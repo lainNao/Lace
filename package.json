@@ -14,7 +14,7 @@
     "build:mac": "nextron build --mac --x64",
     "build:linux": "nextron build --linux",
     "postinstall": "electron-builder install-app-deps",
-    "git:add:commit:push": "git add . && git commit -m '-' && git push"
+    "git:add:commit:push": "git add . && git commit -m \"-\" && git push"
   },
   "dependencies": {
     "@zeit/next-sass": "^1.0.1",
