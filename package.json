@@ -6,7 +6,6 @@
   "author": "仮",
   "main": "app/background.js",
   "scripts": {
-    "git:add:commit:push": "git add . && git commit -m '-' && git push",
     "dev": "nextron",
     "build": "nextron build",
     "build:all": "nextron build --all",
@@ -14,11 +13,14 @@
     "build:win64": "nextron build --win --x64",
     "build:mac": "nextron build --mac --x64",
     "build:linux": "nextron build --linux",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "git:add:commit:push": "git add . && git commit -m '-' && git push"
   },
   "dependencies": {
+    "@zeit/next-sass": "^1.0.1",
     "electron-serve": "^1.0.0",
-    "electron-store": "^6.0.1"
+    "electron-store": "^6.0.1",
+    "node-sass": "^5.0.0"
   },
   "devDependencies": {
     "@material-ui/core": "^4.11.1",
