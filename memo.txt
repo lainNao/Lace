@@ -16,6 +16,8 @@
         ・再生ボタンはreact-uwpとかを使う？
         ・v2を作る時、v1からexportできるようにしたい
         ・エクスプローラーを左カラムに表示したい（例えば自分の創作技法サイト位のやつの物語技法のときの並びみたいなのを左カラムのクリックで一気にそこまで飛ばしたい）
+        ・さすがに読み込み時や書き出し時に無駄なので、カラムスペースごとにdbファイルを分けること
+            ・別カラムスペースと連動する方式を作りたい場合、その対象カラムスペースのDBを依存先として別途読み込む方式にする（つまり、カラムスペースのjsonのところに依存カラムスペースUUIDの配列的なものを用意して、そこにあるのも読み込むなど）
     ＜悩み＞
         ■
             メディアと1対1になるのは、mediasの中に入れても問題無いしむしろそうするのが正当。(作品と、そのタイトルとか)
@@ -84,22 +86,20 @@
     ＜column_space＞
         {
             UUID: {                         //カラムスペースのUUID
-                id: UUID,                      //カラムスペースのID
                 name: text,                    //カラムスペース名
                 columns: {                     //カラムの全データ
                     UUID: {                      //カラムのUUID
                         name: string,            //カラム名
                         type: enum,              //カラムのタイプ（file, bool, tag, text, markdown, select, radio, combo, event(javascriptで定義。任意のカラムの値が変更されたら発火するイベントを作れる。evalで実行)）
                         collapsable: bool,       //コラプスするタイプかどうか（これがtrueなカラムがある場合、メディアの左側にコラプスアイコンつけることになる）
-                        child_column_id: UUID,   //どのカラムを子に持つか
-                        self_data: {             //自カラムが持つデータ達
+                        childs_columns: [        //何を子カラムに持つか
+                            UUID,                  //子カラムUUID
+                            ...
+                        ],
+                        data: {                  //自カラムが持つデータ達
                             UUID: any,             //自カラムデータのUUIDとデータ本体（実データの形式は、typeのenumによって変わる）
                             ...
                         },
-                        childs_data: {           //何を子カラムに持つか
-                            UUID,                  //子カラムUUID
-                            ...
-                        }
                     },
                     ...
                 }
@@ -109,12 +109,12 @@
     ＜それぞれのtypeごとのdataの形式＞
         ■fileの場合
             {
-                path: text,           //メディアへのpath
-                type: enum,           //メディア種類（img, audio, vidoe, txtなど）
-                name: text,           //メディアのファイル名
-                other_columns_ids: {  //これが持つ他カラムの値を入れるやつ
-                    UUID: {             //他カラムのUUID
-                        UUID,             //他カラムのself_dataのUUID
+                path: text,              //メディアへのpath
+                type: enum,              //メディア種類（img, audio, vidoe, txtなど）
+                name: text,              //メディアのファイル名
+                childs_columns_datas: {  //これが持つ他カラムの値を入れるやつ
+                    UUID: {                 //他カラムのUUID
+                        UUID,                 //他カラムのdataのUUID
                         ...
                     }
                 }

@@ -6,7 +6,7 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx"
-  ],
+, "../userdata/db/database.mock.js"  ],
   "exclude": [
     "node_modules"
   ]
