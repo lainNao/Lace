@@ -1,9 +1,9 @@
 {
   "private": true,
   "name": "kari",
-  "description": "仮",
+  "description": "kari",
   "version": "1.0.0",
-  "author": "仮",
+  "author": "kari",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
