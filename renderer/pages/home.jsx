@@ -1,30 +1,37 @@
-import React, {useState, useEffect} from 'react';
-import {HeadThreeColumnFoot, Header, Left, Center, Right, Footer} from '../components/layouts/HeadThreeColumnFoot'
-import {readFile, copyFile, writeFile} from 'fs'
+import React, { useState, useEffect } from 'react';
+import { HeadThreeColumnFoot, Header, Left, Center, Right, Footer } from '../components/layouts/HeadThreeColumnFoot'
+import { readFile, copyFile, writeFile, existsSync } from 'fs'
 import { v4 as uuidv4 } from 'uuid'
-const databaseFilePath = "userdata/db/database.json"
-
+import { databaseFilePath } from '../consts/path'
+import { DBService } from '../services/DBService'
+/*
+  絶対パスでimportできるようにする
+*/
 
 const Home = () => {
 
   const [columnspaceDB, setColumnspaceDB] = useState(null)
-
   const currentColumnSpaceUUID = "test_column_space"    //仮のモック
   const currentMainDisplayedColumnUUID = "test_file_column_uuid"
   const currentMainDisplayedColumnDatas = (columnspaceDB !== null) ? columnspaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas : null;
 
   // DBの読み込み
   useEffect(() => {
-    readFile(databaseFilePath, "utf8", (error, databaseText) => {
-      setColumnspaceDB(JSON.parse(databaseText))
-    })
-  }, [])
+    const readOrCreateDatabase = async () => {
+      const dbService = new DBService({
+        databaseFilePath : databaseFilePath,
+      });
+      setColumnspaceDB(await dbService.readOrCreateDatabase());
+    }
+
+    readOrCreateDatabase();
+  }, []);
 
   // D&Dの制御
   useEffect(() => {
 
     document.ondragover = document.ondrop = (e) => {
-      e.preventDefault()
+      e.preventDefault();
     }
 
     document.body.ondrop = (e) => {
@@ -43,37 +50,35 @@ const Home = () => {
         ひとまずメモリ上でjson型のDBを作り、定期保存かつ、windowが閉じられた時に保存するような仕様にする
         asyncだと後々難しい場合、synkで全部やるのも考える
       */
-      const fileList = e.dataTransfer.files
-      Array.from(fileList).forEach(fileObject => {
-        const savePath = `userdata/column_spaces/${currentColumnSpaceUUID}/${currentMainDisplayedColumnUUID}/${fileObject.name}`
-        copyFile(fileObject.path, savePath, (error) => {
+      const droppedFileList = e.dataTransfer.files;
+      Array.from(droppedFileList).forEach(droppedFile => {
+        const filePath = `userdata/column_spaces/${currentColumnSpaceUUID}/${currentMainDisplayedColumnUUID}/${droppedFile.name}`;
+        const savePath = `renderer/public/${filePath}`;
+        copyFile(droppedFile.path, savePath, (error) => {
           if (error) {
-            console.log(error.stack)
-            return
+            console.log(error.stack);
+            return;
           }
 
-          const newColumnSpaceDB = Object.assign({}, columnspaceDB)
-          const newFileUUID = uuidv4()
-          console.log(columnspaceDB)
+          const newColumnSpaceDB = Object.assign({}, columnspaceDB);
+          const newFileUUID = uuidv4();
           newColumnSpaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas[newFileUUID] = {
-            path: savePath,
-            type: fileObject.type,
-            name: fileObject.name,
-            childs_columns_datas: {
-              test_technique_column_uuid: {}
-            }
-          }
+            path: filePath,
+            type: droppedFile.type,
+            name: droppedFile.name,
+            childs_columns_datas: {},    //この時点では空にし、後々セットする時にこの中身は持たせる。なぜならば、ここでファイル取り込みした後にchild_columnsの中の要素が増える可能性があるため。
+          };
 
           setColumnspaceDB((currentState) =>  newColumnSpaceDB);
-          console.log('ファイル取り込み完了')
+          console.log('ファイル取り込み完了');
 
           writeFile(databaseFilePath, JSON.stringify(newColumnSpaceDB, null, "\t"), "utf8", (error) => {
             if (error) {
-              console.log(error.stack)
-              return
+              console.log(error.stack);
+              return;
             }
 
-            console.log("DB書き出し完了")
+            console.log("DB書き出し完了");
           })
         })
       })
@@ -95,7 +100,12 @@ const Home = () => {
           {
             Object.keys(currentMainDisplayedColumnDatas).map((dataUUID, index) => {
               const data = currentMainDisplayedColumnDatas[dataUUID]
-              return <div key={`${data.name}-${index}`}>{data.name}</div>
+              return (
+                  <div key={`${data.name}-${index}`}>
+                    <div><img src={data.path} /></div>
+                    <div>{data.name}</div>
+                  </div>
+                )
             })
           }
         </Center>
@@ -103,7 +113,7 @@ const Home = () => {
         <Footer>footer</Footer>
 			</HeadThreeColumnFoot>
     </React.Fragment>
-  );
-};
+  )
+}
 
 export default Home;
