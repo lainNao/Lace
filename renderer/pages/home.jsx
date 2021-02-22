@@ -17,8 +17,9 @@ const Home = () => {
   const [service, setService] = useState(null);
   const currentColumnSpaceUUID = "test_column_space";    //仮のモック
   const currentMainDisplayedColumnUUID = "test_file_column_uuid";
-  const currentMainDisplayedColumnDatas
-    = (columnspaceDB !== null) ? columnspaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas : null;
+  const currentMainDisplayedColumnDatas = (columnspaceDB !== null)
+      ? columnspaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas
+      : null;
 
   // DBサービスの読み込み
   useEffect(() => {

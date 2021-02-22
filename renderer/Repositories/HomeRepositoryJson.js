@@ -18,6 +18,7 @@ export class HomeRepositoryJson {
   // publicフォルダのパス
   publicPath = null;
 
+  // 初期状態のDB
   initialDB = {
     "test_column_space": {
       "name": "test_column_space",
