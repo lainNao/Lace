@@ -90,7 +90,6 @@ export class HomeRepositoryJson {
         childs_columns_datas: {},    //この時点では空にし、後々セットする時にこの中身は持たせる。なぜならば、ここでファイル取り込みした後にchild_columnsの中の要素が増える可能性があるため。
       };
 
-      // ここらへん、ちゃんとトランザクションっぽくする？
       // エラーハンドリングもする
       copyFileSync(fileObject.path, realFilePath)
       writeFileSync(this.dbFilePath, JSON.stringify(newColumnSpaceDB, null, "\t"), "utf8")
