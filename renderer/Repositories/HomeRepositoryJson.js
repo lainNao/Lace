@@ -18,7 +18,7 @@ export class HomeRepositoryJson {
   // publicフォルダのパス
   publicPath = null;
 
-  // 初期状態のDB
+  // 初期状態のDB（後で別ファイルに移したり、あと「test_column_space」とか「test_file_column_uuid」とかを動的にする
   initialDB = {
     "test_column_space": {
       "name": "test_column_space",
