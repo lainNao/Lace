@@ -1,31 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { HeadThreeColumnFoot, Header, Left, Center, Right, Footer } from '../components/layouts/HeadThreeColumnFoot'
-import { readFile, copyFile, writeFile, existsSync } from 'fs'
-import { v4 as uuidv4 } from 'uuid'
-import { databaseFilePath } from '../consts/path'
-import { DBService } from '../services/DBService'
+import { HeadThreeColumnFoot, Header, Left, Center, Right, Footer } from '../components/layouts/HeadThreeColumnFoot';
+import { readFile, copyFile, writeFile, existsSync } from 'fs';
+import { v4 as uuidv4 } from 'uuid';
+import { DBFilePath, PUBLIC_PATH } from '../consts/path';
+import { HomeService } from '../Services/HomeService';
+import { HomeRepositoryJson } from '../Repositories/HomeRepositoryJson';
 /*
   絶対パスでimportできるようにする
+  サービスをre-ducksパターンとかそういうのに切り出すか…
+  useEffect類はカスタムフックスにきりだすなど…
 */
 
 const Home = () => {
 
-  const [columnspaceDB, setColumnspaceDB] = useState(null)
-  const currentColumnSpaceUUID = "test_column_space"    //仮のモック
-  const currentMainDisplayedColumnUUID = "test_file_column_uuid"
-  const currentMainDisplayedColumnDatas = (columnspaceDB !== null) ? columnspaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas : null;
+  const [columnspaceDB, setColumnspaceDB] = useState(null);
+  const [service, setService] = useState(null);
+  const currentColumnSpaceUUID = "test_column_space";    //仮のモック
+  const currentMainDisplayedColumnUUID = "test_file_column_uuid";
+  const currentMainDisplayedColumnDatas
+    = (columnspaceDB !== null) ? columnspaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas : null;
+
+  // DBサービスの読み込み
+  useEffect(() => {
+    setService(() => new HomeService({
+      repository: new HomeRepositoryJson({
+        dbFilePath: DBFilePath,
+        currentColumnSpaceUUID,
+        publicPath: PUBLIC_PATH
+      }),
+    }));
+  }, []);
 
   // DBの読み込み
   useEffect(() => {
-    const readOrCreateDatabase = async () => {
-      const dbService = new DBService({
-        databaseFilePath : databaseFilePath,
-      });
-      setColumnspaceDB(await dbService.readOrCreateDatabase());
+    const readOrCreateDB = async () => {
+      setColumnspaceDB(await service.readOrCreateDB());
     }
-
-    readOrCreateDatabase();
-  }, []);
+    if (service) {
+      readOrCreateDB();
+    }
+  }, [service]);
 
   // D&Dの制御
   useEffect(() => {
@@ -34,7 +48,7 @@ const Home = () => {
       e.preventDefault();
     }
 
-    document.body.ondrop = (e) => {
+    document.body.ondrop = async (e) => {
       /*
         ファイルの種類のバリデーションをすること
         ローディングスピナーでも出すこと
@@ -48,44 +62,18 @@ const Home = () => {
         そしてリビルドさせること
         ひとまずはmainDisplayedColumnにアップロードさせるが、後で他カラムに使うファイルのアップロードにも対応させること
         ひとまずメモリ上でjson型のDBを作り、定期保存かつ、windowが閉じられた時に保存するような仕様にする
-        asyncだと後々難しい場合、synkで全部やるのも考える
+        asyncだと後々難しい場合、syncで全部やるのも考える
       */
       const droppedFileList = e.dataTransfer.files;
-      Array.from(droppedFileList).forEach(droppedFile => {
-        const filePath = `userdata/column_spaces/${currentColumnSpaceUUID}/${currentMainDisplayedColumnUUID}/${droppedFile.name}`;
-        const savePath = `renderer/public/${filePath}`;
-        copyFile(droppedFile.path, savePath, (error) => {
-          if (error) {
-            console.log(error.stack);
-            return;
-          }
-
-          const newColumnSpaceDB = Object.assign({}, columnspaceDB);
-          const newFileUUID = uuidv4();
-          newColumnSpaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas[newFileUUID] = {
-            path: filePath,
-            type: droppedFile.type,
-            name: droppedFile.name,
-            childs_columns_datas: {},    //この時点では空にし、後々セットする時にこの中身は持たせる。なぜならば、ここでファイル取り込みした後にchild_columnsの中の要素が増える可能性があるため。
-          };
-
-          setColumnspaceDB((currentState) =>  newColumnSpaceDB);
-          console.log('ファイル取り込み完了');
-
-          writeFile(databaseFilePath, JSON.stringify(newColumnSpaceDB, null, "\t"), "utf8", (error) => {
-            if (error) {
-              console.log(error.stack);
-              return;
-            }
-
-            console.log("DB書き出し完了");
-          })
-        })
-      })
+      if (!droppedFileList.length) {
+        return;
+      }
+      const newColumnSpaceDB = await service.uploadFiles(droppedFileList, currentMainDisplayedColumnUUID);
+      setColumnspaceDB(() => newColumnSpaceDB);
     }
   }, [columnspaceDB])
 
-  if (columnspaceDB === null) {
+  if (columnspaceDB === null || columnspaceDB === undefined) {
     return (
       <div>DB読込中</div>
     )
