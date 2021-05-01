@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Dispatch } from 'react';
-import { columnspaceDBType } from '../@types'
+import { columnspaceDBType, currentMainDisplayedColumnDatasType } from '../@types'
 import { IHomeService } from '../@types/services'
 import { useService } from '../hooks/useService'
 import { useHomeServiceProps } from '../@types/hooks'
@@ -25,8 +25,8 @@ export function useHomeService(props: useHomeServiceProps) : {
       }),
     }),
   )
-  const [columnSpaceDB, setColumnSpaceDB] = useState(null);
-  const [currentMainDisplayedColumnDatas, setCurrentMainDisplayedColumnDatas] = useState();
+  const [columnSpaceDB, setColumnSpaceDB] = useState<columnspaceDBType>(null);
+  const [currentMainDisplayedColumnDatas, setCurrentMainDisplayedColumnDatas] = useState<currentMainDisplayedColumnDatasType>();
 
   // DBの読み込み
   useEffect(() => {

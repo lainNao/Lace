@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useHomeService } from '../hooks/useHomeService'
-import { columnspaceDBType } from '../@types'
+import { columnspaceDBType, currentMainDisplayedColumnDatasType } from '../@types'
 import { HomeViewProps } from '../@types/viewProps'
 
 /*
