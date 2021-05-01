@@ -95,7 +95,7 @@
                         name: string,            //カラム名
                         type: enum,              //カラムのタイプ（file, bool, tag, text, markdown, select, radio, combo, event(javascriptで定義。任意のカラムの値が変更されたら発火するイベントを作れる。evalで実行)）
                         collapsable: bool,       //コラプスするタイプかどうか（これがtrueなカラムがある場合、メディアの左側にコラプスアイコンつけることになる）
-                        childs_columns: [        //何を子カラムに持つか
+                        childs_columns: [        //何を子カラムに持つか（これ「child_columns」のほうが良さそう）
                             UUID,                  //子カラムUUID
                             ...
                         ],
