@@ -1,8 +1,5 @@
-const withSass = require('@zeit/next-sass')
-
-module.exports = withSass({
+module.exports = {
   webpack: (config) => Object.assign(config, {
     target: 'electron-renderer',
   }),
-  cssModules: true,
-});
+};

@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { HeadThreeColumnFoot, Header, Left, Center, Right, Footer } from '../components/layouts/HeadThreeColumnFoot';
-import { readFile, copyFile, writeFile, existsSync } from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import { DB_FILE_PATH, PUBLIC_PATH } from '../consts/path';
 import { HomeService } from '../services/HomeService';
 import { HomeRepositoryJson } from '../repositories/HomeRepositoryJson';
@@ -83,7 +80,28 @@ const Home = () => {
 
   return (
     <React.Fragment>
-			<HeadThreeColumnFoot>
+      <div className="flex">
+        <div>
+          left
+        </div>
+        <div>
+          {
+            Object.keys(currentMainDisplayedColumnDatas).map((dataUUID, index) => {
+              const data = currentMainDisplayedColumnDatas[dataUUID]
+              return (
+                  <div key={`${data.name}-${index}`}>
+                    <div><img src={data.path} /></div>
+                    <div>{data.name}</div>
+                  </div>
+                )
+            })
+          }
+        </div>
+        <div>
+          right
+        </div>
+      </div>
+			{/* <HeadThreeColumnFoot>
         <Header>header</Header>
         <Left>left</Left>
         <Center>
@@ -101,7 +119,7 @@ const Home = () => {
         </Center>
         <Right>right</Right>
         <Footer>footer</Footer>
-			</HeadThreeColumnFoot>
+			</HeadThreeColumnFoot> */}
     </React.Fragment>
   )
 }

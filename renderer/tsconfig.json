@@ -3,10 +3,8 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx"
-, "public/userdata/db/database.mock.js"  ],
+    "**/*.tsx"
+  ],
   "exclude": [
     "node_modules"
   ]
