@@ -1,24 +1,21 @@
 
 export interface IHomeRepository {
-  // メモリ上に読み込んだDB
-  columnSpaceDB;
 
   // 現芸のカラムスペースのUUID
-  currentColumnSpaceUUID;
-
+  currentColumnSpaceUUID: string;
   // DBファイルのパス
-  dbFilePath;
-
+  dbFilePath: string;
   // publicフォルダのパス
-  publicPath;
-
+  publicPath: string;
+  // メモリ上に読み込んだDB
+  columnSpaceDB: columnspaceDBType;
   // 初期状態のDB（後で別ファイルに移したり、あと「test_column_space」とか「test_file_column_uuid」とかを動的にする
-  initialDB;
+  initialDB: columnspaceDBType;
 
   readOrCreateDB(): Promise<columnspaceDBType> ;
-  readDB(): Promise<columnspaceDBType> ;
-  createDB(): Promise<any>;
-  uploadFile(fileObject, targetColumnUUID): Promise<columnspaceDBType> ;
-  getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): Promise<string>;
+  readDB: () => Promise<columnspaceDBType> ;
+  createDB: () => Promise<any>;
+  uploadFile: (fileObject, targetColumnUUID) => Promise<columnspaceDBType> ;
+  getSavePathWithoutDuplication: (filenameWithExtension, targetColumnUUID) => Promise<string>;
 
 }

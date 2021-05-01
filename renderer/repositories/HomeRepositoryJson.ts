@@ -1,4 +1,4 @@
-import { readFileSync, copyFile, copyFileSync, writeFileSync, existsSync } from 'fs'
+import { readFileSync, copyFile, copyFileSync, writeFileSync, existsSync, exists } from 'fs'
 import { parse } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { IHomeRepository } from '../@types/repositories'
@@ -10,13 +10,13 @@ export class HomeRepositoryJson implements IHomeRepository{
   columnSpaceDB = null;
 
   // 現芸のカラムスペースのUUID
-  currentColumnSpaceUUID = null;
+  currentColumnSpaceUUID: string = null;
 
   // DBファイルのパス
-  dbFilePath = null;
+  dbFilePath: string = null;
 
   // publicフォルダのパス
-  publicPath = null;
+  publicPath: string = null;
 
   // 初期状態のDB（後で別ファイルに移したり、あと「test_column_space」とか「test_file_column_uuid」とかを動的にする
   initialDB: columnspaceDBType = {
@@ -43,10 +43,9 @@ export class HomeRepositoryJson implements IHomeRepository{
   }
 
   async readOrCreateDB(): Promise<columnspaceDBType> {
-
     this.columnSpaceDB = existsSync(this.dbFilePath)
-      ? await this.createDB()
-      : await this.readDB();
+      ? await this.readDB()
+      : await this.createDB();
 
     return this.columnSpaceDB;
   }
