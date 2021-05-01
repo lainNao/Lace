@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useHomeService } from '../hooks/useHomeService'
 import { columnspaceDBType } from '../@types'
+import { HomeViewProps } from '../@types/viewProps'
 
 /*
   絶対パスでimportできるようにする
@@ -22,6 +23,8 @@ const HomeController: React.FC = () => {
       e.preventDefault();
     }
 
+    // いずれdocument.bodyへのドロップじゃないのに変えるべき
+    // そもそもファイル類追加のときのみDnDを受け入れるようにする
     document.body.ondrop = async (e) => {
       /*
         今はメインのカラムに追加しか対応してないけど、特定のセルの今のカーソル位置に追加とか、子カラムの特定セルに追加とかもできるようにする
@@ -53,12 +56,7 @@ const HomeController: React.FC = () => {
   )
 }
 
-interface HomeViewDTO {
-  columnSpaceDB: any,
-  currentMainDisplayedColumnDatas: any,
-}
-
-const HomeView: React.FC<HomeViewDTO> = (props) => {
+const HomeView: React.FC<HomeViewProps> = (props) => {
   if (props.columnSpaceDB == null) {
     return (
       <div>DB読込中</div>
@@ -72,14 +70,17 @@ const HomeView: React.FC<HomeViewDTO> = (props) => {
   }
 
   return (
-    <React.Fragment>
-      <div className="flex flex-row w-screen h-screen">
+    <div className="flex flex-col h-screen">
+      <div className="header">
+        head（自由検索、各種設定、ヘルプ、リンクなど）
+      </div>
+      <div className="content flex flex-row w-screen max-h-full ">
 
-        <div className="h-screen min-w-300  overflow-y-auto p-3">
-          left
+        <div className=" min-w-300  overflow-y-auto p-3">
+          カラムスペースの選択
         </div>
 
-        <div className="h-screen overflow-y-auto p-3">
+        <div className=" overflow-y-auto p-3">
           {
             Object.keys(props.currentMainDisplayedColumnDatas).map((dataUUID, index) => {
               const data = props.currentMainDisplayedColumnDatas[dataUUID]
@@ -93,12 +94,17 @@ const HomeView: React.FC<HomeViewDTO> = (props) => {
           }
         </div>
 
-        <div className="h-screen min-w-300 overflow-y-auto p-3">
-          right
+        <div className=" min-w-300 overflow-y-auto p-3">
+          セルの詳細の表示
         </div>
 
       </div>
-    </React.Fragment>
+
+      <div className="footer">
+        foot（状態表示など）
+      </div>
+
+    </div>
   )
 
 }
