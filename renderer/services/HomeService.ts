@@ -1,16 +1,12 @@
-import { readFileSync, copyFile, copyFileSync, writeFileSync, existsSync } from 'fs'
-import { parse } from 'path'
-import { HomeRepository } from '../repositories/HomeRepository'
-import { promisify } from 'util'
-import { v4 as uuidv4 } from 'uuid'
-import { DBFilePath } from '../consts/path'
+import { IHomeRepository } from '../@types/repositories'
+import { IHomeService } from '../@types/services'
 
 /*
   こういうのは一度処理ができたら随時typescript化
 */
-export class HomeService {
+export class HomeService implements IHomeService {
 
-  repository: HomeRepository;
+  repository: IHomeRepository;
 
   constructor(options) {
     this.repository = options.repository;

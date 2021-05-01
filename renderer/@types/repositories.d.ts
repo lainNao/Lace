@@ -1,6 +1,5 @@
 
-export interface HomeRepository {
-
+export interface IHomeRepository {
   // メモリ上に読み込んだDB
   columnSpaceDB;
 
@@ -16,16 +15,10 @@ export interface HomeRepository {
   // 初期状態のDB（後で別ファイルに移したり、あと「test_column_space」とか「test_file_column_uuid」とかを動的にする
   initialDB;
 
-  constructor(options);
-
   readOrCreateDB(): Promise<any>;
-
   readDB(): Promise<any>;
-
   createDB(): Promise<any>;
-
   uploadFile(fileObject, targetColumnUUID): Promise<any>;
-
   getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID);
 
 }

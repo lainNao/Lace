@@ -1,9 +1,10 @@
 import { readFileSync, copyFile, copyFileSync, writeFileSync, existsSync } from 'fs'
 import { parse } from 'path'
 import { v4 as uuidv4 } from 'uuid'
+import { IHomeRepository } from '../@types/repositories'
 
 
-export class HomeRepositoryJson {
+export class HomeRepositoryJson implements IHomeRepository{
 
   // メモリ上に読み込んだDB
   columnSpaceDB = null;
@@ -78,24 +79,24 @@ export class HomeRepositoryJson {
   }
 
   async uploadFile(fileObject, targetColumnUUID) {
-      const filePath = this.getSavePathWithoutDuplication(fileObject.name, targetColumnUUID);
-      const realFilePath = this.publicPath + filePath;
-      const currentColumnSpaceDB = await this.readDB();
+    const filePath = this.getSavePathWithoutDuplication(fileObject.name, targetColumnUUID);
+    const realFilePath = this.publicPath + filePath;
+    const currentColumnSpaceDB = await this.readDB();
 
-      let newColumnSpaceDB = Object.assign({}, currentColumnSpaceDB);
-      newColumnSpaceDB[this.currentColumnSpaceUUID].columns[targetColumnUUID].datas[uuidv4()] = {
-        path: filePath,
-        type: fileObject.type,
-        name: parse(realFilePath).name + parse(realFilePath).ext,
-        childs_columns_datas: {},    //この時点では空にし、後々セットする時にこの中身は持たせる。なぜならば、ここでファイル取り込みした後にchild_columnsの中の要素が増える可能性があるため。
-      };
+    let newColumnSpaceDB = Object.assign({}, currentColumnSpaceDB);
+    newColumnSpaceDB[this.currentColumnSpaceUUID].columns[targetColumnUUID].datas[uuidv4()] = {
+      path: filePath,
+      type: fileObject.type,
+      name: parse(realFilePath).name + parse(realFilePath).ext,
+      childs_columns_datas: {},    //この時点では空にし、後々セットする時にこの中身は持たせる。なぜならば、ここでファイル取り込みした後にchild_columnsの中の要素が増える可能性があるため。
+    };
 
-      // エラーハンドリングもする
-      copyFileSync(fileObject.path, realFilePath)
-      writeFileSync(this.dbFilePath, JSON.stringify(newColumnSpaceDB, null, "\t"), "utf8")
+    // エラーハンドリングもする
+    copyFileSync(fileObject.path, realFilePath)
+    writeFileSync(this.dbFilePath, JSON.stringify(newColumnSpaceDB, null, "\t"), "utf8")
 
-      console.log("DB書き出し完了");
-      return newColumnSpaceDB;
+    console.log("DB書き出し完了");
+    return newColumnSpaceDB;
   }
 
 }
