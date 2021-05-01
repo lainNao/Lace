@@ -8,12 +8,11 @@
 
 html,
 body {
-  @apply bg-gray-900 text-white;
+  @apply bg-gray-900 text-white h-screen;
 }
 
-/* Write your own custom component styles here */
-.btn-blue {
-  @apply px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-600;
+#__next {
+  @apply h-screen;
 }
 
 /* Start purging... */
@@ -21,3 +20,4 @@ body {
 /* Stop purging. */
 
 /* Your own custom utilities */
+@import url("./_scrollbar.css");

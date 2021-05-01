@@ -3,7 +3,6 @@ import { parse } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { IHomeRepository } from '../@types/repositories'
 
-
 export class HomeRepositoryJson implements IHomeRepository{
 
   // メモリ上に読み込んだDB
@@ -33,7 +32,7 @@ export class HomeRepositoryJson implements IHomeRepository{
           }
         }
       }
-    }
+    },
   }
 
   constructor(options) {

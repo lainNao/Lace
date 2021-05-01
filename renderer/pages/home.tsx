@@ -2,18 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { DB_FILE_PATH, PUBLIC_PATH } from '../consts/path';
 import { HomeService } from '../services/HomeService';
 import { HomeRepositoryJson } from '../repositories/HomeRepositoryJson';
+import { columnspaceDB } from '../@types'
+import { IHomeService } from '../@types/services'
+
 /*
   絶対パスでimportできるようにする
   サービスをre-ducksパターンとかそういうのに切り出すか…
   useEffect類はカスタムフックスにきりだすなど…
 */
 
-const Home = () => {
+const Home: React.FC = () => {
 
-  const [columnspaceDB, setColumnspaceDB] = useState(null);
-  const [service, setService] = useState(null);
-  const currentColumnSpaceUUID = "test_column_space";    //仮のモック
-  const currentMainDisplayedColumnUUID = "test_file_column_uuid";
+  const [columnspaceDB, setColumnspaceDB] = useState<columnspaceDB>(null);
+  const [service, setService] = useState<IHomeService>(null);
+  const currentColumnSpaceUUID: string = "test_column_space";    //仮のモック
+  const currentMainDisplayedColumnUUID: string = "test_file_column_uuid";
   const currentMainDisplayedColumnDatas = (columnspaceDB !== null)
       ? columnspaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas
       : null;
@@ -72,7 +75,7 @@ const Home = () => {
     }
   }, [columnspaceDB])
 
-  if (columnspaceDB === null || columnspaceDB === undefined) {
+  if (columnspaceDB == null) {
     return (
       <div>DB読込中</div>
     )
@@ -80,11 +83,13 @@ const Home = () => {
 
   return (
     <React.Fragment>
-      <div className="flex">
-        <div>
+      <div className="flex flex-row w-screen h-screen">
+
+        <div className="h-screen min-w-300  overflow-y-auto p-3">
           left
         </div>
-        <div>
+
+        <div className="h-screen overflow-y-auto p-3">
           {
             Object.keys(currentMainDisplayedColumnDatas).map((dataUUID, index) => {
               const data = currentMainDisplayedColumnDatas[dataUUID]
@@ -97,29 +102,12 @@ const Home = () => {
             })
           }
         </div>
-        <div>
+
+        <div className="h-screen min-w-300 overflow-y-auto p-3">
           right
         </div>
+
       </div>
-			{/* <HeadThreeColumnFoot>
-        <Header>header</Header>
-        <Left>left</Left>
-        <Center>
-          {
-            Object.keys(currentMainDisplayedColumnDatas).map((dataUUID, index) => {
-              const data = currentMainDisplayedColumnDatas[dataUUID]
-              return (
-                  <div key={`${data.name}-${index}`}>
-                    <div><img src={data.path} /></div>
-                    <div>{data.name}</div>
-                  </div>
-                )
-            })
-          }
-        </Center>
-        <Right>right</Right>
-        <Footer>footer</Footer>
-			</HeadThreeColumnFoot> */}
     </React.Fragment>
   )
 }
