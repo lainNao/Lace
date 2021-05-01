@@ -1,6 +1,5 @@
 import { readFileSync, copyFile, copyFileSync, writeFileSync, existsSync } from 'fs'
 import { parse } from 'path'
-import { promisify } from 'util'
 import { v4 as uuidv4 } from 'uuid'
 
 

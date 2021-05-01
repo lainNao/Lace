@@ -3,8 +3,8 @@ import { HeadThreeColumnFoot, Header, Left, Center, Right, Footer } from '../com
 import { readFile, copyFile, writeFile, existsSync } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { DBFilePath, PUBLIC_PATH } from '../consts/path';
-import { HomeService } from '../Services/HomeService';
-import { HomeRepositoryJson } from '../Repositories/HomeRepositoryJson';
+import { HomeService } from '../services/HomeService';
+import { HomeRepositoryJson } from '../repositories/HomeRepositoryJson';
 /*
   絶対パスでimportできるようにする
   サービスをre-ducksパターンとかそういうのに切り出すか…
@@ -21,7 +21,7 @@ const Home = () => {
       ? columnspaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas
       : null;
 
-  // DBサービスの読み込み
+  // サービスの読み込み
   useEffect(() => {
     setService(() => new HomeService({
       repository: new HomeRepositoryJson({
