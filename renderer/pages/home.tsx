@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { DB_FILE_PATH, PUBLIC_PATH } from '../consts/path';
-import { HomeService } from '../services/HomeService';
-import { HomeRepositoryJson } from '../repositories/HomeRepositoryJson';
-import { columnspaceDB } from '../@types'
-import { IHomeService } from '../@types/services'
+import React, { useEffect } from 'react';
+import { useHomeService } from '../hooks/useHomeService'
+import { columnspaceDBType } from '../@types'
 
 /*
   絶対パスでimportできるようにする
@@ -11,36 +8,12 @@ import { IHomeService } from '../@types/services'
   useEffect類はカスタムフックスにきりだすなど…
 */
 
-const Home: React.FC = () => {
+const HomeController: React.FC = () => {
 
-  const [columnspaceDB, setColumnspaceDB] = useState<columnspaceDB>(null);
-  const [service, setService] = useState<IHomeService>(null);
-  const currentColumnSpaceUUID: string = "test_column_space";    //仮のモック
-  const currentMainDisplayedColumnUUID: string = "test_file_column_uuid";
-  const currentMainDisplayedColumnDatas = (columnspaceDB !== null)
-      ? columnspaceDB[currentColumnSpaceUUID].columns[currentMainDisplayedColumnUUID].datas
-      : null;
-
-  // サービスの読み込み
-  useEffect(() => {
-    setService(() => new HomeService({
-      repository: new HomeRepositoryJson({
-        dbFilePath: DB_FILE_PATH,
-        currentColumnSpaceUUID,
-        publicPath: PUBLIC_PATH
-      }),
-    }));
-  }, []);
-
-  // DBの読み込み
-  useEffect(() => {
-    const readOrCreateDB = async () => {
-      setColumnspaceDB(await service.readOrCreateDB());
-    }
-    if (service) {
-      readOrCreateDB();
-    }
-  }, [service]);
+  const {service, columnSpaceDB, setColumnSpaceDB, currentColumnSpaceUUID, currentMainDisplayedColumnUUID, currentMainDisplayedColumnDatas} = useHomeService({
+    currentColumnSpaceUUID: "test_column_space",              //仮のモック
+    currentMainDisplayedColumnUUID: "test_file_column_uuid",  //仮のモック
+  });
 
   // D&Dの制御
   useEffect(() => {
@@ -70,14 +43,31 @@ const Home: React.FC = () => {
       if (!droppedFileList.length) {
         return;
       }
-      const newColumnSpaceDB = await service.uploadFiles(droppedFileList, currentMainDisplayedColumnUUID);
-      setColumnspaceDB(() => newColumnSpaceDB);
+      const newColumnSpaceDB: columnspaceDBType = await service.uploadFiles(droppedFileList, currentMainDisplayedColumnUUID);
+      setColumnSpaceDB(() => newColumnSpaceDB);
     }
-  }, [columnspaceDB])
+  }, [columnSpaceDB])
 
-  if (columnspaceDB == null) {
+  return (
+    <HomeView columnSpaceDB={columnSpaceDB} currentMainDisplayedColumnDatas={currentMainDisplayedColumnDatas} />
+  )
+}
+
+interface HomeViewDTO {
+  columnSpaceDB: any,
+  currentMainDisplayedColumnDatas: any,
+}
+
+const HomeView: React.FC<HomeViewDTO> = (props) => {
+  if (props.columnSpaceDB == null) {
     return (
       <div>DB読込中</div>
+    )
+  }
+
+  if (props.currentMainDisplayedColumnDatas == null) {
+    return (
+      <div>カラム読込中</div>
     )
   }
 
@@ -91,14 +81,14 @@ const Home: React.FC = () => {
 
         <div className="h-screen overflow-y-auto p-3">
           {
-            Object.keys(currentMainDisplayedColumnDatas).map((dataUUID, index) => {
-              const data = currentMainDisplayedColumnDatas[dataUUID]
+            Object.keys(props.currentMainDisplayedColumnDatas).map((dataUUID, index) => {
+              const data = props.currentMainDisplayedColumnDatas[dataUUID]
               return (
-                  <div key={`${data.name}-${index}`}>
-                    <div><img src={data.path} /></div>
-                    <div>{data.name}</div>
-                  </div>
-                )
+                <div key={`${data.name}-${index}`}>
+                  <div><img src={data.path} /></div>
+                  <div>{data.name}</div>
+                </div>
+              )
             })
           }
         </div>
@@ -110,6 +100,7 @@ const Home: React.FC = () => {
       </div>
     </React.Fragment>
   )
+
 }
 
-export default Home;
+export default HomeController;

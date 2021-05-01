@@ -1,4 +1,4 @@
-export type columnspaceDB = {
+export type columnspaceDBType = {
   [columnSpaceName :string]: {
     name: string,
     columns: {
