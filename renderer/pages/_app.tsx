@@ -2,6 +2,8 @@ import React from 'react';
 import Head from 'next/head';
 import type { AppProps } from 'next/app';
 import "../styles/global.css";
+import { ChakraProvider } from "@chakra-ui/react"
+import dark from "../themes/dark"
 
 function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -20,7 +22,9 @@ function App(props: AppProps) {
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <title>with-typescript-material-ui</title>
       </Head>
-      <Component {...pageProps} />
+      <ChakraProvider theme={dark}>
+        <Component {...pageProps} />
+      </ChakraProvider>
     </React.Fragment>
   );
 }

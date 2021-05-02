@@ -2,7 +2,7 @@ import { readFileSync, copyFile, copyFileSync, writeFileSync, existsSync, exists
 import { parse } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { IHomeRepository } from '../@types/repositories'
-import { columnspaceDBType, currentMainDisplayedColumnDatasType } from '../@types'
+import { columnSpacesType, columnsType } from '../@types/app'
 
 export class HomeRepositoryJson implements IHomeRepository{
 
@@ -19,7 +19,7 @@ export class HomeRepositoryJson implements IHomeRepository{
   publicPath: string = null;
 
   // 初期状態のDB（後で別ファイルに移したり、あと「test_column_space」とか「test_file_column_uuid」とかを動的にする
-  initialDB: columnspaceDBType = {
+  initialDB: columnSpacesType = {
     "test_column_space": {
       "name": "test_column_space",
       "columns": {
@@ -27,8 +27,6 @@ export class HomeRepositoryJson implements IHomeRepository{
           "name": "test_file_column",
           "type": "file",
           "collapsable": false,
-          "childColumns": [
-          ],
           "datas": {
           }
         }
@@ -42,7 +40,7 @@ export class HomeRepositoryJson implements IHomeRepository{
     this.publicPath = options.publicPath;
   }
 
-  async readOrCreateDB(): Promise<columnspaceDBType> {
+  async readOrCreateDB(): Promise<columnSpacesType> {
     this.columnSpaceDB = existsSync(this.dbFilePath)
       ? await this.readDB()
       : await this.createDB();
@@ -50,11 +48,11 @@ export class HomeRepositoryJson implements IHomeRepository{
     return this.columnSpaceDB;
   }
 
-  async readDB(): Promise<columnspaceDBType>  {
+  async readDB(): Promise<columnSpacesType>  {
     return JSON.parse(readFileSync(this.dbFilePath, "utf8"));
   }
 
-  async createDB(): Promise<columnspaceDBType> {
+  async createDB(): Promise<columnSpacesType> {
     writeFileSync(this.dbFilePath, JSON.stringify(this.initialDB, null, 2));
     return this.initialDB;
   }
@@ -76,7 +74,7 @@ export class HomeRepositoryJson implements IHomeRepository{
     return savedDirectory + savedFileName;
   }
 
-  async uploadFile(fileObject, targetColumnUUID): Promise<columnspaceDBType> {
+  async uploadFile(fileObject, targetColumnUUID): Promise<columnSpacesType> {
     const filePath = await this.getSavePathWithoutDuplication(fileObject.name, targetColumnUUID);
     const realFilePath = this.publicPath + filePath;
     const currentColumnSpaceDB = await this.readDB();

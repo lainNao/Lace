@@ -193,10 +193,6 @@
                         name: string,            //カラム名
                         type: enum,              //カラムのタイプ（file, bool, tag, text, markdown, select, radio, combo, event(javascriptで定義。任意のカラムの値が変更されたら発火するイベントを作れる。evalで実行)）
                         collapsable: bool,       //コラプスするタイプかどうか（これがtrueなカラムがある場合、メディアの左側にコラプスアイコンつけることになる）
-                        childsColumns: [         //何を子カラムに持つか（これ「child_columns」のほうが良さそう）
-                            UUID,                  //子カラムUUID
-                            ...
-                        ],
                         data: {                  //自カラムが持つデータ達
                             UUID: any,             //自カラムデータのUUIDとデータ本体（実データの形式は、typeのenumによって変わる）
                             ...
@@ -213,7 +209,7 @@
                 path: text,              //メディアへのpath
                 type: enum,              //メディア種類（img, audio, vidoe, txtなど）
                 name: text,              //メディアのファイル名
-                childsColumnsDatas: {    //これが持つ他カラムの値を入れるやつ
+                relatedDatas: {          //関連セル
                     UUID: {                 //他カラムのUUID
                         UUID,                 //他カラムのdataのUUID
                         ...

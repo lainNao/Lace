@@ -8,14 +8,14 @@ export interface IHomeRepository {
   // publicフォルダのパス
   publicPath: string;
   // メモリ上に読み込んだDB
-  columnSpaceDB: columnspaceDBType;
+  columnSpaceDB: columnSpacesType;
   // 初期状態のDB（後で別ファイルに移したり、あと「test_column_space」とか「test_file_column_uuid」とかを動的にする
-  initialDB: columnspaceDBType;
+  initialDB: columnSpacesType;
 
-  readOrCreateDB(): Promise<columnspaceDBType> ;
-  readDB: () => Promise<columnspaceDBType> ;
+  readOrCreateDB(): Promise<columnSpacesType> ;
+  readDB: () => Promise<columnSpacesType> ;
   createDB: () => Promise<any>;
-  uploadFile: (fileObject, targetColumnUUID) => Promise<columnspaceDBType> ;
+  uploadFile: (fileObject, targetColumnUUID) => Promise<columnSpacesType> ;
   getSavePathWithoutDuplication: (filenameWithExtension, targetColumnUUID) => Promise<string>;
 
 }

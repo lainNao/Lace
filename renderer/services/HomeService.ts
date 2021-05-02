@@ -1,6 +1,6 @@
 import { IHomeRepository } from '../@types/repositories'
 import { IHomeService } from '../@types/services'
-import { columnspaceDBType, currentMainDisplayedColumnDatasType } from '../@types'
+import { columnSpacesType, columnsType } from '../@types/app'
 
 /*
   こういうのは一度処理ができたら随時typescript化
@@ -13,12 +13,12 @@ export class HomeService implements IHomeService {
     this.repository = options.repository;
   }
 
-  async readOrCreateDB(): Promise<columnspaceDBType> {
+  async readOrCreateDB(): Promise<columnSpacesType> {
     return this.repository.readOrCreateDB();
   }
 
-  async uploadFiles(files, targetColumnUUID): Promise<columnspaceDBType> {
-    let newColumnSpaceDB: columnspaceDBType;
+  async uploadFiles(files, targetColumnUUID): Promise<columnSpacesType> {
+    let newColumnSpaceDB: columnSpacesType;
 
     for (let i=0; i<files.length; i++) {
       //トランザクションとか考慮？

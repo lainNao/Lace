@@ -3,7 +3,10 @@ module.exports = {
   theme: {
     extend: {
       minWidth: {
-        '300': '300px'
+        '300px': '300px',
+      },
+      width: {
+        "120px": "120px",
       },
       height: {
         'inherit': 'inherit'

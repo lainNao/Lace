@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Dispatch } from 'react';
-import { columnspaceDBType, currentMainDisplayedColumnDatasType } from '../@types'
+import { columnSpacesType, columnsType } from '../@types/app'
 import { IHomeService } from '../@types/services'
 import { useService } from '../hooks/useService'
 import { useHomeServiceProps } from '../@types/hooks'
@@ -9,12 +9,10 @@ import { HomeService } from '../services/HomeService';
 
 export function useHomeService(props: useHomeServiceProps) : {
   service: IHomeService,
-  columnSpaceDB: columnspaceDBType,
+  columnSpaceDB: columnSpacesType,
   currentColumnSpaceUUID: any,
-  currentMainDisplayedColumnDatas: any,
   currentMainDisplayedColumnUUID: string,
-  setColumnSpaceDB: Dispatch<() => columnspaceDBType>,
-  setCurrentMainDisplayedColumnDatas: Dispatch<() => any>,
+  setColumnSpaceDB: Dispatch<() => columnSpacesType>,
 } {
 
   const [service] = useService<IHomeService>(new HomeService({
@@ -25,8 +23,7 @@ export function useHomeService(props: useHomeServiceProps) : {
       }),
     }),
   )
-  const [columnSpaceDB, setColumnSpaceDB] = useState<columnspaceDBType>(null);
-  const [currentMainDisplayedColumnDatas, setCurrentMainDisplayedColumnDatas] = useState<currentMainDisplayedColumnDatasType>();
+  const [columnSpaceDB, setColumnSpaceDB] = useState<columnSpacesType>(null);
 
   // DBの読み込み
   useEffect(() => {
@@ -38,21 +35,12 @@ export function useHomeService(props: useHomeServiceProps) : {
     }
   }, [service]);
 
-  // currentMainDisplayedColumnDatasの読み込み
-  useEffect(() => {
-    if (columnSpaceDB == null) {
-      return;
-    }
-    setCurrentMainDisplayedColumnDatas(columnSpaceDB[props.currentColumnSpaceUUID].columns[props.currentMainDisplayedColumnUUID].datas)
-  }, [columnSpaceDB])
 
   return {
     service,
     columnSpaceDB,
     currentColumnSpaceUUID: props.currentColumnSpaceUUID,
     currentMainDisplayedColumnUUID: props.currentMainDisplayedColumnUUID,
-    currentMainDisplayedColumnDatas,
     setColumnSpaceDB,
-    setCurrentMainDisplayedColumnDatas,
   };
 }

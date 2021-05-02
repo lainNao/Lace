@@ -1,8 +1,8 @@
-import { HomeRepository } from './repositories/HomeRepository'
+import { IHomeRepository } from "./repositories"
 
 export interface IHomeService {
-  repository: HomeRepository;
-  readOrCreateDB: () => Promise<columnspaceDBType>;
-  uploadFiles: (files, targetColumnUUID) => Promise<columnspaceDBType>;
+  repository: IHomeRepository;
+  readOrCreateDB: () => Promise<columnSpacesType>;
+  uploadFiles: (files, targetColumnUUID) => Promise<columnSpacesType>;
 }
 
