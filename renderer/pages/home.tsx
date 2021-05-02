@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useHomeService } from '../hooks/useHomeService'
-import { columnSpacesType, columnsType } from '../@types/app'
+import { useForceUpdate } from '../hooks/useForceUpdate'
+import { columnSpacesType } from '../@types/app'
 import { HomeView } from "../views/HomeView"
 
 /*
@@ -11,7 +12,15 @@ import { HomeView } from "../views/HomeView"
 
 const HomeController: React.FC = () => {
 
-  const {service, columnSpaceDB, setColumnSpaceDB, currentColumnSpaceUUID, currentMainDisplayedColumnUUID} = useHomeService({
+  const forceUpdate = useForceUpdate();
+
+  const {
+    service,
+    columnSpaceDB,
+    setColumnSpaceDB,
+    currentColumnSpaceUUID,
+    currentMainDisplayedColumnUUID,
+  } = useHomeService({
     currentColumnSpaceUUID: "test_column_space",              //仮のモック
     currentMainDisplayedColumnUUID: "test_file_column_uuid",  //仮のモック
   });
@@ -52,7 +61,13 @@ const HomeController: React.FC = () => {
   }, [columnSpaceDB])
 
   return (
-    <HomeView columnSpaceDB={columnSpaceDB} currentColumnSpaceId={currentColumnSpaceUUID} currentMainColumnId={currentMainDisplayedColumnUUID} />
+    <HomeView
+      columnSpaceDB={columnSpaceDB}
+      currentColumnSpaceId={currentColumnSpaceUUID}
+      currentMainColumnId={currentMainDisplayedColumnUUID}
+      forceUpdateHome={forceUpdate}
+      service={service}
+      />
   )
 }
 

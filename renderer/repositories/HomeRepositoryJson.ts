@@ -6,19 +6,10 @@ import { columnSpacesType, columnsType } from '../@types/app'
 
 export class HomeRepositoryJson implements IHomeRepository{
 
-  // メモリ上に読み込んだDB
   columnSpaceDB = null;
-
-  // 現芸のカラムスペースのUUID
   currentColumnSpaceUUID: string = null;
-
-  // DBファイルのパス
   dbFilePath: string = null;
-
-  // publicフォルダのパス
   publicPath: string = null;
-
-  // 初期状態のDB（後で別ファイルに移したり、あと「test_column_space」とか「test_file_column_uuid」とかを動的にする
   initialDB: columnSpacesType = {
     "test_column_space": {
       "name": "test_column_space",
@@ -53,8 +44,17 @@ export class HomeRepositoryJson implements IHomeRepository{
   }
 
   async createDB(): Promise<columnSpacesType> {
-    writeFileSync(this.dbFilePath, JSON.stringify(this.initialDB, null, 2));
+    this.saveDB(this.initialDB);
     return this.initialDB;
+  }
+
+  async addColumnSpace(columnSpaceName): Promise<columnSpacesType> {
+    this.columnSpaceDB[uuidv4()] = {
+      "name": columnSpaceName,
+      "columns": {},
+    }
+    this.saveDB(this.columnSpaceDB);
+    return this.columnSpaceDB;
   }
 
   async getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): Promise<string> {
@@ -89,10 +89,14 @@ export class HomeRepositoryJson implements IHomeRepository{
 
     // エラーハンドリングもする
     copyFileSync(fileObject.path, realFilePath)
-    writeFileSync(this.dbFilePath, JSON.stringify(newColumnSpaceDB, null, "\t"), "utf8")
+    this.saveDB(newColumnSpaceDB);
 
     console.log("DB書き出し完了");
     return newColumnSpaceDB;
+  }
+
+  private saveDB(DBJson: columnSpacesType, dbFilePath: string = this.dbFilePath) {
+    writeFileSync(dbFilePath, JSON.stringify(DBJson, null, "\t"), "utf8")
   }
 
 }

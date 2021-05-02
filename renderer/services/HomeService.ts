@@ -1,11 +1,7 @@
 import { IHomeRepository } from '../@types/repositories'
-import { IHomeService } from '../@types/services'
 import { columnSpacesType, columnsType } from '../@types/app'
 
-/*
-  こういうのは一度処理ができたら随時typescript化
-*/
-export class HomeService implements IHomeService {
+export class HomeService {
 
   repository: IHomeRepository;
 
@@ -15,6 +11,10 @@ export class HomeService implements IHomeService {
 
   async readOrCreateDB(): Promise<columnSpacesType> {
     return this.repository.readOrCreateDB();
+  }
+
+  async addColumnSpace(columnSpaceName): Promise<columnSpacesType> {
+    return this.repository.addColumnSpace(columnSpaceName);
   }
 
   async uploadFiles(files, targetColumnUUID): Promise<columnSpacesType> {

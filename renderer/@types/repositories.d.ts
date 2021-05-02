@@ -14,8 +14,9 @@ export interface IHomeRepository {
 
   readOrCreateDB(): Promise<columnSpacesType> ;
   readDB: () => Promise<columnSpacesType> ;
-  createDB: () => Promise<any>;
-  uploadFile: (fileObject, targetColumnUUID) => Promise<columnSpacesType> ;
-  getSavePathWithoutDuplication: (filenameWithExtension, targetColumnUUID) => Promise<string>;
+  createDB: () => Promise<columnSpacesType>;
+  addColumnSpace: (columnSpaceName: string) => Promise<columnSpacesType>;
+  uploadFile: (fileObject, targetColumnUUID: string) => Promise<columnSpacesType> ;
+  getSavePathWithoutDuplication: (filenameWithExtension: string, targetColumnUUID: string) => Promise<string>;
 
 }

@@ -1,12 +1,14 @@
 import React from 'react';
 import { IconButton } from "@chakra-ui/react"
-import { SearchIcon, EditIcon } from "@chakra-ui/icons"
+import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
 import { columnSpacesType, columnSpaceType } from '../../@types/app';
 
 interface HomeViewProps {
   columnSpaceDB: columnSpacesType,
   currentColumnSpaceId: string,
   currentMainColumnId: string,
+  service: any,
+  forceUpdateHome: any,
 }
 
 export const HomeView: React.FC<HomeViewProps> = (props) => {
@@ -31,7 +33,14 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
         </div>
 
         <div className="min-w-300px overflow-y-auto p-3">
-          カラムスペースの選択
+          <div>
+            <span >カラムスペース</span>
+            <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={ async() => {
+              // props.addColumnSpace("aaa")}
+              await props.service.addColumnSpace("aaa")
+              props.forceUpdateHome();
+            }}/>
+          </div>
           {Object.keys(props.columnSpaceDB).map((columnSpaceUUID, index) => {
             const columnSpace: columnSpaceType = props.columnSpaceDB[columnSpaceUUID];
             return (
