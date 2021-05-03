@@ -93,16 +93,16 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
     });
   };
 
-  const [open, setOpen] = React.useState(false);
+  const [isOpeningModal, setIsOpeningModal] = React.useState(false);
   const [modalContent, setModalContent] = React.useState<ReactElement<any, any>>();
 
   const handleOpenModal = (modalContent: ReactElement<any,any>) => {
-    setOpen(true);
+    setIsOpeningModal(true);
     setModalContent(modalContent)
   };
 
   const handleCloseModal = () => {
-    setOpen(false);
+    setIsOpeningModal(false);
   };
 
   const handleCloseContextMenu = () => {
@@ -171,7 +171,7 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
     )
   }
 
-  const generateColumnSpaceElementTree = (columnSpace, selfColumnSpaceUUID) => {
+  const generateColumnSpaceElementTree = (columnSpace: columnSpaceType, selfColumnSpaceUUID: string) => {
     const hasChildColumnSpaces = !!(Object.keys(columnSpace.childColumnSpaces)?.length)
 
     return (
@@ -247,7 +247,7 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
 
         <div className="min-w-300px overflow-y-auto p-3">
         <Modal
-          open={open}
+          open={isOpeningModal}
           onClose={handleCloseModal}
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
