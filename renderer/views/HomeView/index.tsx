@@ -2,7 +2,6 @@ import React, {ReactElement} from 'react';
 import { IconButton } from "@chakra-ui/react"
 import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
 import { columnSpacesType, columnSpaceType, columnType } from '../../@types/app';
-import { useForceUpdate } from '../../hooks/useForceUpdate'
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -18,13 +17,16 @@ import SendIcon from '@material-ui/icons/Send';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import columnSpacesState from '../../atoms/columnSpacesState';
+import { cloneDeep } from "lodash"
+import useAddColumnSpace from '../../hooks/useAddColumnSpace';
+import useMoveColumnSpace from '../../hooks/useMoveColumnSpace';
 
 
 interface HomeViewProps {
-  columnSpaceDB: columnSpacesType,
   currentColumnSpaceId: string,
   currentMainColumnId: string,
-  service: any,
 }
 
 const initialState = {
@@ -74,7 +76,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 export const HomeView: React.FC<HomeViewProps> = (props) => {
-  const forceUpdate = useForceUpdate();
+  const columnSpaces = useRecoilValue<columnSpacesType>(columnSpacesState);
+  const addColumnSpace = useAddColumnSpace();
+  const moveColumnSpace = useMoveColumnSpace();
+
   const classes = useStyles();
 
   const [contextMenuState, setContextMenuState] = React.useState(initialState);
@@ -119,7 +124,6 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
     const onMouseUpFromDirectoryDragging = (innerEvent) => {
       const droppedElementDataset = innerEvent.toElement.parentElement.parentElement.dataset;
       const dropElementDatase = event.target.parentElement.parentElement.dataset;
-
       const areBothDirectory: boolean = (droppedElementDataset.type == ContextMenuTargetType.Directory.valueOf())
       const areBothDifferent: boolean = (droppedElementDataset.uuid !== dropElementDatase.uuid)
       const isDroppedHasNoColumnsOrChildColumnSpaces = (droppedElementDataset.hasChildColumnSpaces === "false" && droppedElementDataset.hasColumns === "false")
@@ -127,6 +131,8 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
         console.log("ディレクトリを（columnsもchildColumnSpacesも無い）別ディレクトリにドロップした")
         console.log("された", droppedElementDataset)      //ドロップされた側
         console.log("した側", dropElementDatase)          //ドロップしたがわ
+        moveColumnSpace(dropElementDatase.uuid, droppedElementDataset.uuid)
+
         handleOpenModal(
           <div>
             <h3 className="font-semibold mb-3 text-center">どうしますか？</h3>
@@ -164,15 +170,14 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
     }
   }
 
-
-  if (props.columnSpaceDB == null) {
+  if (columnSpaces == null) {
     return (
       <div>DB読込中</div>
     )
   }
 
   const generateColumnSpaceElementTree = (columnSpace: columnSpaceType, selfColumnSpaceUUID: string) => {
-    const hasChildColumnSpaces = !!(Object.keys(columnSpace.childColumnSpaces)?.length)
+    const hasChildColumnSpaces = !!(Object.keys(columnSpace?.childColumnSpaces)?.length)
 
     return (
       <TreeItem
@@ -212,7 +217,7 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
     )
   }
 
-  // const currentMainColumnDatas = props.columnSpaceDB[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
+  // const currentMainColumnDatas = columnSpaces[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
 
   return (
     <div className="flex flex-col h-screen">
@@ -229,9 +234,8 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
         <div className="min-w-300px overflow-y-auto p-3" onContextMenu={(event) => handleRightClickOnTree(event, {targetType: ContextMenuTargetType.EmptySpace})}>
           <div>
             <span >カラムスペース</span>
-            <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={ async() => {
-              await props.service.addColumnSpace("aaa")
-              forceUpdate();
+            <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={ () => {
+              addColumnSpace("121212dfdfd12")
             }}/>
           </div>
           <TreeView
@@ -239,8 +243,8 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
             defaultExpandIcon={<ChevronRightIcon />}
             className="select-none"
             >
-            {Object.keys(props.columnSpaceDB).map((columnSpaceUUID) => {
-              return generateColumnSpaceElementTree(props.columnSpaceDB[columnSpaceUUID], columnSpaceUUID)
+            {Object.keys(columnSpaces).map((columnSpaceUUID) => {
+              return generateColumnSpaceElementTree(columnSpaces[columnSpaceUUID], columnSpaceUUID)
             })}
           </TreeView>
         </div>

@@ -4,6 +4,7 @@ import type { AppProps } from 'next/app';
 import "../styles/global.css";
 import { ChakraProvider } from "@chakra-ui/react"
 import dark from "../themes/dark"
+import { RecoilRoot } from 'recoil';
 
 function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -23,7 +24,9 @@ function App(props: AppProps) {
         <title>with-typescript-material-ui</title>
       </Head>
       <ChakraProvider theme={dark}>
-        <Component {...pageProps} />
+        <RecoilRoot>
+          <Component {...pageProps} />
+        </RecoilRoot>
       </ChakraProvider>
     </React.Fragment>
   );
