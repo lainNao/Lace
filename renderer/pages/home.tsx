@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useHomeService } from '../hooks/useHomeService'
-import { useForceUpdate } from '../hooks/useForceUpdate'
 import { columnSpacesType } from '../@types/app'
 import { HomeView } from "../views/HomeView"
 
@@ -12,8 +11,6 @@ import { HomeView } from "../views/HomeView"
 
 const HomeController: React.FC = () => {
 
-  const forceUpdate = useForceUpdate();
-
   const {
     service,
     columnSpaceDB,
@@ -21,8 +18,8 @@ const HomeController: React.FC = () => {
     currentColumnSpaceUUID,
     currentMainDisplayedColumnUUID,
   } = useHomeService({
-    currentColumnSpaceUUID: "test_column_space",              //仮のモック
-    currentMainDisplayedColumnUUID: "test_file_column_uuid",  //仮のモック
+    currentColumnSpaceUUID: "123456789-1234-1234-1234-123456789123",              //仮のモック
+    currentMainDisplayedColumnUUID: "C23456789-C234-C234-C234-C23456789123",  //仮のモック
   });
 
   // D&Dの制御
@@ -65,7 +62,6 @@ const HomeController: React.FC = () => {
       columnSpaceDB={columnSpaceDB}
       currentColumnSpaceId={currentColumnSpaceUUID}
       currentMainColumnId={currentMainDisplayedColumnUUID}
-      forceUpdateHome={forceUpdate}
       service={service}
       />
   )

@@ -5,6 +5,7 @@ export type columnSpacesType = {
 export type columnSpaceType = {
   name: string,
   columns: columnsType,
+  childColumnSpaces: columnSpacesType,
 }
 
 export type columnsType = {

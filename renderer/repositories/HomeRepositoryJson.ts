@@ -1,8 +1,8 @@
-import { readFileSync, copyFile, copyFileSync, writeFileSync, existsSync, exists } from 'fs'
+import { readFileSync, copyFile, copyFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { parse } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { IHomeRepository } from '../@types/repositories'
-import { columnSpacesType, columnsType } from '../@types/app'
+import { columnSpacesType, columnSpaceType, columnsType } from '../@types/app'
 
 export class HomeRepositoryJson implements IHomeRepository{
 
@@ -11,10 +11,11 @@ export class HomeRepositoryJson implements IHomeRepository{
   dbFilePath: string = null;
   publicPath: string = null;
   initialDB: columnSpacesType = {
-    "test_column_space": {
+    "123456789-1234-1234-1234-123456789123": {
       "name": "test_column_space",
+      "childColumnSpaces": {},
       "columns": {
-        "test_file_column_uuid": {
+        "C23456789-C234-C234-C234-C23456789123": {
           "name": "test_file_column",
           "type": "file",
           "collapsable": false,
@@ -51,8 +52,10 @@ export class HomeRepositoryJson implements IHomeRepository{
   async addColumnSpace(columnSpaceName): Promise<columnSpacesType> {
     this.columnSpaceDB[uuidv4()] = {
       "name": columnSpaceName,
+      "childColumnSpaces": {},
       "columns": {},
     }
+    this.createColumnSpaceDirectory(columnSpaceName);
     this.saveDB(this.columnSpaceDB);
     return this.columnSpaceDB;
   }
@@ -87,7 +90,7 @@ export class HomeRepositoryJson implements IHomeRepository{
       childsColumnsDatas: {},    //この時点では空にし、後々セットする時にこの中身は持たせる。なぜならば、ここでファイル取り込みした後にchild_columnsの中の要素が増える可能性があるため。
     };
 
-    // エラーハンドリングもする
+    // エラーハンドリングもする。サービス側で一括でやったほうがいいかも
     copyFileSync(fileObject.path, realFilePath)
     this.saveDB(newColumnSpaceDB);
 
@@ -97,6 +100,15 @@ export class HomeRepositoryJson implements IHomeRepository{
 
   private saveDB(DBJson: columnSpacesType, dbFilePath: string = this.dbFilePath) {
     writeFileSync(dbFilePath, JSON.stringify(DBJson, null, "\t"), "utf8")
+  }
+
+  private createColumnSpaceDirectory(columnSpaceName: string): string | void {
+    // エラーハンドリングもする。サービス側で一括でやったほうがいいかも
+    if (!existsSync(columnSpaceName)){
+      mkdirSync(columnSpaceName);
+    } else {
+      throw new Error("既に存在しています");
+    }
   }
 
 }
