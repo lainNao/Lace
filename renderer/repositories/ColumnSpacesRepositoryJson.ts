@@ -37,16 +37,12 @@ export class ColumnSpacesRepositoryJson {
   constructor() {
   }
 
-  getRootColumnSpaces(): ColumnSpaces {
-    return this.readDB();
-  }
-
   save(columnSpaces: ColumnSpaces): ColumnSpaces {
     //todo　オブジェクトをjsonに変換してそのままファイルに保存。toJson的なのも実装？
     return columnSpaces;
   }
 
-  readOrCreateDB(): ColumnSpaces {
+  readOrCreateDB(): ColumnSpaces {//todo ここらへんの「DB」的な命名が古いままなので見合う名前に直して
     try {
       return this.readDB();
     } catch {
@@ -59,30 +55,14 @@ export class ColumnSpacesRepositoryJson {
     return ColumnSpaces.fromJson(JSON.parse(fileString));
   }
 
-  createDB(): ColumnSpaces {
+  createDB(): ColumnSpaces {//todo ここらへんの「DB」的な命名が古いままなので見合う名前に直して
     this.saveFile(this.initialDB);
     return ColumnSpaces.fromJson(this.initialDB);
   }
 
-  getCellSaveDirectoryOf = (targetColumnUUID: string) => {
-    return `userdata/column_spaces/${targetColumnUUID}/`;
-  }
-
-  getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): string {
-    const saveDirectory = this.getCellSaveDirectoryOf(targetColumnUUID);
-    const fileExtension = parse(filenameWithExtension).ext;
-    const fileName = parse(filenameWithExtension).name;
-    let saveFileName = fileName + fileExtension;
-
-    for (let i=1; ; i++) {
-      const sameNameExists = existsSync(this.publicPath + saveDirectory + saveFileName)
-      if (!sameNameExists) {
-        break;
-      }
-      saveFileName = fileName + `(${i})` + fileExtension;
-    }
-
-    return saveDirectory + saveFileName;
+  saveFile(columnSpaces: ColumnSpaces): void {
+    //todo 駄目なら例外　というかこれとsaveかぶってない？ createDBもいらなくない？そこらへん片付けて
+    writeFileSync(this.dbFilePath, JSON.stringify(columnSpaces, null, "\t"), "utf8")
   }
 
   // async uploadFile(fileObject, targetColumnUUID): Promise<columnSpacesType> {
@@ -106,11 +86,6 @@ export class ColumnSpacesRepositoryJson {
   //   return newcolumnSpaces;
   // }
 
-  saveFile(columnSpaces: ColumnSpaces): void {
-    //todo 駄目なら例外
-    writeFileSync(this.dbFilePath, JSON.stringify(columnSpaces, null, "\t"), "utf8")
-  }
-
   // private createColumnSpaceDirectory(columnSpaceName: string): string | void {
   //   // エラーハンドリングもする。サービス側で一括でやったほうがいいかも
   //   if (!existsSync(columnSpaceName)){
@@ -119,5 +94,31 @@ export class ColumnSpacesRepositoryJson {
   //     throw new Error("既に存在しています");
   //   }
   // }
+
+
+
+  private getCellSaveDirectoryOf = (targetColumnUUID: string) => {
+    return `userdata/column_spaces/${targetColumnUUID}/`;
+  }
+
+  private getSaveFileName(saveDirectory, fileName, extension) {
+    for (let i=0; ; i++) {
+      const path = (i === 0)
+        ? this.publicPath + saveDirectory + fileName + extension
+        : this.publicPath + saveDirectory + fileName + `(${i})` + extension
+
+      const samePathExists = existsSync(path)
+      if (samePathExists) {
+        continue;
+      }
+      return path
+    }
+  }
+
+  private getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): string {
+    const saveDirectory = this.getCellSaveDirectoryOf(targetColumnUUID);
+    const saveFileName = this.getSaveFileName(this.publicPath, parse(filenameWithExtension).name, parse(filenameWithExtension).ext);
+    return saveDirectory + saveFileName;
+  }
 
 }
