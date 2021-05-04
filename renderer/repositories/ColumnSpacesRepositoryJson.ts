@@ -54,7 +54,7 @@ export class ColumnSpacesRepositoryJson {
     }
   }
 
-  readDB(): ColumnSpaces {
+  readDB(): ColumnSpaces {  //todo ここらへんの「DB」的な命名が古いままなので見合う名前に直して
     const fileString = readFileSync(this.dbFilePath, "utf-8");
     return ColumnSpaces.fromJson(JSON.parse(fileString));
   }
