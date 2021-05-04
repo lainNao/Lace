@@ -60,6 +60,7 @@ export const useHomeController = () => {
   const [modalContent, setModalContent] = React.useState<ReactElement<any, any>>();
 
   const addColumnSpace = useRecoilCallback(({set}) => async (columnSpaceName: string) => {
+    //todo これ、handleClickColumnSpaceAddButtonに移す（移される側？）。サービスのメソッド名で大体分かるだろうということで、わざわざここを２つに分けることないから。
     const newColumnSpaces = createNewColumnSpace(columnSpaceName)
     set(columnSpacesState, newColumnSpaces)
   });

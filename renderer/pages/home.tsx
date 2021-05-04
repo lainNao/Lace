@@ -106,9 +106,9 @@ const Home: React.FC = () => {
             : undefined
         }
       >
-        {controller.contextMenuState.targetType === ContextMenuTargetType.EmptySpace &&
+        {controller.contextMenuState.targetType === ContextMenuTargetType.EmptySpace &&     //todo ここらへんどうにかする
           [
-            <MenuItem onClick={controller.handleCloseContextMenu}>なにもないところを右クリ</MenuItem>
+            <MenuItem key="あとで" onClick={controller.handleCloseContextMenu}>なにもないところを右クリ</MenuItem>
           ]
         }
         {controller.contextMenuState.targetType === ContextMenuTargetType.Directory &&
@@ -121,7 +121,7 @@ const Home: React.FC = () => {
         }
         {controller.contextMenuState.targetType === ContextMenuTargetType.Column &&
           [
-            <MenuItem onClick={controller.handleCloseContextMenu}>あああ</MenuItem>
+            <MenuItem key="あとでやる" onClick={controller.handleCloseContextMenu}>あああ</MenuItem>
           ]
         }
       </Menu>
