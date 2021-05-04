@@ -11,14 +11,6 @@ interface ColumnSpaceConstructorArgs {
 
 export class ColumnSpace {
 
-  /*
-    ■実構造
-    UUID: {                   // id
-      name: text,             //
-      columns: {},            // カラム達（子カラムスペース達と排他
-      childColumnSpaces: {}   // 子カラムスペース達
-  */
-
   id: string;
   name: string;
   childColumnSpaces: ColumnSpaces;
@@ -34,10 +26,15 @@ export class ColumnSpace {
     this.columns = args.columns;
   }
 
-  canHasChildColumnSpaces() {
+  canAddChildColumnSpace() {
     return (
       this.childColumnSpaces.children.length > 0
     )
   }
+
+  hasColumns(): boolean {
+    return (this.columns == null || this.columns.children.length > 0)
+  }
+
 
 }

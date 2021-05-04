@@ -1,7 +1,7 @@
 import { atom } from 'recoil';
 import { ColumnSpaces } from '../models/ColumnSpaces';
 
-const columnSpacesState = atom<any>({ //todo any
+const columnSpacesState = atom<ColumnSpaces>({
   key: "columnSpaces",
   default: null,
 });

@@ -164,10 +164,10 @@ export const useHomeController = () => {
           data-type={ContextMenuTargetType.Directory}
           data-name={columnSpace.name}
           data-uuid={columnSpace.id}
-          data-has-child-column-spaces={columnSpace.canHasChildColumnSpaces().toString}
-          data-has-columns={!!(columnSpace.columns.children.length)}
+          data-has-child-column-spaces={columnSpace.canAddChildColumnSpace().toString}
+          data-has-columns={!!(columnSpace.hasColumns().toString)}
         >
-          {columnSpace.canHasChildColumnSpaces()
+          {columnSpace.canAddChildColumnSpace()
             // カラムスペースを再帰レンダリング
             ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
             // カラムをレンダリング
