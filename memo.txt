@@ -222,43 +222,49 @@
 
 ■データ構造
     ＜column_space＞
-        {
-            UUID: {                         //カラムスペースのUUID
+        [
+            {
+                id: UUID,                   //カラムスペースのUUID
                 name: text,                    //カラムスペース名
                 columns: {},
-                childColumnSpaces: {           //子カラムスペース達
-                    UUID: {                       //子カラムスペース（↑とここは、何回層にもつらなりうる）
+                childColumnSpaces: [           //子カラムスペース達
+                    {
+                        id: UUID,                      //id
                         name: text,                    //カラムスペース名
-                        columns: {                     //カラムの全データ
-                            UUID: {                      //カラムのUUID
+                        columns: [                     //カラムの全データ
+                            {
+                                id: UUID,                //カラムのUUID
                                 name: string,            //カラム名
                                 type: enum,              //カラムのタイプ（file, bool, tag, text, markdown, select, radio, combo, event(javascriptで定義。任意のカラムの値が変更されたら発火するイベントを作れる。evalで実行)）
                                 collapsable: bool,       //コラプスするタイプかどうか（これがtrueなカラムがある場合、メディアの左側にコラプスアイコンつけることになる）
-                                data: {                  //自カラムが持つデータ達
-                                    UUID: any,             //自カラムデータのUUIDとデータ本体（実データの形式は、typeのenumによって変わる）
+                                cells: [                 //自カラムが持つデータ達
+                                    各種データ             //自カラムデータのUUIDとデータ本体（実データの形式は、typeのenumによって変わる）
                                     ...
                                 },
                             },
                             ...
                         }
-                        childColumnSpaces: {},      //columnsにデータがある場合、ここが空である必要がある（ちょっと汚い設計な雰囲気感じてるけどもう無理、。実装的には不整合は防げる気はしてるから）
+                        childColumnSpaces: [],      //columnsにデータがある場合、ここが空である必要がある（ちょっと汚い設計な雰囲気感じてるけどもう無理、。実装的には不整合は防げる気はしてるから）
                     }
                 }
             },
             ...
-        }
+        ]
     ＜それぞれのtypeごとのdataの形式＞
         ■fileの場合
             {
+                id: UUID,
                 path: text,              //メディアへのpath
                 type: enum,              //メディア種類（img, audio, vidoe, txtなど）
                 name: text,              //メディアのファイル名
-                relatedDatas: {          //関連セル
-                    UUID: {                 //他カラムのUUID
-                        UUID,                 //他カラムのdataのUUID
-                        ...
-                    }
-                }
+                relatedCells: [          //関連セル
+                    {
+                        id: UUID,              //
+                        columnSpaceId: UUID,  //他カラムのUUID
+                        cellId: UUID,         //他カラムのcellのUUID
+                    },
+                    ...
+                ]
             }
 
 ■ルール
@@ -269,3 +275,5 @@
         feature/any     //機能用（なんでもあり）
     ＜コミット＞
         ・なにもない時は「git commit -m "-"」でよい
+    ＜ソース＞
+        ・現状自動テストは無しの設計で

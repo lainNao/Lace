@@ -1,9 +1,7 @@
 import { useRecoilCallback, useRecoilState, useRecoilValue } from "recoil";
 import columnSpacesState from "../atoms/columnSpacesState";
 import { v4 as uuidv4 } from 'uuid'
-import { columnSpacesType } from "../@types/app";
 import { cloneDeep } from "lodash";
-import homeRepositoryState from "../atoms/homeRepositoryState";
 
 /*
   ここ、実装がかなり不安定なので余裕あれば直す
@@ -51,20 +49,20 @@ export default function useMoveColumnSpace() {
 
   const moveColumnSpace = useRecoilCallback(({snapshot, set}) => async (meUUID: string, toUUID: string) => {
 
-    /* カラムスペース追加（コード汚いのでどうにかする） */
-    const currentColumnSpaces = await snapshot.getPromise(columnSpacesState)
-    //指定UUID配下のデータを全部切り取る
-    let separated = cloneDeep(currentColumnSpaces);
-    removeProp(separated, meUUID);
-    const cuttedColumnSpace = findAllByKey(cloneDeep(currentColumnSpaces), meUUID)[0];
-    //指定UUIDのchildColumnSpacesに生やす
-    addProp(separated, toUUID, cuttedColumnSpace, meUUID)
-    //保存する
-    set(columnSpacesState, separated)
+    // /* カラムスペース追加（コード汚いのでどうにかする） */
+    // const currentColumnSpaces = await snapshot.getPromise(columnSpacesState)
+    // //指定UUID配下のデータを全部切り取る
+    // let separated = cloneDeep(currentColumnSpaces);
+    // removeProp(separated, meUUID);
+    // const cuttedColumnSpace = findAllByKey(cloneDeep(currentColumnSpaces), meUUID)[0];
+    // //指定UUIDのchildColumnSpacesに生やす
+    // addProp(separated, toUUID, cuttedColumnSpace, meUUID)
+    // //保存する
+    // set(columnSpacesState, separated)
 
-    // ファイル書き出し
-    const homeRepository = await snapshot.getPromise(homeRepositoryState)
-    homeRepository.saveFile(separated)
+    // // ファイル書き出し
+    // const homeRepository = await snapshot.getPromise(homeRepositoryState)
+    // homeRepository.saveFile(separated)
   });
 
   return moveColumnSpace;

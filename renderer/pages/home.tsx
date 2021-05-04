@@ -1,12 +1,6 @@
 import React, { useState, useEffect, Dispatch } from 'react';
-import { DB_FILE_PATH, PUBLIC_PATH } from '../consts/path';
-import { HomeRepositoryJson } from '../repositories/HomeRepositoryJson';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import columnSpacesState from '../atoms/columnSpacesState';
-import useSetupColumnSpaces from "../hooks/useSetupColumnSpaces";
 import { IconButton } from "@chakra-ui/react"
 import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
-import { columnSpacesType, columnSpaceType, columnType } from '../@types/app';
 import { ContextMenuTargetType } from "../enums/app"
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -14,7 +8,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Modal from '@material-ui/core/Modal';
-import { useHomeController } from '../hooks/useHomeController';
+import { useHomeController } from '../controllers/useHomeController';
 
 /*
   絶対パスでimportできるようにする
@@ -64,9 +58,7 @@ const Home: React.FC = () => {
             defaultExpandIcon={<ChevronRightIcon />}
             className="select-none"
             >
-            {Object.keys(controller.columnSpaces).map((columnSpaceUUID) => {
-              return controller.generateColumnSpaceElementTree(controller.columnSpaces[columnSpaceUUID], columnSpaceUUID)
-            })}
+            {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
           </TreeView>
         </div>
 

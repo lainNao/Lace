@@ -1,30 +1,16 @@
 import React, {ReactElement, useCallback} from 'react';
-import { IconButton } from "@chakra-ui/react"
-import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
-import { columnSpacesType, columnSpaceType, columnType } from '../@types/app';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
-import Typography from '@material-ui/core/Typography';
-import Modal from '@material-ui/core/Modal';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import columnSpacesState from '../atoms/columnSpacesState';
-import { cloneDeep } from "lodash"
-import useAddColumnSpace from './useAddColumnSpace';
-import useMoveColumnSpace from './useMoveColumnSpace';
-import useSetupColumnSpaces from './useSetupColumnSpaces';
+import useMoveColumnSpace from '../hooks/useMoveColumnSpace';
+import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 import { ContextMenuTargetType } from "../enums/app"
-
+import { ColumnSpace } from '../models/ColumnSpace';
+import { Column } from '../models/Column';
+import { ColumnSpaces } from '../models/ColumnSpaces';
+import { createNewColumnSpace } from '../usecases/createNewColumnSpace';
 
 const initialState = {
   targetType: null,
@@ -64,9 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const useHomeController = () => {
-  useSetupColumnSpaces();
-  const columnSpaces = useRecoilValue<columnSpacesType>(columnSpacesState);
-  const addColumnSpace = useAddColumnSpace();
+  const columnSpaces = useSetupColumnSpaces();
   const moveColumnSpace = useMoveColumnSpace();
   const classes = useStyles();
   const [contextMenuState, setContextMenuState] = React.useState(initialState);
@@ -74,6 +58,11 @@ export const useHomeController = () => {
   const [draggingTargetInfo, setDraggingTargetInfo] = React.useState<targetElementDatasets>(null);
   const [isOpeningModal, setIsOpeningModal] = React.useState(false);
   const [modalContent, setModalContent] = React.useState<ReactElement<any, any>>();
+
+  const addColumnSpace = useRecoilCallback(({set}) => async (columnSpaceName: string) => {
+    const newColumnSpaces = createNewColumnSpace(columnSpaceName)
+    set(columnSpacesState, newColumnSpaces)
+  });
 
   /// 以下ツリー右クリック関連の処理
   /// コンテキストメニューの処理をいろいろ実装すること
@@ -87,6 +76,10 @@ export const useHomeController = () => {
     });
   }, [setContextMenuState]);
 
+  const handleCloseContextMenu = useCallback(() => {
+    setContextMenuState(initialState);
+  }, [setContextMenuState]);
+
   const handleOpenModal = useCallback((modalContent: ReactElement<any,any>) => {
     setIsOpeningModal(true);
     setModalContent(modalContent)
@@ -95,10 +88,6 @@ export const useHomeController = () => {
   const handleCloseModal = useCallback(() => {
     setIsOpeningModal(false);
   }, [setIsOpeningModal]);
-
-  const handleCloseContextMenu = useCallback(() => {
-    setContextMenuState(initialState);
-  }, [setContextMenuState]);
 
   const handleClickColumnSpaceAddButton = useCallback((_, newColumnSpaceName) => {
     addColumnSpace(newColumnSpaceName)
@@ -160,45 +149,40 @@ export const useHomeController = () => {
     }
   }, [directoryDraggingState])
 
-  const generateColumnSpaceElementTree = useCallback((columnSpace: columnSpaceType, selfColumnSpaceUUID: string) => {
-    const hasChildColumnSpaces = !!(Object.keys(columnSpace?.childColumnSpaces)?.length)
+  const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
 
-    return (
-      <TreeItem
-        key={selfColumnSpaceUUID}
-        nodeId={selfColumnSpaceUUID}
-        label={columnSpace.name}
-        onMouseDown={handleMouseDownOnDirectory}
-        onMouseMove={handleDragStartOnDirectory}
-        onMouseOver={handleDragOverOnDirectory}
-        onContextMenu={(event) => handleRightClickOnTree(event, {targetType: ContextMenuTargetType.Directory})}
-        data-type={ContextMenuTargetType.Directory}
-        data-name={columnSpace.name}
-        data-uuid={selfColumnSpaceUUID}
-        data-has-child-column-spaces={hasChildColumnSpaces}
-        data-has-columns={!!(Object.keys(columnSpace.columns)?.length)}
-      >
-        {hasChildColumnSpaces
-          // カラムスペースを再帰レンダリング
-          ? Object.keys(columnSpace.childColumnSpaces).map((childColumnSpaceUUID) => {
-              const childColumnSpace: columnSpaceType = columnSpace.childColumnSpaces[childColumnSpaceUUID];
-              return generateColumnSpaceElementTree(childColumnSpace, childColumnSpaceUUID);
-            })
-          // カラムをレンダリング
-          : Object.keys(columnSpace.columns).map((columnUUID) => {
-              const column: columnType = columnSpace.columns[columnUUID];
-              return (
+    return columnSpaces.children.map((columnSpace) => {
+      return (
+        <TreeItem
+          key={columnSpace.id}
+          nodeId={columnSpace.id}
+          label={columnSpace.name}
+          onMouseDown={handleMouseDownOnDirectory}
+          onMouseMove={handleDragStartOnDirectory}
+          onMouseOver={handleDragOverOnDirectory}
+          onContextMenu={(event) => handleRightClickOnTree(event, {targetType: ContextMenuTargetType.Directory})}
+          data-type={ContextMenuTargetType.Directory}
+          data-name={columnSpace.name}
+          data-uuid={columnSpace.id}
+          data-has-child-column-spaces={columnSpace.canHasChildColumnSpaces().toString}
+          data-has-columns={!!(columnSpace.columns.children.length)}
+        >
+          {columnSpace.canHasChildColumnSpaces()
+            // カラムスペースを再帰レンダリング
+            ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
+            // カラムをレンダリング
+            : columnSpace.columns.children.map((column) =>
                 <TreeItem
-                  key={columnUUID}
-                  nodeId={columnUUID}
+                  key={column.id}
+                  nodeId={column.id}
                   label={column.name}
                   onContextMenu={(event) => handleRightClickOnTree(event, {targetType: ContextMenuTargetType.Column})}
                 />
               )
-            })
-        }
-      </TreeItem>
-    )
+          }
+        </TreeItem>
+      )
+    })
   }, [handleMouseDownOnDirectory, handleDragStartOnDirectory, handleDragOverOnDirectory, handleRightClickOnTree])
 
 

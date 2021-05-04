@@ -1,15 +1,18 @@
-import { useRecoilCallback } from "recoil";
+import { useRecoilCallback, useRecoilState } from "recoil";
 import columnSpacesState from "../atoms/columnSpacesState";
-import homeRepositoryState from "../atoms/homeRepositoryState";
 import { useEffect } from "react";
+import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesRepositoryJson";
 
 export default function useSetupColumnSpaces() {
-  const readOrCreateDB = useRecoilCallback(({snapshot, set}) => async () => {
-    const homeRepository = await snapshot.getPromise(homeRepositoryState)
-    set(columnSpacesState, await homeRepository.readOrCreateDB())
-  });
+
+  const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
 
   useEffect(() => {
-    readOrCreateDB();
-  },[])
+    const columnSpacesRepository = new ColumnSpacesRepositoryJson();
+    const columnSpaces = columnSpacesRepository.readOrCreateDB()
+    setColumnSpaces(columnSpaces)
+  }, [setColumnSpaces])
+
+  return columnSpaces;
+
 }
