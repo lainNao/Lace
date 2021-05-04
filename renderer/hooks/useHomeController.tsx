@@ -1,7 +1,7 @@
-import React, {ReactElement} from 'react';
+import React, {ReactElement, useCallback} from 'react';
 import { IconButton } from "@chakra-ui/react"
 import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
-import { columnSpacesType, columnSpaceType, columnType } from '../../@types/app';
+import { columnSpacesType, columnSpaceType, columnType } from '../@types/app';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -18,29 +18,19 @@ import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import columnSpacesState from '../../atoms/columnSpacesState';
+import columnSpacesState from '../atoms/columnSpacesState';
 import { cloneDeep } from "lodash"
-import useAddColumnSpace from '../../hooks/useAddColumnSpace';
-import useMoveColumnSpace from '../../hooks/useMoveColumnSpace';
+import useAddColumnSpace from './useAddColumnSpace';
+import useMoveColumnSpace from './useMoveColumnSpace';
+import useSetupColumnSpaces from './useSetupColumnSpaces';
+import { ContextMenuTargetType } from "../enums/app"
 
-
-interface HomeViewProps {
-  currentColumnSpaceId: string,
-  currentMainColumnId: string,
-}
 
 const initialState = {
   targetType: null,
   mouseX: null,
   mouseY: null,
 };
-
-enum ContextMenuTargetType {
-  EmptySpace,
-  Directory,
-  Column,
-  Data,
-}
 
 enum DirectoryDraggingState {
   Releasing,
@@ -58,7 +48,6 @@ interface targetElementDatasets {
   uuid: string,
 }
 
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: 'absolute',
@@ -74,21 +63,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-export const HomeView: React.FC<HomeViewProps> = (props) => {
+export const useHomeController = () => {
+  useSetupColumnSpaces();
   const columnSpaces = useRecoilValue<columnSpacesType>(columnSpacesState);
   const addColumnSpace = useAddColumnSpace();
   const moveColumnSpace = useMoveColumnSpace();
-
   const classes = useStyles();
-
   const [contextMenuState, setContextMenuState] = React.useState(initialState);
   const [directoryDraggingState, setDirectoryDraggingState] = React.useState(DirectoryDraggingState.Releasing);
   const [draggingTargetInfo, setDraggingTargetInfo] = React.useState<targetElementDatasets>(null);
+  const [isOpeningModal, setIsOpeningModal] = React.useState(false);
+  const [modalContent, setModalContent] = React.useState<ReactElement<any, any>>();
 
   /// 以下ツリー右クリック関連の処理
   /// コンテキストメニューの処理をいろいろ実装すること
-  const handleRightClickOnTree = (event: React.MouseEvent<HTMLElement, MouseEvent>, meta: onContextMenuMeta) => {
+  const handleRightClickOnTree = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>, meta: onContextMenuMeta) => {
     event.preventDefault();
     event.stopPropagation();
     setContextMenuState({
@@ -96,30 +85,30 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
       mouseX: event.clientX - 2,
       mouseY: event.clientY - 4,
     });
-  };
+  }, [setContextMenuState]);
 
-  const [isOpeningModal, setIsOpeningModal] = React.useState(false);
-  const [modalContent, setModalContent] = React.useState<ReactElement<any, any>>();
-
-  const handleOpenModal = (modalContent: ReactElement<any,any>) => {
+  const handleOpenModal = useCallback((modalContent: ReactElement<any,any>) => {
     setIsOpeningModal(true);
     setModalContent(modalContent)
-  };
+  }, [setIsOpeningModal, setModalContent]);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsOpeningModal(false);
-  };
+  }, [setIsOpeningModal]);
 
-  const handleCloseContextMenu = () => {
+  const handleCloseContextMenu = useCallback(() => {
     setContextMenuState(initialState);
-  };
+  }, [setContextMenuState]);
 
+  const handleClickColumnSpaceAddButton = useCallback((_, newColumnSpaceName) => {
+    addColumnSpace(newColumnSpaceName)
+  }, [addColumnSpace])
 
   /// 以下ディレクトリを別ディレクトリにドロップする関連の処理
   /// ドロップしている要素の名前をマウスの右下に出すこと、別ディレクトリにドロップ中にされてる側の背景色が変わること（できれば）、ドロップした後に確認モーダルで決定したら移動されること
   /// ディレクトリをドロップで移動したらファイルも移動になるのでどうしよう。UUIDのみのフォルダに統一できるなら移動する必要ないけどその場合は親子関係をなんらかの値で表現して読み取る必要ある。
   /// そもそもディレクトリ構造にカラムスペースのフォルダは不要なのでは。カラムのみでいい。それならいくらでも移動できる。多分この考えでいける。となるとディレクトリ構造変えるのも対応する必要あり。まずリポジトリ内のソース変更してそこ対応してしまおう、その後にいろいろやろう。でも親子構造をどうデータに反映するかな。
-  const handleMouseDownOnDirectory = (event) => {
+  const handleMouseDownOnDirectory = useCallback((event) => {
 
     const onMouseUpFromDirectoryDragging = (innerEvent) => {
       const droppedElementDataset = innerEvent.toElement.parentElement.parentElement.dataset;
@@ -155,28 +144,23 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
     document.addEventListener("mouseup", onMouseUpFromDirectoryDragging)
     setDirectoryDraggingState(DirectoryDraggingState.Downed)
     setDraggingTargetInfo(event.target.parentElement.parentElement.dataset)
-  }
 
-  const handleDragStartOnDirectory = (event) => {
+  }, [handleOpenModal, setDirectoryDraggingState, setDraggingTargetInfo] )
+
+  const handleDragStartOnDirectory = useCallback(() => {
     if (directoryDraggingState === DirectoryDraggingState.Downed) {
       setDirectoryDraggingState(DirectoryDraggingState.Dragging)
     }
-  }
+  }, [directoryDraggingState, setDirectoryDraggingState])
 
-  const handleDragOverOnDirectory = (event) => {
+  const handleDragOverOnDirectory = useCallback(() => {
     if (directoryDraggingState === DirectoryDraggingState.Dragging) {
       console.log("onmouseover")
       console.log(draggingTargetInfo)
     }
-  }
+  }, [directoryDraggingState])
 
-  if (columnSpaces == null) {
-    return (
-      <div>DB読込中</div>
-    )
-  }
-
-  const generateColumnSpaceElementTree = (columnSpace: columnSpaceType, selfColumnSpaceUUID: string) => {
+  const generateColumnSpaceElementTree = useCallback((columnSpace: columnSpaceType, selfColumnSpaceUUID: string) => {
     const hasChildColumnSpaces = !!(Object.keys(columnSpace?.childColumnSpaces)?.length)
 
     return (
@@ -196,12 +180,12 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
       >
         {hasChildColumnSpaces
           // カラムスペースを再帰レンダリング
-          ? Object.keys(columnSpace.childColumnSpaces).map((childColumnSpaceUUID, secondaryIndex) => {
+          ? Object.keys(columnSpace.childColumnSpaces).map((childColumnSpaceUUID) => {
               const childColumnSpace: columnSpaceType = columnSpace.childColumnSpaces[childColumnSpaceUUID];
               return generateColumnSpaceElementTree(childColumnSpace, childColumnSpaceUUID);
             })
           // カラムをレンダリング
-          : Object.keys(columnSpace.columns).map((columnUUID, columnIndex) => {
+          : Object.keys(columnSpace.columns).map((columnUUID) => {
               const column: columnType = columnSpace.columns[columnUUID];
               return (
                 <TreeItem
@@ -215,108 +199,69 @@ export const HomeView: React.FC<HomeViewProps> = (props) => {
         }
       </TreeItem>
     )
+  }, [handleMouseDownOnDirectory, handleDragStartOnDirectory, handleDragOverOnDirectory, handleRightClickOnTree])
+
+
+
+  // D&Dの制御
+  // useEffect(() => {
+
+  //   document.ondragover = document.ondrop = (e) => {
+  //     e.preventDefault();
+  //   }
+
+  //   // いずれdocument.bodyへのドロップじゃないのに変えるべき
+  //   // そもそもファイル類追加のときのみDnDを受け入れるようにする
+  //   document.body.ondrop = async (e) => {
+  //     /*
+  //       今はメインのカラムに追加しか対応してないけど、特定のセルの今のカーソル位置に追加とか、子カラムの特定セルに追加とかもできるようにする
+  //       ファイルの種類のバリデーションをすること
+  //       ローディングスピナーでも出すこと
+  //       ファイル名のバリデーションをすること（スラッシュとかいろいろあるとバグるので）
+  //       ファイルサイズのバリデーションをすること（あまりにもでかすぎる場合確認取るなど）
+  //       同名ファイルは「(2)」とかつけるようにすること
+  //       エラー起きたらいい感じに表示すること
+  //       ファイルが入ったら、リストアイテムの表示を更新すること
+  //       リストアイテムの表示は軽くすること
+  //       アップロード完了したらファイルのパスをDBに保存すること（そしてメモリに展開すること）（single truth of source的なものも実現させたいところ…）
+  //       そしてリビルドさせること
+  //       ひとまずはmainDisplayedColumnにアップロードさせるが、後で他カラムに使うファイルのアップロードにも対応させること
+  //       ひとまずメモリ上でjson型のDBを作り、定期保存かつ、windowが閉じられた時に保存するような仕様にする
+  //       asyncだと後々難しい場合、syncで全部やるのも考える
+  //     */
+  //     const droppedFileList = e.dataTransfer.files;
+  //     if (!droppedFileList.length) {
+  //       return;
+  //     }
+  //     let newColumnSpaceDB: columnSpacesType;
+
+  //     for (let i=0; i<droppedFileList.length; i++) {
+  //       //トランザクションとか考慮？
+  //       newColumnSpaceDB = await this.repository.uploadFile(droppedFileList[i], currentMainDisplayedColumnUUID);
+  //     }
+
+  //     console.log('ファイル取り込み完了');
+
+  //     setColumnSpaces(newColumnSpaceDB);
+  //   }
+  // }, [columnSpaceDB])
+
+  return {
+    //データ
+    columnSpaces,
+    isOpeningModal,
+    classes,
+    modalContent,
+    contextMenuState,
+    //関数
+    generateColumnSpaceElementTree,
+    //イベントハンドラ
+    handleCloseContextMenu,
+    handleDragOverOnDirectory,
+    handleDragStartOnDirectory,
+    handleRightClickOnTree,
+    handleCloseModal,
+    handleClickColumnSpaceAddButton,
+
   }
-
-  // const currentMainColumnDatas = columnSpaces[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
-
-  return (
-    <div className="flex flex-col h-screen">
-      <div className="header">
-        head（自由検索、各種設定、ヘルプ、リンクなど）
-      </div>
-      <div className="content flex flex-row w-screen max-h-full ">
-
-        <div className="flex flex-col items-center overflow-y-auto p-3 space-y-2.5">
-          <IconButton aria-label="search" icon={<SearchIcon />} />
-          <IconButton aria-label="edit" icon={<EditIcon />} />
-        </div>
-
-        <div className="min-w-300px overflow-y-auto p-3" onContextMenu={(event) => handleRightClickOnTree(event, {targetType: ContextMenuTargetType.EmptySpace})}>
-          <div>
-            <span >カラムスペース</span>
-            <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={ () => {
-              addColumnSpace("121212dfdfd12")
-            }}/>
-          </div>
-          <TreeView
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-            className="select-none"
-            >
-            {Object.keys(columnSpaces).map((columnSpaceUUID) => {
-              return generateColumnSpaceElementTree(columnSpaces[columnSpaceUUID], columnSpaceUUID)
-            })}
-          </TreeView>
-        </div>
-
-        <div className="min-w-300px overflow-y-auto p-3">
-        <Modal
-          open={isOpeningModal}
-          onClose={handleCloseModal}
-          aria-labelledby="simple-modal-title"
-          aria-describedby="simple-modal-description"
-        >
-          <div className={classes.paper}>
-            {modalContent}
-          </div>
-        </Modal>
-
-          {/* {Object.keys(currentMainColumnDatas).map((dataUUID,index) => {
-            const data = currentMainColumnDatas[dataUUID];
-            return (
-              <div key={`${data.name}-${index}`}>
-                <div><img src={data.path} /></div>
-                <div>{data.name}</div>
-              </div>
-            )
-          })} */}
-        </div>
-
-        <div className=" min-w-300px overflow-y-auto p-3">
-          セルの詳細の表示
-        </div>
-
-      </div>
-
-      <div className="footer">
-        foot（状態表示など）
-      </div>
-
-      <Menu
-        keepMounted
-        open={contextMenuState.mouseY !== null}
-        onClose={handleCloseContextMenu}
-        anchorReference="anchorPosition"
-        anchorPosition={
-          contextMenuState.mouseY !== null && contextMenuState.mouseX !== null
-            ? { top: contextMenuState.mouseY, left: contextMenuState.mouseX }
-            : undefined
-        }
-      >
-        {contextMenuState.targetType === ContextMenuTargetType.EmptySpace &&
-          [
-            <MenuItem onClick={handleCloseContextMenu}>なにもないところを右クリ</MenuItem>
-          ]
-        }
-        {contextMenuState.targetType === ContextMenuTargetType.Directory &&
-          [
-            <MenuItem key="表示" onClick={handleCloseContextMenu}>表示</MenuItem>,
-            <MenuItem key="フォルダ追加" onClick={handleCloseContextMenu}>フォルダ追加</MenuItem>,
-            <MenuItem key="削除" onClick={handleCloseContextMenu}>削除</MenuItem>,
-            <MenuItem key="リネーム" onClick={handleCloseContextMenu}>リネーム</MenuItem>,
-          ]
-        }
-        {contextMenuState.targetType === ContextMenuTargetType.Column &&
-          [
-            <MenuItem onClick={handleCloseContextMenu}>あああ</MenuItem>
-          ]
-        }
-      </Menu>
-
-
-
-    </div>
-  )
-
 }
-
