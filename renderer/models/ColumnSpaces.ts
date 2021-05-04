@@ -29,5 +29,7 @@ export class ColumnSpaces {
     });
   }
 
+    //todo toJson
+
 
 }

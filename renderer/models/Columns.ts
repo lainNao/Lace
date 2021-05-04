@@ -23,4 +23,7 @@ export class Columns {
       })
     )});
   }
+
+    //todo toJson
+
 }

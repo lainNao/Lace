@@ -21,5 +21,6 @@ export class Column {
     this.collapsable = props.collapsable;
     this.cells = props.data;
   }
+  //todo toJson
 
 }

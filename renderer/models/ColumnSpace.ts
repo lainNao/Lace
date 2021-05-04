@@ -37,4 +37,6 @@ export class ColumnSpace {
   }
 
 
+    //todo toJson
+
 }
