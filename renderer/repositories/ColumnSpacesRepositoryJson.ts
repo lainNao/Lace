@@ -1,15 +1,13 @@
 import fs from 'fs'
 import path from 'path';
-import { DB_FILE_PATH, PUBLIC_PATH } from '../consts/path';
+import { DB_FILE_PATH } from '../consts/path';
 import { ColumnSpaces } from '../models/ColumnSpaces';
-import electron from "electron";
-import { getUserdataPath } from '../modules/ipc';
+import { getSaveDirPath } from '../modules/ipc';
 
 // todo 例外処理
 export class ColumnSpacesRepositoryJson {
 
   dbFilePath: string = DB_FILE_PATH;
-  publicPath: string = PUBLIC_PATH;
   initialDB: any = [       //todo モックなので後で直す
     {
       "id": "1111",
@@ -39,12 +37,13 @@ export class ColumnSpacesRepositoryJson {
   }
 
   async save(columnSpaces: ColumnSpaces): Promise<ColumnSpaces> {
-    const userDataPath = await getUserdataPath();
+    const userDataPath = await getSaveDirPath();
     await fs.promises.writeFile(path.join(userDataPath, this.dbFilePath), JSON.stringify(columnSpaces, null, "\t"), "utf8")
     return columnSpaces;
   }
 
   async readOrInitialize(): Promise<ColumnSpaces> {
+    // todo awaitしてるやつにtry-catch効かないかもなのであとで確認
     try {
       return await this.read();
     } catch {
@@ -53,13 +52,13 @@ export class ColumnSpacesRepositoryJson {
   }
 
   async read(): Promise<ColumnSpaces> {
-    const userDataPath = await getUserdataPath();
+    const userDataPath = await getSaveDirPath();
     const fileString = await fs.promises.readFile(path.join(userDataPath, this.dbFilePath), "utf-8");
     return ColumnSpaces.fromJson(JSON.parse(fileString));
   }
 
   async initialize(): Promise<ColumnSpaces> {
-    const userDataPath = await getUserdataPath();
+    const userDataPath = await getSaveDirPath();
     const dbPath = path.join(userDataPath, this.dbFilePath);
     const dbDir = path.dirname(dbPath);
 
@@ -106,7 +105,7 @@ export class ColumnSpacesRepositoryJson {
 
 
   private async getCellSaveDirectoryOf(targetColumnUUID: string): Promise<string> {
-    const userDataPath = await getUserdataPath();
+    const userDataPath = await getSaveDirPath();
     return path.join(userDataPath, "userdata/column_spaces", targetColumnUUID) + "/";
   }
 

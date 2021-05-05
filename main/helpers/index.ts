@@ -1,13 +1,11 @@
 import createWindow from './create-window';
-import { app, ipcMain, BrowserWindow } from 'electron'
-import fs from 'fs';
-import path from 'path';
-
-// ユーザーデータのパスを返す
-ipcMain.handle('read-userdata-path', async (event) => {
-  return app.getPath('userData');
-})
+import registerIpc from './register-ipc';
+import registerEvents from './register-events';
+import registerMenus from './register-menus';
 
 export {
   createWindow,
+  registerIpc,
+  registerEvents,
+  registerMenus,
 };

@@ -36,7 +36,10 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="header">
+      <div className="header bg-gray-900 webkit-app-region-drag">
+        メニューをvscodeみたいに自前で作る。electronにやらせると微妙になるので。コンテキストメニューも自前で。
+      </div>
+      <div>
         head（自由検索、各種設定、ヘルプ、リンクなど）
       </div>
       <div className="content flex flex-row w-screen max-h-full ">

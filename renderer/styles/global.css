@@ -19,6 +19,14 @@ body {
 @tailwind utilities;
 /* Stop purging. */
 
+button {
+  -webkit-app-region: no-drag;
+}
+
+.webkit-app-region-drag {
+  -webkit-app-region: drag;
+}
+
 /* Your own custom utilities */
 @import url("./_scrollbar.css");
 @import url("./_layout.css");
