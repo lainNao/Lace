@@ -4,13 +4,13 @@ import Button from '@material-ui/core/Button';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import columnSpacesState from '../atoms/columnSpacesState';
-import useMoveColumnSpace from '../hooks/useMoveColumnSpace';
 import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 import { ContextMenuTargetType } from "../enums/app"
 import { ColumnSpace } from '../models/ColumnSpace';
 import { Column } from '../models/Column';
 import { ColumnSpaces } from '../models/ColumnSpaces';
 import { createNewColumnSpaceUseCase } from '../usecases/createNewColumnSpaceUseCase';
+import { moveColumnSpaceUseCase } from '../usecases/moveColumnSpaceUseCase';
 
 const initialState = {
   targetType: null,
@@ -51,13 +51,17 @@ const useStyles = makeStyles((theme) => ({
 
 export const useHomeController = () => {
   const columnSpaces = useSetupColumnSpaces();
-  const moveColumnSpace = useMoveColumnSpace();
   const classes = useStyles();
   const [contextMenuState, setContextMenuState] = React.useState(initialState);
   const [directoryDraggingState, setDirectoryDraggingState] = React.useState(DirectoryDraggingState.Releasing);
   const [draggingTargetInfo, setDraggingTargetInfo] = React.useState<targetElementDatasets>(null);
   const [isOpeningModal, setIsOpeningModal] = React.useState(false);
   const [modalContent, setModalContent] = React.useState<ReactElement<any, any>>();
+
+  const moveColumnSpace = useRecoilCallback(({set}) => async (id: string, toId: string) => {
+    const newColumnSpaces = await moveColumnSpaceUseCase(id, toId);
+    set(columnSpacesState, newColumnSpaces);
+  });
 
   const addColumnSpace = useRecoilCallback(({set}) => async (columnSpaceName: string) => {
     //todo これ、handleClickColumnSpaceAddButtonに移す（移される側？）。サービスのメソッド名で大体分かるだろうということで、わざわざここを２つに分けることないから。
@@ -110,14 +114,13 @@ export const useHomeController = () => {
         console.log("ディレクトリを（columnsもchildColumnSpacesも無い）別ディレクトリにドロップした")
         console.log("された", droppedElementDataset)      //ドロップされた側
         console.log("した側", dropElementDatase)          //ドロップしたがわ
-        moveColumnSpace(dropElementDatase.uuid, droppedElementDataset.uuid)
 
         handleOpenModal(
           <div>
             <h3 className="font-semibold mb-3 text-center">どうしますか？</h3>
             <div className="flex justify-around">
               <Button variant="contained" color="primary"onClick={() => {
-                // service.MoveDir(fromUUID, toUUID)
+                moveColumnSpace(dropElementDatase.uuid, droppedElementDataset.uuid)
                 handleCloseModal();
               }}>はい</Button>
               <Button variant="contained" onClick={handleCloseModal}>いいえ</Button>
@@ -135,7 +138,7 @@ export const useHomeController = () => {
     setDirectoryDraggingState(DirectoryDraggingState.Downed)
     setDraggingTargetInfo(event.target.parentElement.parentElement.dataset)
 
-  }, [handleOpenModal, setDirectoryDraggingState, setDraggingTargetInfo] )
+  }, [handleOpenModal, setDirectoryDraggingState, setDraggingTargetInfo, moveColumnSpace] )
 
   const handleDragStartOnDirectory = useCallback(() => {
     if (directoryDraggingState === DirectoryDraggingState.Downed) {
