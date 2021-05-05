@@ -19,6 +19,5 @@ export class Column {
     this.collapsable = args.collapsable;
     this.cells = args.cells;
   }
-  //todo toJson
 
 }

@@ -13,6 +13,4 @@ export class RelatedCell {
     this.cellId = props.cellId;
   }
 
-    //todo toJson
-
 }

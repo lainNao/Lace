@@ -12,7 +12,7 @@ export class Columns {
     this.children = (args == undefined) ? [] : args.children;
   }
 
-  static fromJson(json) {
+  static fromJSON(json) {
     return new Columns({
       children: json.map((column) => new Column({
         id: column.id,

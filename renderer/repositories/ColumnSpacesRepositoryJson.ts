@@ -54,7 +54,7 @@ export class ColumnSpacesRepositoryJson {
   async read(): Promise<ColumnSpaces> {
     const userDataPath = await getSaveDirPath();
     const fileString = await fs.promises.readFile(path.join(userDataPath, this.dbFilePath), "utf-8");
-    return ColumnSpaces.fromJson(JSON.parse(fileString));
+    return ColumnSpaces.fromJSON(JSON.parse(fileString));
   }
 
   async initialize(): Promise<ColumnSpaces> {
@@ -69,7 +69,7 @@ export class ColumnSpacesRepositoryJson {
 
     // 初期DBファイル作成
     await fs.promises.writeFile(dbPath, JSON.stringify(this.initialDB, null, "\t"), "utf8");
-    return ColumnSpaces.fromJson(this.initialDB);
+    return ColumnSpaces.fromJSON(this.initialDB);
   }
 
   // async uploadFile(fileObject, targetColumnUUID): Promise<columnSpacesType> {
@@ -104,29 +104,29 @@ export class ColumnSpacesRepositoryJson {
 
 
 
-  private async getCellSaveDirectoryOf(targetColumnUUID: string): Promise<string> {
-    const userDataPath = await getSaveDirPath();
-    return path.join(userDataPath, "userdata/column_spaces", targetColumnUUID) + "/";
-  }
+  // private async getCellSaveDirectoryOf(targetColumnUUID: string): Promise<string> {
+  //   const userDataPath = await getSaveDirPath();
+  //   return path.join(userDataPath, "userdata/column_spaces", targetColumnUUID) + "/";
+  // }
 
-  private getSaveFileName(saveDirectory, fileName, extension) {
-    for (let i=0; ; i++) {
-      const path = (i === 0)
-        ? this.publicPath + saveDirectory + fileName + extension
-        : this.publicPath + saveDirectory + fileName + `(${i})` + extension
+  // private getSaveFileName(saveDirectory, fileName, extension) {
+  //   for (let i=0; ; i++) {
+  //     const path = (i === 0)
+  //       ? this.publicPath + saveDirectory + fileName + extension
+  //       : this.publicPath + saveDirectory + fileName + `(${i})` + extension
 
-      const samePathExists = fs.existsSync(path)
-      if (samePathExists) {
-        continue;
-      }
-      return path
-    }
-  }
+  //     const samePathExists = fs.existsSync(path)
+  //     if (samePathExists) {
+  //       continue;
+  //     }
+  //     return path
+  //   }
+  // }
 
-  private async getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): Promise<string> {
-    const saveDirectory = await this.getCellSaveDirectoryOf(targetColumnUUID);
-    const saveFileName = this.getSaveFileName(this.publicPath, path.parse(filenameWithExtension).name, path.parse(filenameWithExtension).ext);
-    return saveDirectory + saveFileName;
-  }
+  // private async getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): Promise<string> {
+  //   const saveDirectory = await this.getCellSaveDirectoryOf(targetColumnUUID);
+  //   const saveFileName = this.getSaveFileName(this.publicPath, path.parse(filenameWithExtension).name, path.parse(filenameWithExtension).ext);
+  //   return saveDirectory + saveFileName;
+  // }
 
 }

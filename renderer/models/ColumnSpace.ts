@@ -36,7 +36,4 @@ export class ColumnSpace {
     return (this.columns == null || this.columns.children.length > 0)
   }
 
-
-    //todo toJson
-
 }

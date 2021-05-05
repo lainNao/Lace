@@ -18,13 +18,13 @@ export class ColumnSpaces {
     this.children.push(columnSpace);
   }
 
-  static fromJson(json) {
+  static fromJSON(json) {
     return new ColumnSpaces({
       children: json.map((columnSpace) => new ColumnSpace({
         id: columnSpace.id,
         name: columnSpace.name,
-        childColumnSpaces: ColumnSpaces.fromJson(columnSpace.childColumnSpaces),
-        columns: Columns.fromJson(columnSpace.columns),
+        childColumnSpaces: ColumnSpaces.fromJSON(columnSpace.childColumnSpaces),
+        columns: Columns.fromJSON(columnSpace.columns),
       }))
     });
   }

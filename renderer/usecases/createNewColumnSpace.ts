@@ -12,6 +12,5 @@ export const createNewColumnSpace = async(newColumnSpaceName: string): Promise<C
     "columns": new Columns(),
   }));
   await columnSpacesRepository.save(rootColumnSpaces);
-
   return rootColumnSpaces;
 }

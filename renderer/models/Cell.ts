@@ -16,6 +16,4 @@ export class Cell {
     this.relatedCells = props.relatedCells;
   }
 
-  //todo toJson
-
 }

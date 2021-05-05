@@ -13,7 +13,7 @@ export class Cells {
     this.children.push(cell);
   }
 
-  static fromJson(json) {
+  static fromJSON(json) {
     return new Cells({
       children: json.map((cell) => new Cell({  //todo ここはポリモーフィズムやる
         id: cell.id,

@@ -9,7 +9,7 @@ export class RelatedCells {
     this.children = (args == undefined) ? [] : args.children;
   }
 
-  static fromJson(json) {
+  static fromJSON(json) {
     const children = json.map((relatedCell) => {
       return new RelatedCell({
         id: relatedCell.id,
