@@ -3,7 +3,7 @@ import { ColumnSpace } from "../models/ColumnSpace";
 import { ColumnSpaces } from "../models/ColumnSpaces";
 import { Columns } from "../models/Columns";
 
-export const createNewColumnSpace = async(newColumnSpaceName: string): Promise<ColumnSpaces> => {
+export const createNewColumnSpaceUseCase = async(newColumnSpaceName: string): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
   rootColumnSpaces.addColumnSpace(new ColumnSpace({

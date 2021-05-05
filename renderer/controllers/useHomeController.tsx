@@ -10,7 +10,7 @@ import { ContextMenuTargetType } from "../enums/app"
 import { ColumnSpace } from '../models/ColumnSpace';
 import { Column } from '../models/Column';
 import { ColumnSpaces } from '../models/ColumnSpaces';
-import { createNewColumnSpace } from '../usecases/createNewColumnSpace';
+import { createNewColumnSpaceUseCase } from '../usecases/createNewColumnSpaceUseCase';
 
 const initialState = {
   targetType: null,
@@ -61,7 +61,7 @@ export const useHomeController = () => {
 
   const addColumnSpace = useRecoilCallback(({set}) => async (columnSpaceName: string) => {
     //todo これ、handleClickColumnSpaceAddButtonに移す（移される側？）。サービスのメソッド名で大体分かるだろうということで、わざわざここを２つに分けることないから。
-    const newColumnSpaces = await createNewColumnSpace(columnSpaceName)
+    const newColumnSpaces = await createNewColumnSpaceUseCase(columnSpaceName)
     set(columnSpacesState, newColumnSpaces)
   });
 
