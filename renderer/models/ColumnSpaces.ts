@@ -98,8 +98,7 @@ export class ColumnSpaces {
     //todo ここにも「子カラムが無いなら」みたいな判定処理いれる？（add～のみでいいとは思うけど曖昧なのでまた後で）
     const immigrant = this.findDescendantColumnSpace(id);
     const newColumnSpaces = this.removeDescendantColumnSpace(id);
-    const res = newColumnSpaces.addDescendantColumnSpace(immigrant, toId);
-    return res;
+    return newColumnSpaces.addDescendantColumnSpace(immigrant, toId);
   }
 
 }
