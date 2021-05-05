@@ -61,7 +61,7 @@ export const useHomeController = () => {
 
   const addColumnSpace = useRecoilCallback(({set}) => async (columnSpaceName: string) => {
     //todo これ、handleClickColumnSpaceAddButtonに移す（移される側？）。サービスのメソッド名で大体分かるだろうということで、わざわざここを２つに分けることないから。
-    const newColumnSpaces = createNewColumnSpace(columnSpaceName)
+    const newColumnSpaces = await createNewColumnSpace(columnSpaceName)
     set(columnSpacesState, newColumnSpaces)
   });
 
@@ -165,8 +165,8 @@ export const useHomeController = () => {
           data-type={ContextMenuTargetType.Directory}
           data-name={columnSpace.name}
           data-uuid={columnSpace.id}
-          data-has-child-column-spaces={columnSpace.canAddChildColumnSpace().toString}
-          data-has-columns={!!(columnSpace.hasColumns().toString)}
+          data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
+          data-has-columns={!!(columnSpace.hasColumns())}
         >
           {columnSpace.canAddChildColumnSpace()
             // カラムスペースを再帰レンダリング

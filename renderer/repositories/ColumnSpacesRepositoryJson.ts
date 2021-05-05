@@ -1,15 +1,16 @@
-import { readFileSync,readFile, copyFile, writeFileSync, existsSync, access,  mkdirSync } from 'fs'
-import { parse } from 'path'
-import { v4 as uuidv4 } from 'uuid'
+import fs from 'fs'
+import path from 'path';
 import { DB_FILE_PATH, PUBLIC_PATH } from '../consts/path';
 import { ColumnSpaces } from '../models/ColumnSpaces';
+import electron from "electron";
+import { getUserdataPath } from '../modules/ipc';
 
+// todo 例外処理
 export class ColumnSpacesRepositoryJson {
 
-  columnSpaces: ColumnSpaces = null;
   dbFilePath: string = DB_FILE_PATH;
   publicPath: string = PUBLIC_PATH;
-  initialDB: any = [       //モックなので後で直す
+  initialDB: any = [       //todo モックなので後で直す
     {
       "id": "1111",
       "name": "test_column_space",
@@ -37,32 +38,39 @@ export class ColumnSpacesRepositoryJson {
   constructor() {
   }
 
-  save(columnSpaces: ColumnSpaces): ColumnSpaces {
-    //todo　オブジェクトをjsonに変換してそのままファイルに保存。toJson的なのも実装？
+  async save(columnSpaces: ColumnSpaces): Promise<ColumnSpaces> {
+    const userDataPath = await getUserdataPath();
+    await fs.promises.writeFile(path.join(userDataPath, this.dbFilePath), JSON.stringify(columnSpaces, null, "\t"), "utf8")
     return columnSpaces;
   }
 
-  readOrCreateDB(): ColumnSpaces {//todo ここらへんの「DB」的な命名が古いままなので見合う名前に直して
+  async readOrInitialize(): Promise<ColumnSpaces> {
     try {
-      return this.readDB();
+      return await this.read();
     } catch {
-      return this.createDB()
+      return await this.initialize()
     }
   }
 
-  readDB(): ColumnSpaces {  //todo ここらへんの「DB」的な命名が古いままなので見合う名前に直して
-    const fileString = readFileSync(this.dbFilePath, "utf-8");
+  async read(): Promise<ColumnSpaces> {
+    const userDataPath = await getUserdataPath();
+    const fileString = await fs.promises.readFile(path.join(userDataPath, this.dbFilePath), "utf-8");
     return ColumnSpaces.fromJson(JSON.parse(fileString));
   }
 
-  createDB(): ColumnSpaces {//todo ここらへんの「DB」的な命名が古いままなので見合う名前に直して
-    this.saveFile(this.initialDB);
-    return ColumnSpaces.fromJson(this.initialDB);
-  }
+  async initialize(): Promise<ColumnSpaces> {
+    const userDataPath = await getUserdataPath();
+    const dbPath = path.join(userDataPath, this.dbFilePath);
+    const dbDir = path.dirname(dbPath);
 
-  saveFile(columnSpaces: ColumnSpaces): void {
-    //todo 駄目なら例外　というかこれとsaveかぶってない？ createDBもいらなくない？そこらへん片付けて
-    writeFileSync(this.dbFilePath, JSON.stringify(columnSpaces, null, "\t"), "utf8")
+    // フォルダ無いならフォルダ作る
+    if (!fs.existsSync(dbDir)) {
+      await fs.promises.mkdir(dbDir, { recursive: true });
+    }
+
+    // 初期DBファイル作成
+    await fs.promises.writeFile(dbPath, JSON.stringify(this.initialDB, null, "\t"), "utf8");
+    return ColumnSpaces.fromJson(this.initialDB);
   }
 
   // async uploadFile(fileObject, targetColumnUUID): Promise<columnSpacesType> {
@@ -97,8 +105,9 @@ export class ColumnSpacesRepositoryJson {
 
 
 
-  private getCellSaveDirectoryOf = (targetColumnUUID: string) => {
-    return `userdata/column_spaces/${targetColumnUUID}/`;
+  private async getCellSaveDirectoryOf(targetColumnUUID: string): Promise<string> {
+    const userDataPath = await getUserdataPath();
+    return path.join(userDataPath, "userdata/column_spaces", targetColumnUUID) + "/";
   }
 
   private getSaveFileName(saveDirectory, fileName, extension) {
@@ -107,7 +116,7 @@ export class ColumnSpacesRepositoryJson {
         ? this.publicPath + saveDirectory + fileName + extension
         : this.publicPath + saveDirectory + fileName + `(${i})` + extension
 
-      const samePathExists = existsSync(path)
+      const samePathExists = fs.existsSync(path)
       if (samePathExists) {
         continue;
       }
@@ -115,9 +124,9 @@ export class ColumnSpacesRepositoryJson {
     }
   }
 
-  private getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): string {
-    const saveDirectory = this.getCellSaveDirectoryOf(targetColumnUUID);
-    const saveFileName = this.getSaveFileName(this.publicPath, parse(filenameWithExtension).name, parse(filenameWithExtension).ext);
+  private async getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): Promise<string> {
+    const saveDirectory = await this.getCellSaveDirectoryOf(targetColumnUUID);
+    const saveFileName = this.getSaveFileName(this.publicPath, path.parse(filenameWithExtension).name, path.parse(filenameWithExtension).ext);
     return saveDirectory + saveFileName;
   }
 

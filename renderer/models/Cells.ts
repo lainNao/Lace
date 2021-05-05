@@ -24,6 +24,9 @@ export class Cells {
       })
     )});
   }
-  //todo toJson
+
+  toJSON(key) {
+    return this.children;
+  }
 
 }

@@ -22,6 +22,8 @@ export class RelatedCells {
     });
   }
 
-    //todo toJson
+  toJSON(key) {
+    return this.children;
+  }
 
 }

@@ -29,7 +29,8 @@ export class ColumnSpaces {
     });
   }
 
-    //todo toJson
-
+  toJSON(key) {
+    return this.children;
+  }
 
 }

@@ -19,11 +19,13 @@ export class Columns {
         name: column.name,
         type: column.type,
         collapsable: column.collapsable,
-        data: column.data,
+        cells: column.cells,
       })
     )});
   }
 
-    //todo toJson
+  toJSON(key) {
+    return this.children;
+  }
 
 }

@@ -8,9 +8,11 @@ export default function useSetupColumnSpaces() {
   const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
 
   useEffect(() => {
-    const columnSpacesRepository = new ColumnSpacesRepositoryJson();
-    const columnSpaces = columnSpacesRepository.readOrCreateDB()
-    setColumnSpaces(columnSpaces)
+    (async() => {
+      const columnSpacesRepository = new ColumnSpacesRepositoryJson();
+      const columnSpaces = await columnSpacesRepository.readOrInitialize()
+      setColumnSpaces(columnSpaces)
+    })()
   }, [setColumnSpaces])
 
   return columnSpaces;

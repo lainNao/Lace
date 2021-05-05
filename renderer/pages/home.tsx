@@ -41,7 +41,7 @@ const Home: React.FC = () => {
       </div>
       <div className="content flex flex-row w-screen max-h-full ">
 
-        <div className="flex flex-col items-center overflow-y-auto p-3 space-y-2.5">
+        <div className="flex flex-col items-center p-3 space-y-2.5">
           <IconButton aria-label="search" icon={<SearchIcon />} />
           <IconButton aria-label="edit" icon={<EditIcon />} />
         </div>

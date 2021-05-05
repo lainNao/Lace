@@ -3,16 +3,15 @@ import { ColumnSpace } from "../models/ColumnSpace";
 import { ColumnSpaces } from "../models/ColumnSpaces";
 import { Columns } from "../models/Columns";
 
-export const createNewColumnSpace = (newColumnSpaceName: string): ColumnSpaces => {
-
+export const createNewColumnSpace = async(newColumnSpaceName: string): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
-  const rootColumnSpaces = columnSpacesRepository.readDB();
+  const rootColumnSpaces = await columnSpacesRepository.read();
   rootColumnSpaces.addColumnSpace(new ColumnSpace({
     "name": newColumnSpaceName,
     "childColumnSpaces": new ColumnSpaces(),
     "columns": new Columns(),
   }));
-  columnSpacesRepository.save(rootColumnSpaces);
+  await columnSpacesRepository.save(rootColumnSpaces);
 
   return rootColumnSpaces;
 }

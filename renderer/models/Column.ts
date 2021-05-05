@@ -5,21 +5,19 @@ export class Column {
 
   id: string;
   name: string
-  metatype: any; //todo(enum)
   type: any; //todo(enum)
   collapsable: any; //todo(bool)
   cells: Cells; //todo
 
-  constructor(props) {
-    const id = props.id ?? uuidv4();
+  constructor(args) {
+    const id = args.id ?? uuidv4();
 
     //todo 不変条件、あといろいろ入れる
     this.id = id;
-    this.name = props.name;
-    this.metatype = "column";   //todo 後でenum化
+    this.name = args.name;
     this.type = "file"; //todo 後でenum化
-    this.collapsable = props.collapsable;
-    this.cells = props.data;
+    this.collapsable = args.collapsable;
+    this.cells = args.cells;
   }
   //todo toJson
 
