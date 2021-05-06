@@ -2,11 +2,9 @@ import React from 'react';
 import { IconButton } from "@chakra-ui/react"
 import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
 import TreeView from '@material-ui/lab/TreeView';
-import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useHomeController } from '../controllers/useHomeController';
-import { makeStyles } from '@material-ui/core';
 
 /*
 ファイルアップロードする前にはカラムスペースとカラムのUUIDのフォルダが必要なのでそれ作成しておくように実装を修正する
@@ -49,7 +47,7 @@ const Home: React.FC = () => {
           <IconButton aria-label="edit" icon={<EditIcon />} />
         </div>
 
-        <div className="w-300px bg-gray-800 whitespace-pre overflow-y-auto p-3" onContextMenu={controller.handleRightClickOnEmptySpace}>
+        <div className="min-w-300px w-300px bg-gray-800 whitespace-pre overflow-y-auto p-3" onContextMenu={controller.handleRightClickOnEmptySpace}>
           <div>
             <span >カラムスペース</span>
             <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={controller.handleClickAddColumnSpaceButton}/>

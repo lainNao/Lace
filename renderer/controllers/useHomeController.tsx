@@ -42,7 +42,7 @@ export const useHomeController = () => {
     event.preventDefault();
     event.stopPropagation();
 
-    const targetDataset = (event.target as HTMLElement).parentElement.parentElement.dataset;
+    const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
 
     showColumnSpaceContextMenu(event, {
       handleClickDeleteColumnSpace: async () => {
@@ -83,7 +83,7 @@ export const useHomeController = () => {
   }, [newColumnSpaceInputRef, setNewColumnFormVisible, showEmptySpaceContextMenu]);
 
   // カラムスペース追加inputをBlur時に発火
-  const handleNewColumnInputOnBlur =  useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleNewColumnInputOnBlur = useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
     event.preventDefault();
     const newColumnSpaceName = event.target.value;
     newColumnSpaceInputRef.current.value = null;
