@@ -5,7 +5,7 @@ import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesReposito
 
 export default function useSetupColumnSpaces() {
 
-  const [columnSpaces, setColumnSpaces] = useRecoilStateLoadable(columnSpacesState);
+  const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
 
   useEffect(() => {
     (async() => {

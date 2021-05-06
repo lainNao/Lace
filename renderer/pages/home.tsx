@@ -23,21 +23,9 @@ const Home: React.FC = () => {
   const currentColumnSpaceUUID = "123456789-1234-1234-1234-123456789123"; //仮のモック（これ今は半無限の深さになったので、道筋のUUIDの配列にするのがいいかも）
   // const currentMainColumnDatas = columnSpaces[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
 
-  if (controller.columnSpaces.state === "loading"){
+  if (!controller.columnSpaces) {
     return (
-      <div>DB読込中</div>
-    )
-  }
-
-  if (controller.columnSpaces.state === "hasError") {
-    return (
-      <div>DB読み込みエラー</div>
-    )
-  }
-
-  if (controller.columnSpaces.state === "hasValue" && !controller.columnSpaces.contents) {
-    return (
-      <div>ロード中</div>
+      <div>読込中</div>
     )
   }
 
@@ -66,7 +54,7 @@ const Home: React.FC = () => {
             defaultExpandIcon={<ChevronRightIcon />}
             className="select-none"
           >
-            {controller.generateColumnSpaceElementTree(controller.columnSpaces.contents)}
+            {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
           </TreeView>
 
           <form onSubmit={controller.handleSubmitNewColumnSpaceForm} className={`${!controller.newColumnFormVisible && "hidden"}`}>

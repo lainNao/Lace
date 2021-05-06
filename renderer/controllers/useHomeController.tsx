@@ -12,6 +12,7 @@ import { showColumnSpaceContextMenu } from '../context-menus/showColumnSpaceCont
 import { showEmptySpaceContextMenu } from '../context-menus/showEmptySpaceContextMenu';
 import { remote } from "electron"
 import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
+import { removeColumnSpaceUseCase } from '../usecases/removeColumnSpaceUseCase';
 
 enum DirectoryDraggingState {
   Releasing,
@@ -22,7 +23,7 @@ enum DirectoryDraggingState {
 interface targetElementDatasets {
   type: string,
   name: string,
-  uuid: string,
+  id: string,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -42,8 +43,8 @@ const useStyles = makeStyles((theme) => ({
 
 // todo ユースケース達はエラー処理してないのでコントローラ側で例外対策する
 // todo useStylesとか使ってるけど、テーマとかどうするか
-// todo 同階層のカラムスペース達の
 
+// memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
 export const useHomeController = () => {
   const classes = useStyles();
   const newColumnSpaceInputRef = React.useRef(null);
@@ -56,8 +57,25 @@ export const useHomeController = () => {
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
-    showColumnSpaceContextMenu(event);
-  }, []);
+
+    const targetDataset = (event.target as HTMLElement).parentElement.parentElement.dataset;
+
+    showColumnSpaceContextMenu(event, {
+      handleClickDeleteColumnSpace: async () => {
+        const res = await remote.dialog.showMessageBox({
+          type: 'info',
+          buttons: ['はい', "いいえ"],
+          title: 'カラムスペースの削除',
+          message: 'カラムスペースの削除',
+          detail: `${targetDataset.name}を削除しますか？`,
+        });
+        if (res.response === 0) { //「はい」を選択した時
+          const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
+          setColumnSpaces(newColumnSpaces);
+        }
+      }
+    });
+  }, [columnSpaces]);
 
   // カラムのコンテキストメニュー表示
   const handleRightClickOnColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -65,7 +83,6 @@ export const useHomeController = () => {
     event.stopPropagation();
     showColumnContextMenu(event);
   }, []);
-
 
   // エクスプローラーの無部分押下時のコンテキストメニュー表示
   const handleRightClickOnEmptySpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -135,26 +152,19 @@ export const useHomeController = () => {
   const handleMouseDownOnDirectory = useCallback((event) => {
 
     const onMouseUpFromDirectoryDragging = async (innerEvent) => {
-      //todo これ、データセットのまま扱ってもいいけどドメインモデルで扱ったほうが判定処理とか共通化できるはず
       const droppedElementDataset = innerEvent.toElement.parentElement.parentElement.dataset;
       const dropElementDatase = event.target.parentElement.parentElement.dataset;
-      const areBothDirectory: boolean = (droppedElementDataset.type == FileSystemEnum.ColumnSpace.valueOf())
-      const areBothDifferent: boolean = (droppedElementDataset.uuid !== dropElementDatase.uuid)
-      const isDroppedHasNoColumns = (droppedElementDataset.hasColumns === "false")
-      if (areBothDirectory && areBothDifferent && isDroppedHasNoColumns) {
-        console.log("ディレクトリを、子columnsが無い別ディレクトリにドロップした")
-        console.log("された", droppedElementDataset)      //ドロップされた側
-        console.log("した側", dropElementDatase)          //ドロップしたがわ
 
+      if (columnSpaces.canMoveDescendantColumnSpace(dropElementDatase.id, droppedElementDataset.id)) {
         const res = await remote.dialog.showMessageBox({
           type: 'info',
           buttons: ['はい', "いいえ"],
-          title: 'タイトル',
+          title: 'カラムスペースの移動',
           message: 'カラムスペースの移動',
-          detail: `${dropElementDatase.name}を${droppedElementDataset.name}配下に移動しますか？`
+          detail: `${dropElementDatase.name}を${droppedElementDataset.name}配下に移動しますか？`  //todo ここの見た目もうちょっとわかりやすくしたい。そもそもいちいちダイアログいらないかも
         });
-        if (res.response === 0) {
-          const newColumnSpaces = await moveColumnSpaceUseCase(dropElementDatase.uuid, droppedElementDataset.uuid);
+        if (res.response === 0) { //「はい」を選択した時
+          const newColumnSpaces = await moveColumnSpaceUseCase(dropElementDatase.id, droppedElementDataset.id);
           setColumnSpaces(newColumnSpaces);
         }
       }
@@ -168,7 +178,7 @@ export const useHomeController = () => {
     setDirectoryDraggingState(DirectoryDraggingState.Downed)
     setDraggingTargetInfo(event.target.parentElement.parentElement.dataset)
 
-  }, [setDirectoryDraggingState, setDraggingTargetInfo, setColumnSpaces] )
+  }, [setDirectoryDraggingState, setDraggingTargetInfo, columnSpaces, setColumnSpaces] )
 
   // ドラッグ状態の管理
   const handleDragStartOnDirectory = useCallback(() => {
@@ -200,7 +210,7 @@ export const useHomeController = () => {
           onContextMenu={handleRightClickOnColumnSpace}
           data-type={FileSystemEnum.ColumnSpace}
           data-name={columnSpace.name}
-          data-uuid={columnSpace.id}
+          data-id={columnSpace.id}
           data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
           data-has-columns={!!(columnSpace.hasColumns())}
         >

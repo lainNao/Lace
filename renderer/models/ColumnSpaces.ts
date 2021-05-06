@@ -59,6 +59,7 @@ export class ColumnSpaces {
   }
 
   // 子孫のカラムスペースから指定IDのものを削除
+  // todo 失敗したら例外（もしかして再帰的な構造だから無理？無理っぽいので代案考えておく…渡されたidの要素が無い場合でもちゃんと自身を返すからエラーなのかエラーじゃないのか判別つかないんだよな…フラグを使うしかないかな、。他のメソッドでも同じことなってそうなので後で確認）
   removeDescendantColumnSpace(targetId: string): ColumnSpaces {
     for (let i=0; i<this.children.length; i++) {
       if (this.children[i].id === targetId) {
@@ -96,9 +97,32 @@ export class ColumnSpaces {
   // todo バグってるかもなので自動テストやってみて…
   moveDescendantColumnSpace(id: string, toId: string): ColumnSpaces {
     //todo ここにも「子カラムが無いなら」みたいな判定処理いれる？（add～のみでいいとは思うけど曖昧なのでまた後で）
+    if (!this.canMoveDescendantColumnSpace(id, toId)) {
+      throw new Error("例外の設計は後で…、、、ひとまず例外")
+    }
     const immigrant = this.findDescendantColumnSpace(id);
     const newColumnSpaces = this.removeDescendantColumnSpace(id);
     return newColumnSpaces.addDescendantColumnSpace(immigrant, toId);
+  }
+
+  // 指定IDのカラムスペースを、指定IDのカラムスペース配下に移動可能か
+  canMoveDescendantColumnSpace(id: string, toId: string): boolean {
+    const isSame: boolean = (id === toId);
+    if (isSame) {
+      return false;
+    }
+
+    const toColumnSpace = this.findDescendantColumnSpace(toId);
+    if (!toColumnSpace || toColumnSpace.hasColumns()) {
+      return false;
+    }
+
+    const columnSpace = this.findDescendantColumnSpace(id);
+    if (!columnSpace) {
+      return false;
+    }
+
+    return true;
   }
 
 }
