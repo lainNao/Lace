@@ -9,9 +9,9 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
     label:"カラムスペースを右クリしました",
   }));
   contextMenu.append(new MenuItem({
-    label:"テスト1",
+    label:"削除",
     click:()=>{
-      dialog.showMessageBox({message:"コンテキストメニュー:テスト1クリック"})
+      dialog.showMessageBox({message:"よろしいですか？的な選択肢を出したいところ。アラートマークを「削除」の左側に見せたい。あと区切り線の下に置きたい"})
     }
   }));
   contextMenu.append(new MenuItem({

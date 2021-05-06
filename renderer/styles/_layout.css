@@ -1,6 +1,6 @@
-.header, .footer {
+.menu-bar, .header, .footer {
   height: 25px;
 }
 .content {
-  height: calc(100% - 50px);
+  height: calc(100% - 75px);
 }

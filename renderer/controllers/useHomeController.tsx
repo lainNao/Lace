@@ -41,13 +41,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // todo ユースケース達はエラー処理してないのでコントローラ側で例外対策する
+// todo useStylesとか使ってるけど、テーマとかどうするか
+// todo 同階層のカラムスペース達の
+
 export const useHomeController = () => {
+  const classes = useStyles();
+  const newColumnSpaceInputRef = React.useRef(null);
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   const [directoryDraggingState, setDirectoryDraggingState] = useState(DirectoryDraggingState.Releasing);
   const [draggingTargetInfo, setDraggingTargetInfo] = useState<targetElementDatasets>(null);
   const [newColumnFormVisible, setNewColumnFormVisible] = useState<boolean>(false);
-  const classes = useStyles();
-  const newColumnSpaceInputRef = React.useRef(null);
 
   // カラムスペースのコンテキストメニュー表示
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -107,7 +110,7 @@ export const useHomeController = () => {
 
 
   // カラムスペース追加フォームsubmit
-  // todo 右クリメニューからの特定カラムスペース配下への追加も対応したい
+  // todo 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
   const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setNewColumnFormVisible(false);
@@ -137,9 +140,9 @@ export const useHomeController = () => {
       const dropElementDatase = event.target.parentElement.parentElement.dataset;
       const areBothDirectory: boolean = (droppedElementDataset.type == FileSystemEnum.ColumnSpace.valueOf())
       const areBothDifferent: boolean = (droppedElementDataset.uuid !== dropElementDatase.uuid)
-      const isDroppedHasNoColumnsOrChildColumnSpaces = (droppedElementDataset.hasChildColumnSpaces === "false" && droppedElementDataset.hasColumns === "false")
-      if (areBothDirectory && areBothDifferent && isDroppedHasNoColumnsOrChildColumnSpaces) {
-        console.log("ディレクトリを（columnsもchildColumnSpacesも無い）別ディレクトリにドロップした")
+      const isDroppedHasNoColumns = (droppedElementDataset.hasColumns === "false")
+      if (areBothDirectory && areBothDifferent && isDroppedHasNoColumns) {
+        console.log("ディレクトリを、子columnsが無い別ディレクトリにドロップした")
         console.log("された", droppedElementDataset)      //ドロップされた側
         console.log("した側", dropElementDatase)          //ドロップしたがわ
 

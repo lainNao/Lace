@@ -1,21 +1,21 @@
-import React, { useState, useEffect, Dispatch } from 'react';
+import React from 'react';
 import { IconButton } from "@chakra-ui/react"
 import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import Modal from '@material-ui/core/Modal';
 import { useHomeController } from '../controllers/useHomeController';
-
-/*
-  絶対パスでimportできるようにする
-*/
 
 /*
 ファイルアップロードする前にはカラムスペースとカラムのUUIDのフォルダが必要なのでそれ作成しておくように実装を修正する
 	無い場合は作る感じでいい気がする
 	というかそもそもファイルが必要とするカラムを作成した時点で作る感じでいいかな（↑で無い場合はこれを呼ぶなど）
 */
+// todo 絶対パスでimportできるようにする
+// todo ツリーの表示がもっさりしてるから別のライブラリに切り替えるか、または今のツリーのオプションを探す
+// todo カラムスペース追加インプットの見た目
+// todo カラムスペース追加時に一瞬ガクっとなる（高さが限界を超える場合）のをいつか直す
+
 
 const Home: React.FC = () => {
   const controller = useHomeController();
@@ -43,10 +43,10 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="header bg-gray-900 webkit-app-region-drag">
+      <div className="menu-bar bg-gray-900 webkit-app-region-drag">
         メニューをvscodeみたいに自前で作る。electronにやらせると微妙になるので。コンテキストメニューも自前で。
       </div>
-      <div>
+      <div className="header">
         head（自由検索、各種設定、ヘルプ、リンクなど）
       </div>
       <div className="content flex flex-row w-screen max-h-full ">
@@ -56,7 +56,7 @@ const Home: React.FC = () => {
           <IconButton aria-label="edit" icon={<EditIcon />} />
         </div>
 
-        <div className="min-w-300px overflow-y-auto p-3" onContextMenu={controller.handleRightClickOnEmptySpace}>
+        <div className="w-300px bg-gray-800 whitespace-pre overflow-y-auto p-3" onContextMenu={controller.handleRightClickOnEmptySpace}>
           <div>
             <span >カラムスペース</span>
             <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={controller.handleClickAddColumnSpaceButton}/>
