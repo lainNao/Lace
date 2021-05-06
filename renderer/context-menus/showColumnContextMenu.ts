@@ -1,12 +1,13 @@
 import { remote } from "electron";
 
-export const showEmptySpaceContextMenu = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 
   const MenuItem = remote.MenuItem;
   const dialog = remote.dialog;
   const contextMenu = new remote.Menu();
+
   contextMenu.append(new MenuItem({
-    label:"無を右クリしました",
+    label:"カラムを右クリしました",
   }));
   contextMenu.append(new MenuItem({
     label:"テスト1",

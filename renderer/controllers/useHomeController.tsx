@@ -1,4 +1,4 @@
-import React, {ReactElement, useCallback, useEffect} from 'react';
+import React, {ReactElement, useCallback, useEffect, useState} from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import { useRecoilCallback, useRecoilState, useRecoilValueLoadable } from 'recoil';
@@ -7,9 +7,9 @@ import { FileSystemEnum } from "../enums/app"
 import { ColumnSpaces } from '../models/ColumnSpaces';
 import { createNewColumnSpaceUseCase } from '../usecases/createNewColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../usecases/moveColumnSpaceUseCase';
-import { showColumnContextMenu } from '../context_menus/showColumnContextMenu';
-import { showColumnSpaceContextMenu } from '../context_menus/showColumnSpaceContextMenu';
-import { showEmptySpaceContextMenu } from '../context_menus/showEmptySpaceContextMenu';
+import { showColumnContextMenu } from '../context-menus/showColumnContextMenu';
+import { showColumnSpaceContextMenu } from '../context-menus/showColumnSpaceContextMenu';
+import { showEmptySpaceContextMenu } from '../context-menus/showEmptySpaceContextMenu';
 import { remote } from "electron"
 import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 
@@ -40,11 +40,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// todo ユースケース達はエラー処理してないのでコントローラ側で例外対策する
 export const useHomeController = () => {
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
-  const [directoryDraggingState, setDirectoryDraggingState] = React.useState(DirectoryDraggingState.Releasing);
-  const [draggingTargetInfo, setDraggingTargetInfo] = React.useState<targetElementDatasets>(null);
+  const [directoryDraggingState, setDirectoryDraggingState] = useState(DirectoryDraggingState.Releasing);
+  const [draggingTargetInfo, setDraggingTargetInfo] = useState<targetElementDatasets>(null);
+  const [newColumnFormVisible, setNewColumnFormVisible] = useState<boolean>(false);
   const classes = useStyles();
+  const newColumnSpaceInputRef = React.useRef(null);
 
   // カラムスペースのコンテキストメニュー表示
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -60,19 +63,67 @@ export const useHomeController = () => {
     showColumnContextMenu(event);
   }, []);
 
+
   // エクスプローラーの無部分押下時のコンテキストメニュー表示
   const handleRightClickOnEmptySpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
-    showEmptySpaceContextMenu(event);
-  }, []);
+    showEmptySpaceContextMenu(event, {
+      handleClickAddColumnSpace: () => {
+        setNewColumnFormVisible(true);
+        setImmediate(() => {
+          newColumnSpaceInputRef.current.focus();
+        })
+      }
+    });
+  }, [newColumnSpaceInputRef, setNewColumnFormVisible, showEmptySpaceContextMenu]);
+
+  // カラムスペース追加inputをBlur時に発火
+  const handleNewColumnInputOnBlur =  useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const newColumnSpaceName = event.target.value;
+    newColumnSpaceInputRef.current.value = null;
+    newColumnSpaceInputRef.current.blur();
+    setNewColumnFormVisible(false);
+
+    // 入力値が空なら何も何もしない
+    if (newColumnSpaceName === "") {
+      return;
+    }
+
+    // 新しいカラムスペースを追加
+    const newColumnSpaces = await createNewColumnSpaceUseCase(newColumnSpaceName)
+    set(columnSpacesState, newColumnSpaces)
+  }, [setNewColumnFormVisible]);
 
   // カラムスペース追加ボタン押下
-  const handleClickAddColumnSpaceButton = useRecoilCallback(({set}) => async (event: React.MouseEvent<HTMLElement, MouseEvent>, columnSpaceName: string) => {
+  const handleClickAddColumnSpaceButton = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
-    const newColumnSpaces = await createNewColumnSpaceUseCase(columnSpaceName)
+    setNewColumnFormVisible(true);
+    setImmediate(() => {
+      newColumnSpaceInputRef.current.focus();
+    })
+  }, [newColumnSpaceInputRef, setNewColumnFormVisible]);
+
+
+  // カラムスペース追加フォームsubmit
+  // todo 右クリメニューからの特定カラムスペース配下への追加も対応したい
+  const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setNewColumnFormVisible(false);
+    const newColumnSpaceName: string = (event.currentTarget.elements.namedItem("new-column-space-name") as HTMLInputElement).value;
+    (event.currentTarget.elements.namedItem("new-column-space-name") as HTMLInputElement).value = null;
+
+    // 入力値が空なら何も何もしない
+    if (newColumnSpaceName === "") {
+      newColumnSpaceInputRef.current.blur();
+      return;
+    }
+
+    // 新しいカラムスペースを追加
+    const newColumnSpaces = await createNewColumnSpaceUseCase(newColumnSpaceName)
     set(columnSpacesState, newColumnSpaces)
-  });
+  }, [setNewColumnFormVisible]);
 
   /// 以下ディレクトリを別ディレクトリにドロップする関連の処理
   /// ドロップしている要素の名前をマウスの右下に出すこと、別ディレクトリにドロップ中にされてる側の背景色が変わること（できれば）、ドロップした後に確認モーダルで決定したら移動されること
@@ -215,6 +266,7 @@ export const useHomeController = () => {
     //データ
     columnSpaces,
     classes,
+    newColumnFormVisible,
     //関数
     generateColumnSpaceElementTree,
     //イベントハンドラ
@@ -222,5 +274,9 @@ export const useHomeController = () => {
     handleDragStartOnDirectory,
     handleClickAddColumnSpaceButton,
     handleRightClickOnEmptySpace,
+    handleSubmitNewColumnSpaceForm,
+    handleNewColumnInputOnBlur,
+    //他
+    newColumnSpaceInputRef,
   }
 }
