@@ -80,7 +80,6 @@ export class ColumnSpaces {
 
   // 子孫のカラムスペースに指定カラムスペースを追加
   addDescendantColumnSpace(immigrant: ColumnSpace, toId: string): ColumnSpaces {
-    //todo ここにも「子カラムが無いなら」みたいな判定処理いれる？というかここに書いたらビューはその条件書かなくてもよくなるのでは？もしそうなら面白い
     for (let i=0; i<this.children.length; i++) {
       if (this.children[i].id === toId) {
         this.children[i].childColumnSpaces = this.children[i].childColumnSpaces.addChildColumnSpace(immigrant);
@@ -94,9 +93,7 @@ export class ColumnSpaces {
   }
 
   // 指定IDのカラムスペースを、指定IDのカラムスペース配下に移動
-  // todo バグってるかもなので自動テストやってみて…
   moveDescendantColumnSpace(id: string, toId: string): ColumnSpaces {
-    //todo ここにも「子カラムが無いなら」みたいな判定処理いれる？（add～のみでいいとは思うけど曖昧なのでまた後で）
     if (!this.canMoveDescendantColumnSpace(id, toId)) {
       throw new Error("例外の設計は後で…、、、ひとまず例外");
     }
