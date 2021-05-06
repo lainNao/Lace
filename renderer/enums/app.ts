@@ -1,5 +1,4 @@
-export enum ContextMenuTargetType {
-  EmptySpace,
+export enum FileSystemEnum {
   Directory,
   Column,
   Data,

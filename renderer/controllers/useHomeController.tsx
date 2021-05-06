@@ -1,31 +1,22 @@
 import React, {ReactElement, useCallback} from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
 import Button from '@material-ui/core/Button';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { makeStyles } from '@material-ui/core/styles';
+import { useRecoilCallback } from 'recoil';
 import columnSpacesState from '../atoms/columnSpacesState';
 import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
-import { ContextMenuTargetType } from "../enums/app"
-import { ColumnSpace } from '../models/ColumnSpace';
-import { Column } from '../models/Column';
+import { FileSystemEnum } from "../enums/app"
 import { ColumnSpaces } from '../models/ColumnSpaces';
 import { createNewColumnSpaceUseCase } from '../usecases/createNewColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../usecases/moveColumnSpaceUseCase';
-
-const initialState = {
-  targetType: null,
-  mouseX: null,
-  mouseY: null,
-};
+import { showColumnContextMenu } from '../context_menus/showColumnContextMenu';
+import { showColumnSpaceContextMenu } from '../context_menus/showColumnSpaceContextMenu';
+import { showEmptySpaceContextMenu } from '../context_menus/showEmptySpaceContextMenu';
 
 enum DirectoryDraggingState {
   Releasing,
   Downed,
   Dragging,
-}
-
-interface onContextMenuMeta {
-  targetType: ContextMenuTargetType,
 }
 
 interface targetElementDatasets {
@@ -52,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
 export const useHomeController = () => {
   const columnSpaces = useSetupColumnSpaces();
   const classes = useStyles();
-  const [contextMenuState, setContextMenuState] = React.useState(initialState);
   const [directoryDraggingState, setDirectoryDraggingState] = React.useState(DirectoryDraggingState.Releasing);
   const [draggingTargetInfo, setDraggingTargetInfo] = React.useState<targetElementDatasets>(null);
   const [isOpeningModal, setIsOpeningModal] = React.useState(false);
@@ -63,27 +53,23 @@ export const useHomeController = () => {
     set(columnSpacesState, newColumnSpaces);
   });
 
-  const addColumnSpace = useRecoilCallback(({set}) => async (columnSpaceName: string) => {
-    //todo これ、handleClickColumnSpaceAddButtonに移す（移される側？）。サービスのメソッド名で大体分かるだろうということで、わざわざここを２つに分けることないから。
-    const newColumnSpaces = await createNewColumnSpaceUseCase(columnSpaceName)
-    set(columnSpacesState, newColumnSpaces)
-  });
-
-  /// 以下ツリー右クリック関連の処理
-  /// コンテキストメニューの処理をいろいろ実装すること
-  const handleRightClickOnTree = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>, meta: onContextMenuMeta) => {
+  const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
-    setContextMenuState({
-      targetType: meta.targetType,
-      mouseX: event.clientX - 2,
-      mouseY: event.clientY - 4,
-    });
-  }, [setContextMenuState]);
+    showColumnSpaceContextMenu(event);
+  }, []);
 
-  const handleCloseContextMenu = useCallback(() => {
-    setContextMenuState(initialState);
-  }, [setContextMenuState]);
+  const handleRightClickOnColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    showColumnContextMenu(event);
+  }, []);
+
+  const handleRightClickOnEmptySpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    showEmptySpaceContextMenu(event);
+  }, []);
 
   const handleOpenModal = useCallback((modalContent: ReactElement<any,any>) => {
     setIsOpeningModal(true);
@@ -94,9 +80,16 @@ export const useHomeController = () => {
     setIsOpeningModal(false);
   }, [setIsOpeningModal]);
 
-  const handleClickColumnSpaceAddButton = useCallback((_, newColumnSpaceName) => {
-    addColumnSpace(newColumnSpaceName)
-  }, [addColumnSpace])
+
+  const handleClickColumnSpaceAddButton = useRecoilCallback(({set}) => async (_, columnSpaceName: string) => {
+    //todo これ、handleClickColumnSpaceAddButtonに移す（移される側？）。サービスのメソッド名で大体分かるだろうということで、わざわざここを２つに分けることないから。
+    const newColumnSpaces = await createNewColumnSpaceUseCase(columnSpaceName)
+    set(columnSpacesState, newColumnSpaces)
+  });
+
+  // const handleClickColumnSpaceAddButton = useCallback((_, newColumnSpaceName) => {
+  //   addColumnSpace(newColumnSpaceName)
+  // }, [addColumnSpace])
 
   /// 以下ディレクトリを別ディレクトリにドロップする関連の処理
   /// ドロップしている要素の名前をマウスの右下に出すこと、別ディレクトリにドロップ中にされてる側の背景色が変わること（できれば）、ドロップした後に確認モーダルで決定したら移動されること
@@ -107,7 +100,7 @@ export const useHomeController = () => {
     const onMouseUpFromDirectoryDragging = (innerEvent) => {
       const droppedElementDataset = innerEvent.toElement.parentElement.parentElement.dataset;
       const dropElementDatase = event.target.parentElement.parentElement.dataset;
-      const areBothDirectory: boolean = (droppedElementDataset.type == ContextMenuTargetType.Directory.valueOf())
+      const areBothDirectory: boolean = (droppedElementDataset.type == FileSystemEnum.Directory.valueOf())
       const areBothDifferent: boolean = (droppedElementDataset.uuid !== dropElementDatase.uuid)
       const isDroppedHasNoColumnsOrChildColumnSpaces = (droppedElementDataset.hasChildColumnSpaces === "false" && droppedElementDataset.hasColumns === "false")
       if (areBothDirectory && areBothDifferent && isDroppedHasNoColumnsOrChildColumnSpaces) {
@@ -164,8 +157,8 @@ export const useHomeController = () => {
           onMouseDown={handleMouseDownOnDirectory}
           onMouseMove={handleDragStartOnDirectory}
           onMouseOver={handleDragOverOnDirectory}
-          onContextMenu={(event) => handleRightClickOnTree(event, {targetType: ContextMenuTargetType.Directory})}
-          data-type={ContextMenuTargetType.Directory}
+          onContextMenu={handleRightClickOnColumnSpace}
+          data-type={FileSystemEnum.Directory}
           data-name={columnSpace.name}
           data-uuid={columnSpace.id}
           data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
@@ -180,14 +173,14 @@ export const useHomeController = () => {
                   key={column.id}
                   nodeId={column.id}
                   label={column.name}
-                  onContextMenu={(event) => handleRightClickOnTree(event, {targetType: ContextMenuTargetType.Column})}
+                  onContextMenu={handleRightClickOnColumn}
                 />
               )
           }
         </TreeItem>
       )
     })
-  }, [handleMouseDownOnDirectory, handleDragStartOnDirectory, handleDragOverOnDirectory, handleRightClickOnTree])
+  }, [handleMouseDownOnDirectory, handleDragStartOnDirectory, handleDragOverOnDirectory, handleRightClickOnColumnSpace, handleRightClickOnColumn])
 
 
 
@@ -240,16 +233,14 @@ export const useHomeController = () => {
     isOpeningModal,
     classes,
     modalContent,
-    contextMenuState,
     //関数
     generateColumnSpaceElementTree,
     //イベントハンドラ
-    handleCloseContextMenu,
     handleDragOverOnDirectory,
     handleDragStartOnDirectory,
-    handleRightClickOnTree,
     handleCloseModal,
     handleClickColumnSpaceAddButton,
+    handleRightClickOnEmptySpace,
 
   }
 }

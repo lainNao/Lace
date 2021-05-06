@@ -5,6 +5,7 @@ import { ColumnSpaces } from '../models/ColumnSpaces';
 import { getSaveDirPath } from '../modules/ipc';
 
 // todo 例外処理
+// todo ファイルシステム触るみたいなことができる処理はもしかしたらメインプロセス側に移したほうが良いかも。というかnode.js全般？そうなると変更大変になる。まだ不明というか調べるの面倒なだけ
 export class ColumnSpacesRepositoryJson {
 
   dbFilePath: string = DB_FILE_PATH;
