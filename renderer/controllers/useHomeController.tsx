@@ -52,6 +52,7 @@ export const useHomeController = () => {
   const [directoryDraggingState, setDirectoryDraggingState] = useState(DirectoryDraggingState.Releasing);
   const [draggingTargetInfo, setDraggingTargetInfo] = useState<targetElementDatasets>(null);
   const [newColumnFormVisible, setNewColumnFormVisible] = useState<boolean>(false);
+  const [expandedColumnSpaces, setExpandedColumnSpaces] = useState([]);
 
   // カラムスペースのコンテキストメニュー表示
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -151,22 +152,15 @@ export const useHomeController = () => {
   /// そもそもディレクトリ構造にカラムスペースのフォルダは不要なのでは。カラムのみでいい。それならいくらでも移動できる。多分この考えでいける。となるとディレクトリ構造変えるのも対応する必要あり。まずリポジトリ内のソース変更してそこ対応してしまおう、その後にいろいろやろう。でも親子構造をどうデータに反映するかな。
   const handleMouseDownOnDirectory = useCallback((event) => {
 
+    // カラムスペース同士のDnDで発火
     const onMouseUpFromDirectoryDragging = async (innerEvent) => {
       const droppedElementDataset = innerEvent.toElement.parentElement.parentElement.dataset;
       const dropElementDatase = event.target.parentElement.parentElement.dataset;
 
       if (columnSpaces.canMoveDescendantColumnSpace(dropElementDatase.id, droppedElementDataset.id)) {
-        const res = await remote.dialog.showMessageBox({
-          type: 'info',
-          buttons: ['はい', "いいえ"],
-          title: 'カラムスペースの移動',
-          message: 'カラムスペースの移動',
-          detail: `${dropElementDatase.name}を${droppedElementDataset.name}配下に移動しますか？`  //todo ここの見た目もうちょっとわかりやすくしたい。そもそもいちいちダイアログいらないかも
-        });
-        if (res.response === 0) { //「はい」を選択した時
-          const newColumnSpaces = await moveColumnSpaceUseCase(dropElementDatase.id, droppedElementDataset.id);
-          setColumnSpaces(newColumnSpaces);
-        }
+        const newColumnSpaces = await moveColumnSpaceUseCase(dropElementDatase.id, droppedElementDataset.id);
+        setColumnSpaces(newColumnSpaces);
+        setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, droppedElementDataset.id]);
       }
 
       document.removeEventListener("mouseup", onMouseUpFromDirectoryDragging)
@@ -178,7 +172,7 @@ export const useHomeController = () => {
     setDirectoryDraggingState(DirectoryDraggingState.Downed)
     setDraggingTargetInfo(event.target.parentElement.parentElement.dataset)
 
-  }, [setDirectoryDraggingState, setDraggingTargetInfo, columnSpaces, setColumnSpaces] )
+  }, [setDirectoryDraggingState, setDraggingTargetInfo, columnSpaces, setColumnSpaces, setExpandedColumnSpaces] )
 
   // ドラッグ状態の管理
   const handleDragStartOnDirectory = useCallback(() => {
@@ -224,6 +218,9 @@ export const useHomeController = () => {
                   nodeId={column.id}
                   label={column.name}
                   onContextMenu={handleRightClickOnColumn}
+                  TransitionProps={{
+                    "timeout": 100         //todo 効いてない…
+                  }}
                 />
               )
           }
@@ -280,6 +277,8 @@ export const useHomeController = () => {
     columnSpaces,
     classes,
     newColumnFormVisible,
+    expandedColumnSpaces,
+    setExpandedColumnSpaces,
     //関数
     generateColumnSpaceElementTree,
     //イベントハンドラ

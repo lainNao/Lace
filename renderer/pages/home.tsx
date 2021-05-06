@@ -2,6 +2,7 @@ import React from 'react';
 import { IconButton } from "@chakra-ui/react"
 import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
 import TreeView from '@material-ui/lab/TreeView';
+import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useHomeController } from '../controllers/useHomeController';
@@ -53,6 +54,10 @@ const Home: React.FC = () => {
             defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpandIcon={<ChevronRightIcon />}
             className="select-none"
+            expanded={controller.expandedColumnSpaces}
+            onNodeToggle={(event, expandedNodeIds) => {
+              controller.setExpandedColumnSpaces(expandedNodeIds)
+            }}
           >
             {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
           </TreeView>

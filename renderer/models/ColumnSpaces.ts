@@ -98,7 +98,7 @@ export class ColumnSpaces {
   moveDescendantColumnSpace(id: string, toId: string): ColumnSpaces {
     //todo ここにも「子カラムが無いなら」みたいな判定処理いれる？（add～のみでいいとは思うけど曖昧なのでまた後で）
     if (!this.canMoveDescendantColumnSpace(id, toId)) {
-      throw new Error("例外の設計は後で…、、、ひとまず例外")
+      throw new Error("例外の設計は後で…、、、ひとまず例外");
     }
     const immigrant = this.findDescendantColumnSpace(id);
     const newColumnSpaces = this.removeDescendantColumnSpace(id);
