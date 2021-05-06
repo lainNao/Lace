@@ -14,7 +14,7 @@ export class ColumnSpaces {
     this.children = (args == undefined) ? [] : args.children;
   }
 
-  addColumnSpace(columnSpace: ColumnSpace): void {  //todo: 失敗したら例外出す
+  addColumnSpace(columnSpace: ColumnSpace): void {  //todo: 失敗したら例外出す　というかここだけいわゆるミュータブルな感じになってる？エンティティはミュータブルでいいっぽいけどそこらへんまたあとで、、
     this.children.push(columnSpace);
   }
 
