@@ -1,10 +1,8 @@
-import React, {ReactElement, useCallback} from 'react';
+import React, {ReactElement, useCallback, useEffect} from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
-import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import { useRecoilCallback } from 'recoil';
+import { useRecoilCallback, useRecoilState, useRecoilValueLoadable } from 'recoil';
 import columnSpacesState from '../atoms/columnSpacesState';
-import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 import { FileSystemEnum } from "../enums/app"
 import { ColumnSpaces } from '../models/ColumnSpaces';
 import { createNewColumnSpaceUseCase } from '../usecases/createNewColumnSpaceUseCase';
@@ -12,6 +10,8 @@ import { moveColumnSpaceUseCase } from '../usecases/moveColumnSpaceUseCase';
 import { showColumnContextMenu } from '../context_menus/showColumnContextMenu';
 import { showColumnSpaceContextMenu } from '../context_menus/showColumnSpaceContextMenu';
 import { showEmptySpaceContextMenu } from '../context_menus/showEmptySpaceContextMenu';
+import { remote } from "electron"
+import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 
 enum DirectoryDraggingState {
   Releasing,
@@ -41,55 +41,38 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const useHomeController = () => {
-  const columnSpaces = useSetupColumnSpaces();
-  const classes = useStyles();
+  const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   const [directoryDraggingState, setDirectoryDraggingState] = React.useState(DirectoryDraggingState.Releasing);
   const [draggingTargetInfo, setDraggingTargetInfo] = React.useState<targetElementDatasets>(null);
-  const [isOpeningModal, setIsOpeningModal] = React.useState(false);
-  const [modalContent, setModalContent] = React.useState<ReactElement<any, any>>();
+  const classes = useStyles();
 
-  const moveColumnSpace = useRecoilCallback(({set}) => async (id: string, toId: string) => {
-    const newColumnSpaces = await moveColumnSpaceUseCase(id, toId);
-    set(columnSpacesState, newColumnSpaces);
-  });
-
+  // カラムスペースのコンテキストメニュー表示
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
     showColumnSpaceContextMenu(event);
   }, []);
 
+  // カラムのコンテキストメニュー表示
   const handleRightClickOnColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
     showColumnContextMenu(event);
   }, []);
 
+  // エクスプローラーの無部分押下時のコンテキストメニュー表示
   const handleRightClickOnEmptySpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
     showEmptySpaceContextMenu(event);
   }, []);
 
-  const handleOpenModal = useCallback((modalContent: ReactElement<any,any>) => {
-    setIsOpeningModal(true);
-    setModalContent(modalContent)
-  }, [setIsOpeningModal, setModalContent]);
-
-  const handleCloseModal = useCallback(() => {
-    setIsOpeningModal(false);
-  }, [setIsOpeningModal]);
-
-
-  const handleClickColumnSpaceAddButton = useRecoilCallback(({set}) => async (_, columnSpaceName: string) => {
-    //todo これ、handleClickColumnSpaceAddButtonに移す（移される側？）。サービスのメソッド名で大体分かるだろうということで、わざわざここを２つに分けることないから。
+  // カラムスペース追加ボタン押下
+  const handleClickAddColumnSpaceButton = useRecoilCallback(({set}) => async (event: React.MouseEvent<HTMLElement, MouseEvent>, columnSpaceName: string) => {
+    event.preventDefault();
     const newColumnSpaces = await createNewColumnSpaceUseCase(columnSpaceName)
     set(columnSpacesState, newColumnSpaces)
   });
-
-  // const handleClickColumnSpaceAddButton = useCallback((_, newColumnSpaceName) => {
-  //   addColumnSpace(newColumnSpaceName)
-  // }, [addColumnSpace])
 
   /// 以下ディレクトリを別ディレクトリにドロップする関連の処理
   /// ドロップしている要素の名前をマウスの右下に出すこと、別ディレクトリにドロップ中にされてる側の背景色が変わること（できれば）、ドロップした後に確認モーダルで決定したら移動されること
@@ -97,10 +80,11 @@ export const useHomeController = () => {
   /// そもそもディレクトリ構造にカラムスペースのフォルダは不要なのでは。カラムのみでいい。それならいくらでも移動できる。多分この考えでいける。となるとディレクトリ構造変えるのも対応する必要あり。まずリポジトリ内のソース変更してそこ対応してしまおう、その後にいろいろやろう。でも親子構造をどうデータに反映するかな。
   const handleMouseDownOnDirectory = useCallback((event) => {
 
-    const onMouseUpFromDirectoryDragging = (innerEvent) => {
+    const onMouseUpFromDirectoryDragging = async (innerEvent) => {
+      //todo これ、データセットのまま扱ってもいいけどドメインモデルで扱ったほうが判定処理とか共通化できるはず
       const droppedElementDataset = innerEvent.toElement.parentElement.parentElement.dataset;
       const dropElementDatase = event.target.parentElement.parentElement.dataset;
-      const areBothDirectory: boolean = (droppedElementDataset.type == FileSystemEnum.Directory.valueOf())
+      const areBothDirectory: boolean = (droppedElementDataset.type == FileSystemEnum.ColumnSpace.valueOf())
       const areBothDifferent: boolean = (droppedElementDataset.uuid !== dropElementDatase.uuid)
       const isDroppedHasNoColumnsOrChildColumnSpaces = (droppedElementDataset.hasChildColumnSpaces === "false" && droppedElementDataset.hasColumns === "false")
       if (areBothDirectory && areBothDifferent && isDroppedHasNoColumnsOrChildColumnSpaces) {
@@ -108,18 +92,17 @@ export const useHomeController = () => {
         console.log("された", droppedElementDataset)      //ドロップされた側
         console.log("した側", dropElementDatase)          //ドロップしたがわ
 
-        handleOpenModal(
-          <div>
-            <h3 className="font-semibold mb-3 text-center">どうしますか？</h3>
-            <div className="flex justify-around">
-              <Button variant="contained" color="primary"onClick={() => {
-                moveColumnSpace(dropElementDatase.uuid, droppedElementDataset.uuid)
-                handleCloseModal();
-              }}>はい</Button>
-              <Button variant="contained" onClick={handleCloseModal}>いいえ</Button>
-            </div>
-          </div>
-        )
+        const res = await remote.dialog.showMessageBox({
+          type: 'info',
+          buttons: ['はい', "いいえ"],
+          title: 'タイトル',
+          message: 'カラムスペースの移動',
+          detail: `${dropElementDatase.name}を${droppedElementDataset.name}配下に移動しますか？`
+        });
+        if (res.response === 0) {
+          const newColumnSpaces = await moveColumnSpaceUseCase(dropElementDatase.uuid, droppedElementDataset.uuid);
+          setColumnSpaces(newColumnSpaces);
+        }
       }
 
       document.removeEventListener("mouseup", onMouseUpFromDirectoryDragging)
@@ -131,14 +114,16 @@ export const useHomeController = () => {
     setDirectoryDraggingState(DirectoryDraggingState.Downed)
     setDraggingTargetInfo(event.target.parentElement.parentElement.dataset)
 
-  }, [handleOpenModal, setDirectoryDraggingState, setDraggingTargetInfo, moveColumnSpace] )
+  }, [setDirectoryDraggingState, setDraggingTargetInfo, setColumnSpaces] )
 
+  // ドラッグ状態の管理
   const handleDragStartOnDirectory = useCallback(() => {
     if (directoryDraggingState === DirectoryDraggingState.Downed) {
       setDirectoryDraggingState(DirectoryDraggingState.Dragging)
     }
   }, [directoryDraggingState, setDirectoryDraggingState])
 
+  // ドラッグ状態の管理
   const handleDragOverOnDirectory = useCallback(() => {
     if (directoryDraggingState === DirectoryDraggingState.Dragging) {
       console.log("onmouseover")
@@ -146,6 +131,7 @@ export const useHomeController = () => {
     }
   }, [directoryDraggingState])
 
+  // ColumnSpacesのツリーをレンダリング
   const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
 
     return columnSpaces.children.map((columnSpace) => {
@@ -158,7 +144,7 @@ export const useHomeController = () => {
           onMouseMove={handleDragStartOnDirectory}
           onMouseOver={handleDragOverOnDirectory}
           onContextMenu={handleRightClickOnColumnSpace}
-          data-type={FileSystemEnum.Directory}
+          data-type={FileSystemEnum.ColumnSpace}
           data-name={columnSpace.name}
           data-uuid={columnSpace.id}
           data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
@@ -181,8 +167,6 @@ export const useHomeController = () => {
       )
     })
   }, [handleMouseDownOnDirectory, handleDragStartOnDirectory, handleDragOverOnDirectory, handleRightClickOnColumnSpace, handleRightClickOnColumn])
-
-
 
   // D&Dの制御
   // useEffect(() => {
@@ -230,17 +214,13 @@ export const useHomeController = () => {
   return {
     //データ
     columnSpaces,
-    isOpeningModal,
     classes,
-    modalContent,
     //関数
     generateColumnSpaceElementTree,
     //イベントハンドラ
     handleDragOverOnDirectory,
     handleDragStartOnDirectory,
-    handleCloseModal,
-    handleClickColumnSpaceAddButton,
+    handleClickAddColumnSpaceButton,
     handleRightClickOnEmptySpace,
-
   }
 }

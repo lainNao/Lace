@@ -22,14 +22,25 @@ const Home: React.FC = () => {
   const controller = useHomeController();
   const currentMainDisplayedColumnUUID = "C23456789-C234-C234-C234-C23456789123"  //仮のモック
   const currentColumnSpaceUUID = "123456789-1234-1234-1234-123456789123"; //仮のモック（これ今は半無限の深さになったので、道筋のUUIDの配列にするのがいいかも）
+  // const currentMainColumnDatas = columnSpaces[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
 
-  if (controller.columnSpaces == null) {
+  if (controller.columnSpaces.state === "loading"){
     return (
       <div>DB読込中</div>
     )
   }
 
-  // const currentMainColumnDatas = columnSpaces[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
+  if (controller.columnSpaces.state === "hasError") {
+    return (
+      <div>DB読み込みエラー</div>
+    )
+  }
+
+  if (controller.columnSpaces.state === "hasValue" && !controller.columnSpaces.contents) {
+    return (
+      <div>ロード中</div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-screen">
@@ -50,30 +61,20 @@ const Home: React.FC = () => {
           <div>
             <span >カラムスペース</span>
             <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={ (event) => {
-              controller.handleClickColumnSpaceAddButton(event, "121212dfdfd12")
+              //todo 名前は自分で決めるようにする
+              controller.handleClickAddColumnSpaceButton(event, "121212dfdfd12")
             }}/>
           </div>
           <TreeView
             defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpandIcon={<ChevronRightIcon />}
             className="select-none"
-            >
-            {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
+          >
+            {controller.generateColumnSpaceElementTree(controller.columnSpaces.contents)}
           </TreeView>
         </div>
 
         <div className="min-w-300px overflow-y-auto p-3">
-        <Modal
-          open={controller.isOpeningModal}
-          onClose={controller.handleCloseModal}
-          aria-labelledby="simple-modal-title"
-          aria-describedby="simple-modal-description"
-        >
-          <div className={controller.classes.paper}>
-            {controller.modalContent}
-          </div>
-        </Modal>
-
           {/* {Object.keys(currentMainColumnDatas).map((dataUUID,index) => {
             const data = currentMainColumnDatas[dataUUID];
             return (

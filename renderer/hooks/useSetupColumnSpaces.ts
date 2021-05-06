@@ -1,11 +1,11 @@
-import { useRecoilCallback, useRecoilState } from "recoil";
+import { useRecoilCallback, useRecoilState, useRecoilStateLoadable } from "recoil";
 import columnSpacesState from "../atoms/columnSpacesState";
 import { useEffect } from "react";
 import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesRepositoryJson";
 
 export default function useSetupColumnSpaces() {
 
-  const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
+  const [columnSpaces, setColumnSpaces] = useRecoilStateLoadable(columnSpacesState);
 
   useEffect(() => {
     (async() => {
@@ -15,6 +15,6 @@ export default function useSetupColumnSpaces() {
     })()
   }, [setColumnSpaces])
 
-  return columnSpaces;
+  return [columnSpaces, setColumnSpaces] as const;
 
 }

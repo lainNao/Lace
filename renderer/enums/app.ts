@@ -1,5 +1,5 @@
 export enum FileSystemEnum {
-  Directory,
+  ColumnSpace,
   Column,
-  Data,
+  Cell,
 }
