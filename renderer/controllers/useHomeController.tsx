@@ -13,6 +13,7 @@ import { showEmptySpaceContextMenu } from '../context-menus/showEmptySpaceContex
 import { remote } from "electron"
 import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 import { removeColumnSpaceUseCase } from '../usecases/removeColumnSpaceUseCase';
+import useSetupSettings from '../hooks/useSetupSettings';
 
 const useStyles = makeStyles({
   label: {
@@ -29,7 +30,12 @@ export const useHomeController = () => {
   const newColumnSpaceInputRef = React.useRef(null);
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   const [newColumnFormVisible, setNewColumnFormVisible] = useState<boolean>(false);
-  const [expandedColumnSpaces, setExpandedColumnSpaces] = useState([]);
+  const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
+
+  const saveExpandedColumnSpaces = useCallback((expandedNodeIds: string[]) => {
+    localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));
+    setExpandedColumnSpaces(expandedNodeIds);
+  }, [setExpandedColumnSpaces]);
 
   // カラムスペースのコンテキストメニュー表示
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -246,13 +252,13 @@ export const useHomeController = () => {
     expandedColumnSpaces,
     //関数
     generateColumnSpaceElementTree,
+    saveExpandedColumnSpaces,
     //イベントハンドラ
     handleClickAddColumnSpaceButton,
     handleRightClickOnEmptySpace,
     handleSubmitNewColumnSpaceForm,
     handleNewColumnInputOnBlur,
     //他
-    setExpandedColumnSpaces,
     newColumnSpaceInputRef,
   }
 }

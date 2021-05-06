@@ -59,7 +59,7 @@ const Home: React.FC = () => {
             defaultExpandIcon={<ChevronRightIcon />}
             className="select-none"
             expanded={controller.expandedColumnSpaces}
-            onNodeToggle={(event, expandedNodeIds) => controller.setExpandedColumnSpaces(expandedNodeIds)}
+            onNodeToggle={(event, expandedNodeIds) => controller.saveExpandedColumnSpaces(expandedNodeIds)}
           >
             {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
           </TreeView>
