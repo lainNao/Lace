@@ -14,43 +14,20 @@ import { remote } from "electron"
 import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 import { removeColumnSpaceUseCase } from '../usecases/removeColumnSpaceUseCase';
 
-enum DirectoryDraggingState {
-  Releasing,
-  Downed,
-  Dragging,
-}
-
-interface targetElementDatasets {
-  type: string,
-  name: string,
-  id: string,
-}
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    position: 'absolute',
-    width: 400,
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "gray",
-    textColor: "white",
-    outline: "none",
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
+const useStyles = makeStyles({
+  label: {
+    fontSize: "15px"
   },
-}));
+});
 
 // todo ユースケース達はエラー処理してないのでコントローラ側で例外対策する
-// todo useStylesとか使ってるけど、テーマとかどうするか
+// todo テーマとかどうするか
 
 // memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
 export const useHomeController = () => {
-  const classes = useStyles();
+  const classes = useStyles()
   const newColumnSpaceInputRef = React.useRef(null);
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
-  const [directoryDraggingState, setDirectoryDraggingState] = useState(DirectoryDraggingState.Releasing);
-  const [draggingTargetInfo, setDraggingTargetInfo] = useState<targetElementDatasets>(null);
   const [newColumnFormVisible, setNewColumnFormVisible] = useState<boolean>(false);
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useState([]);
 
@@ -146,48 +123,27 @@ export const useHomeController = () => {
     set(columnSpacesState, newColumnSpaces)
   }, [setNewColumnFormVisible]);
 
-  /// 以下ディレクトリを別ディレクトリにドロップする関連の処理
-  /// ドロップしている要素の名前をマウスの右下に出すこと、別ディレクトリにドロップ中にされてる側の背景色が変わること（できれば）、ドロップした後に確認モーダルで決定したら移動されること
-  /// ディレクトリをドロップで移動したらファイルも移動になるのでどうしよう。UUIDのみのフォルダに統一できるなら移動する必要ないけどその場合は親子関係をなんらかの値で表現して読み取る必要ある。
-  /// そもそもディレクトリ構造にカラムスペースのフォルダは不要なのでは。カラムのみでいい。それならいくらでも移動できる。多分この考えでいける。となるとディレクトリ構造変えるのも対応する必要あり。まずリポジトリ内のソース変更してそこ対応してしまおう、その後にいろいろやろう。でも親子構造をどうデータに反映するかな。
-  const handleMouseDownOnDirectory = useCallback((event) => {
+  // DnDでカラムスペースの移動の管理
+  const handleDragStartOnNode = useCallback((event) => {
+    event.dataTransfer.setData("fromId", (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id)
+  }, [])
 
-    // カラムスペース同士のDnDで発火
-    const onMouseUpFromDirectoryDragging = async (innerEvent) => {
-      const droppedElementDataset = innerEvent.toElement.parentElement.parentElement.dataset;
-      const dropElementDatase = event.target.parentElement.parentElement.dataset;
+  // DnDでカラムスペースの移動の管理
+  const handleDragOverOnNode = useCallback((event) => {
+    event.preventDefault();
+  }, [])
 
-      if (columnSpaces.canMoveDescendantColumnSpace(dropElementDatase.id, droppedElementDataset.id)) {
-        const newColumnSpaces = await moveColumnSpaceUseCase(dropElementDatase.id, droppedElementDataset.id);
-        setColumnSpaces(newColumnSpaces);
-        setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, droppedElementDataset.id]);
-      }
+  // DnDでカラムスペースの移動の管理
+  const handleDropOnNode = useCallback(async(event) => {
+    const fromId = event.dataTransfer.getData("fromId");
+    const toId = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id
 
-      document.removeEventListener("mouseup", onMouseUpFromDirectoryDragging)
-      setDirectoryDraggingState(DirectoryDraggingState.Releasing)
-      setDraggingTargetInfo(null)
+    if (columnSpaces.canMoveDescendantColumnSpace(fromId, toId)) {
+      const newColumnSpaces = await moveColumnSpaceUseCase(fromId, toId);
+      setColumnSpaces(newColumnSpaces);
+      setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, toId]);
     }
-
-    document.addEventListener("mouseup", onMouseUpFromDirectoryDragging)
-    setDirectoryDraggingState(DirectoryDraggingState.Downed)
-    setDraggingTargetInfo(event.target.parentElement.parentElement.dataset)
-
-  }, [setDirectoryDraggingState, setDraggingTargetInfo, columnSpaces, setColumnSpaces, setExpandedColumnSpaces] )
-
-  // ドラッグ状態の管理
-  const handleDragStartOnDirectory = useCallback(() => {
-    if (directoryDraggingState === DirectoryDraggingState.Downed) {
-      setDirectoryDraggingState(DirectoryDraggingState.Dragging)
-    }
-  }, [directoryDraggingState, setDirectoryDraggingState])
-
-  // ドラッグ状態の管理
-  const handleDragOverOnDirectory = useCallback(() => {
-    if (directoryDraggingState === DirectoryDraggingState.Dragging) {
-      console.log("onmouseover")
-      console.log(draggingTargetInfo)
-    }
-  }, [directoryDraggingState])
+  }, [columnSpaces]);
 
   // ColumnSpacesのツリーをレンダリング
   const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
@@ -197,27 +153,38 @@ export const useHomeController = () => {
         <TreeItem
           key={columnSpace.id}
           nodeId={columnSpace.id}
-          label={columnSpace.name}
-          onMouseDown={handleMouseDownOnDirectory}
-          onMouseMove={handleDragStartOnDirectory}
-          onMouseOver={handleDragOverOnDirectory}
+          label={
+            <div draggable
+              onDragStart={handleDragStartOnNode}
+              onDragOver={handleDragOverOnNode}
+              onDrop={handleDropOnNode}
+            >{columnSpace.name}</div>
+          }
           onContextMenu={handleRightClickOnColumnSpace}
           data-type={FileSystemEnum.ColumnSpace}
           data-name={columnSpace.name}
           data-id={columnSpace.id}
           data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
           data-has-columns={!!(columnSpace.hasColumns())}
+          classes={{
+            label: classes.label,
+          }}
         >
           {columnSpace.canAddChildColumnSpace()
             // カラムスペースを再帰レンダリング
             ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
-            // カラムをレンダリング
+            // 末端をレンダリング（カラムスペース、またはカラム）
+            // todo ここだけTreeItemでなくてもよいかもしれない
             : columnSpace.columns.children.map((column) =>
                 <TreeItem
+                  draggable
                   key={column.id}
                   nodeId={column.id}
                   label={column.name}
                   onContextMenu={handleRightClickOnColumn}
+                  onDragStart={handleDragStartOnNode}
+                  onDragOver={handleDragOverOnNode}
+                  onDrop={handleDropOnNode}
                   TransitionProps={{
                     "timeout": 100         //todo 効いてない…
                   }}
@@ -227,7 +194,7 @@ export const useHomeController = () => {
         </TreeItem>
       )
     })
-  }, [handleMouseDownOnDirectory, handleDragStartOnDirectory, handleDragOverOnDirectory, handleRightClickOnColumnSpace, handleRightClickOnColumn])
+  }, [handleDragStartOnNode, handleDragOverOnNode, handleDropOnNode, handleRightClickOnColumnSpace, handleRightClickOnColumn])
 
   // D&Dの制御
   // useEffect(() => {
@@ -275,20 +242,17 @@ export const useHomeController = () => {
   return {
     //データ
     columnSpaces,
-    classes,
     newColumnFormVisible,
     expandedColumnSpaces,
-    setExpandedColumnSpaces,
     //関数
     generateColumnSpaceElementTree,
     //イベントハンドラ
-    handleDragOverOnDirectory,
-    handleDragStartOnDirectory,
     handleClickAddColumnSpaceButton,
     handleRightClickOnEmptySpace,
     handleSubmitNewColumnSpaceForm,
     handleNewColumnInputOnBlur,
     //他
+    setExpandedColumnSpaces,
     newColumnSpaceInputRef,
   }
 }

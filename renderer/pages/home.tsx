@@ -6,6 +6,7 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useHomeController } from '../controllers/useHomeController';
+import { makeStyles } from '@material-ui/core';
 
 /*
 ファイルアップロードする前にはカラムスペースとカラムのUUIDのフォルダが必要なのでそれ作成しておくように実装を修正する
@@ -19,10 +20,13 @@ import { useHomeController } from '../controllers/useHomeController';
 
 
 const Home: React.FC = () => {
+
   const controller = useHomeController();
   const currentMainDisplayedColumnUUID = "C23456789-C234-C234-C234-C23456789123"  //仮のモック
   const currentColumnSpaceUUID = "123456789-1234-1234-1234-123456789123"; //仮のモック（これ今は半無限の深さになったので、道筋のUUIDの配列にするのがいいかも）
   // const currentMainColumnDatas = columnSpaces[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
+
+  // const classes = useStyles()
 
   if (!controller.columnSpaces) {
     return (
@@ -55,9 +59,7 @@ const Home: React.FC = () => {
             defaultExpandIcon={<ChevronRightIcon />}
             className="select-none"
             expanded={controller.expandedColumnSpaces}
-            onNodeToggle={(event, expandedNodeIds) => {
-              controller.setExpandedColumnSpaces(expandedNodeIds)
-            }}
+            onNodeToggle={(event, expandedNodeIds) => controller.setExpandedColumnSpaces(expandedNodeIds)}
           >
             {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
           </TreeView>
