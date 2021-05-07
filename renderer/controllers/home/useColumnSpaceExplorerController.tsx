@@ -55,12 +55,13 @@ export const useColumnSpaceExplorerController = () => {
           message: 'カラムスペースの削除',
           detail: `${targetDataset.name}を削除しますか？`,
         });
+
         if (res.response === 0) { //「はい」を選択した時
           try {
             const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
             setColumnSpaces(newColumnSpaces);
           } catch (e) {
-            console.log(e);
+            console.log(e.message);
           }
         }
       },
@@ -75,7 +76,7 @@ export const useColumnSpaceExplorerController = () => {
           // const newColumnSpaces = await createColumnUseCase(targetDataset.id);
           // setColumnSpaces(newColumnSpaces);
         } catch(e) {
-          console.log(e);
+          console.log(e.message);
         }
 
       },
@@ -169,7 +170,7 @@ export const useColumnSpaceExplorerController = () => {
       set(columnSpacesState, newColumnSpaces);
       setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
 
   }, []);
@@ -222,7 +223,7 @@ export const useColumnSpaceExplorerController = () => {
       setColumnSpaces(newColumnSpaces);
       setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, toId]);
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
 
   }, [columnSpaces]);
