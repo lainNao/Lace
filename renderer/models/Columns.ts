@@ -8,7 +8,7 @@ export class Columns {
   children: Column[];
 
   constructor(args?: ColumnsConstructorArgs) {
-    //todo: 不変条件
+    //TODO: 不変条件
     this.children = (args == undefined) ? [] : args.children;
   }
 

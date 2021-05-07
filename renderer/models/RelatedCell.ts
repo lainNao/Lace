@@ -5,7 +5,7 @@ export class RelatedCell {
   cellId: string;
 
   constructor(props) {
-    //todo 不変条件
+    //TODO 不変条件
     const id = props.id;
     this.id = id;
     // this.name = props.name;

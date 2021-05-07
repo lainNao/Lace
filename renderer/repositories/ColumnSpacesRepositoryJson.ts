@@ -4,12 +4,12 @@ import { DB_FILE_PATH } from '../consts/path';
 import { ColumnSpaces } from '../models/ColumnSpaces';
 import { getSaveDirPath } from '../modules/ipc';
 
-// todo 例外処理
-// todo ファイルシステム触るみたいなことができる処理はもしかしたらメインプロセス側に移したほうが良いかも。というかnode.js全般？そうなると変更大変になる。まだ不明というか調べるの面倒なだけ
+// TODO 例外処理
+// TODO ファイルシステム触るみたいなことができる処理はもしかしたらメインプロセス側に移したほうが良いかも。というかnode.js全般？そうなると変更大変になる。まだ不明というか調べるの面倒なだけ
 export class ColumnSpacesRepositoryJson {
 
   dbFilePath: string = DB_FILE_PATH;
-  initialDB: any = [       //todo モックなので後で直す
+  initialDB: any = [       //TODO モックなので後で直す
     {
       "id": "1111",
       "name": "test_column_space",
@@ -44,7 +44,7 @@ export class ColumnSpacesRepositoryJson {
   }
 
   async readOrInitialize(): Promise<ColumnSpaces> {
-    // todo awaitしてるやつにtry-catch効かないかもなのであとで確認
+    // TODO awaitしてるやつにtry-catch効かないかもなのであとで確認
     try {
       return await this.read();
     } catch {

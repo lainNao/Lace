@@ -4,7 +4,7 @@ interface EmptySpaceContextMenuArgs {
   handleClickAddColumnSpace: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
 }
 
-// todo ここらへん、contextMenuをそのままreturnしてpopupするのはコントローラでやってもらってもいいかも
+// TODO ここらへん、contextMenuをそのままreturnしてpopupするのはコントローラでやってもらってもいいかも
 export const showEmptySpaceContextMenu = (event: React.MouseEvent<HTMLElement, MouseEvent>, args: EmptySpaceContextMenuArgs) => {
 
   const MenuItem = remote.MenuItem;

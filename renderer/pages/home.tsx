@@ -11,10 +11,10 @@ import { useHomeController } from '../controllers/useHomeController';
 	無い場合は作る感じでいい気がする
 	というかそもそもファイルが必要とするカラムを作成した時点で作る感じでいいかな（↑で無い場合はこれを呼ぶなど）
 */
-// todo 絶対パスでimportできるようにする
-// todo ツリーの表示がもっさりしてるから別のライブラリに切り替えるか、または今のツリーのオプションを探す
-// todo カラムスペース追加インプットの見た目
-// todo カラムスペース追加時に一瞬ガクっとなる（高さが限界を超える場合）のをいつか直す
+// TODO 絶対パスでimportできるようにする
+// TODO ツリーの表示がもっさりしてるから別のライブラリに切り替えるか、または今のツリーのオプションを探す
+// TODO カラムスペース追加インプットの見た目
+// TODO カラムスペース追加時に一瞬ガクっとなる（高さが限界を超える場合）のをいつか直す
 
 const Home: React.FC = () => {
 
@@ -60,7 +60,7 @@ const Home: React.FC = () => {
             {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
           </TreeView>
 
-          <form onSubmit={controller.handleSubmitTopLevelNewColumnSpaceForm} className="hidden" ref={controller.newTopLevelColumnSpaceFormRef} >
+          <form onSubmit={controller.handleSubmitTopLevelNewColumnSpaceForm} className="hidden ml-5" ref={controller.newTopLevelColumnSpaceFormRef} >
             <input name="new-column-space-name" className="bg-gray-700" spellCheck={false} onBlur={controller.handleTopLevelNewColumnInputOnBlur}></input>
           </form>
         </div>

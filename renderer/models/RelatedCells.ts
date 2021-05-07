@@ -5,7 +5,7 @@ export class RelatedCells {
   children: RelatedCell[];
 
   constructor(args?) {
-    //todo: 不変条件
+    //TODO: 不変条件
     this.children = (args == undefined) ? [] : args.children;
   }
 

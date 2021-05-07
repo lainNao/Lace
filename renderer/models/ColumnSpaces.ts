@@ -10,11 +10,11 @@ export class ColumnSpaces {
   children: ColumnSpace[];
 
   constructor(args?: ColumnSpacesConstructorArgs) {
-    //todo: 不変条件
+    //TODO: 不変条件
     this.children = (args == undefined) ? [] : args.children;
   }
 
-  addColumnSpace(columnSpace: ColumnSpace): void {  //todo: 失敗したら例外出す　というかここだけいわゆるミュータブルな感じになってる？エンティティはミュータブルでいいっぽいけどそこらへんまたあとで、、
+  addColumnSpace(columnSpace: ColumnSpace): void {  //TODO: 失敗したら例外出す　というかここだけいわゆるミュータブルな感じになってる？エンティティはミュータブルでいいっぽいけどそこらへんまたあとで、、
     this.children.push(columnSpace);
   }
 
@@ -59,7 +59,7 @@ export class ColumnSpaces {
   }
 
   // 子孫のカラムスペースから指定IDのものを削除
-  // todo 失敗したら例外（もしかして再帰的な構造だから無理？無理っぽいので代案考えておく…渡されたidの要素が無い場合でもちゃんと自身を返すからエラーなのかエラーじゃないのか判別つかないんだよな…フラグを使うしかないかな、。他のメソッドでも同じことなってそうなので後で確認）
+  // TODO 失敗したら例外（もしかして再帰的な構造だから無理？無理っぽいので代案考えておく…渡されたidの要素が無い場合でもちゃんと自身を返すからエラーなのかエラーじゃないのか判別つかないんだよな…フラグを使うしかないかな、。他のメソッドでも同じことなってそうなので後で確認）
   removeDescendantColumnSpace(targetId: string): ColumnSpaces {
     for (let i=0; i<this.children.length; i++) {
       if (this.children[i].id === targetId) {

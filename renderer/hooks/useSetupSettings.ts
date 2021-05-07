@@ -8,7 +8,7 @@ export default function useSetupSettings() {
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useState<string[]>([]);
 
   useEffect(() => {
-    //todo 無いIDが入ってる可能性を考慮
+    //TODO 無いIDが入ってる可能性を考慮
     const expandedColumnSpaces = localStorage.getItem("expandedColumnSpaces")
     setExpandedColumnSpaces((expandedColumnSpaces) ? JSON.parse(expandedColumnSpaces): [])
 

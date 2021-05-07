@@ -22,8 +22,8 @@ const useStyles = makeStyles({
   },
 });
 
-// todo ユースケース達はエラー処理してないのでコントローラ側で例外対策する
-// todo テーマとかどうするか
+// TODO ユースケース達はエラー処理してないのでコントローラ側で例外対策する
+// TODO テーマとかどうするか
 
 // memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
 export const useHomeController = () => {
@@ -64,8 +64,8 @@ export const useHomeController = () => {
         newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
       },
       handleClickAddChildColumn: async () => {
-        //todo 子カラム追加。ここそもそもカラム追加時のカラムタイプの選択とかいろいろあってまた強め作業になる
-        console.log("子カラム追加処理");
+        //TODO 子カラム追加。ここそもそもカラム追加時のカラムタイプの選択とかいろいろあってまた強め作業になる。でもデータ作れば表示は別問題なのでデータの問題なのでそこまで難易度は高くない。ただセルのモデルとかも関わってくるのであれこれある
+        console.log("子カラム追加処理を実装");
         // const newColumnSpaces = await createColumnUseCase(targetDataset.id);
         // setColumnSpaces(newColumnSpaces);
 
@@ -126,7 +126,7 @@ export const useHomeController = () => {
   }, []);
 
   // カラムスペース追加フォームsubmit
-  // todo 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
+  // TODO 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
   const handleSubmitTopLevelNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     newTopLevelColumnSpaceFormRef.current.classList.add("hidden");
@@ -145,7 +145,7 @@ export const useHomeController = () => {
   }, []);
 
     // カラムスペース追加フォームsubmit
-  // todo 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
+  // TODO 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
   const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnSpaceId: string) => {
     event.preventDefault();
 
@@ -254,7 +254,7 @@ export const useHomeController = () => {
               // カラムスペースを再帰レンダリング
               ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
               // 末端（カラム）をレンダリング
-              // todo ここだけTreeItemでなくてもよいかもしれない
+              // TODO ここだけTreeItemでなくてもよいかもしれない
               : columnSpace.columns.children.map((column) =>
                   <TreeItem
                     draggable
@@ -268,7 +268,7 @@ export const useHomeController = () => {
                     data-type={FileSystemEnum.Column}
                     data-name={column.name}
                     data-id={column.id}
-                    //todo collapsableとかcellsとかのあれこれの値も入れて使う時もあるかもなのでその時考慮して追加も考える
+                    //TODO collapsableとかcellsとかのあれこれの値も入れて使う時もあるかもなのでその時考慮して追加も考える
                   />
                 )
             }

@@ -18,7 +18,8 @@ export class ColumnSpace {
 
   constructor(args: ColumnSpaceConstructorArgs) {
     const id = args.id ?? uuidv4();
-    //todo: 既に同じIDが存在するか確認。他各種不変条件
+    //TODO 既に同じIDが存在するか確認（そこまでする必要ある？保存時に確認…？うーん）。他各種不変条件
+    //TODO nameの左右のスペースはここでトリムしてしまってよいかな…？ファクトリー作る…？後に対応…
 
     this.id = id;
     this.name = args.name;
