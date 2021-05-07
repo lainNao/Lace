@@ -211,7 +211,7 @@ export const useColumnSpaceExplorerController = () => {
   // DnDでカラムスペースの移動の管理
   const handleDragOverOnNode = useCallback((event) => {
     event.preventDefault();
-  }, [])
+  }, []);
 
   // DnDでカラムスペースの移動の管理
   const handleDropOnNode = useCallback(async(event) => {
