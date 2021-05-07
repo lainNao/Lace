@@ -1,10 +1,14 @@
 import { RelatedCell } from "./RelatedCell";
 
+interface RelatedCellsConstructorArgs {
+  children: RelatedCell[],
+}
+
 export class RelatedCells {
 
   children: RelatedCell[];
 
-  constructor(args?) {
+  constructor(args?: RelatedCellsConstructorArgs) {
     //TODO: 不変条件
     this.children = (args == undefined) ? [] : args.children;
   }

@@ -16,12 +16,23 @@ function App(props: AppProps) {
     }
   }, []);
 
+  const noOverlayWorkaroundScript = `
+    window.addEventListener('error', event => {
+      event.stopImmediatePropagation()
+    })
+
+    window.addEventListener('unhandledrejection', event => {
+      event.stopImmediatePropagation()
+    })
+  `
+
   return (
     <React.Fragment>
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <title>with-typescript-material-ui</title>
+        <script dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }} />
       </Head>
       <ChakraProvider theme={dark}>
         <RecoilRoot>

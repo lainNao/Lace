@@ -11,7 +11,7 @@ export const showEmptySpaceContextMenu = (event: React.MouseEvent<HTMLElement, M
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({
-    label: "追加",
+    label: "カラムスペースの追加",
     click: args.handleClickAddColumnSpace,
   }));
 

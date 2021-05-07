@@ -15,6 +15,8 @@ import useSetupColumnSpaces from '../../hooks/useSetupColumnSpaces';
 import { removeColumnSpaceUseCase } from '../../usecases/removeColumnSpaceUseCase';
 import useSetupSettings from '../../hooks/useSetupSettings';
 import { createDescendantColumnSpaceUseCase } from '../../usecases/createDescendantColumnSpaceUseCase';
+import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
+import { createColumnUseCase } from '../../usecases/createColumnUseCase';
 
 const useStyles = makeStyles({
   label: {
@@ -22,7 +24,6 @@ const useStyles = makeStyles({
   },
 });
 
-// TODO ユースケース達はエラー処理してないのでコントローラ側で例外対策する
 // TODO テーマとかどうするか
 
 // memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
@@ -55,8 +56,12 @@ export const useColumnSpaceExplorerController = () => {
           detail: `${targetDataset.name}を削除しますか？`,
         });
         if (res.response === 0) { //「はい」を選択した時
-          const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
-          setColumnSpaces(newColumnSpaces);
+          try {
+            const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
+            setColumnSpaces(newColumnSpaces);
+          } catch (e) {
+            console.log(e);
+          }
         }
       },
       handleClickAddChildColumnSpace: async () => {
@@ -66,8 +71,12 @@ export const useColumnSpaceExplorerController = () => {
       handleClickAddChildColumn: async () => {
         //TODO 子カラム追加。ここそもそもカラム追加時のカラムタイプの選択とかいろいろあってまた強め作業になる。でもデータ作れば表示は別問題なのでデータの問題なのでそこまで難易度は高くない。ただセルのモデルとかも関わってくるのであれこれある
         console.log("子カラム追加処理を実装");
-        // const newColumnSpaces = await createColumnUseCase(targetDataset.id);
-        // setColumnSpaces(newColumnSpaces);
+        try {
+          // const newColumnSpaces = await createColumnUseCase(targetDataset.id);
+          // setColumnSpaces(newColumnSpaces);
+        } catch(e) {
+          console.log(e);
+        }
 
       },
       targetColumnSpaceDataset: targetDataset,
@@ -86,6 +95,7 @@ export const useColumnSpaceExplorerController = () => {
   const handleRightClickOnEmptySpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
+
     showEmptySpaceContextMenu(event, {
       handleClickAddColumnSpace: () => {
         newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
@@ -99,96 +109,90 @@ export const useColumnSpaceExplorerController = () => {
   // カラムスペース追加inputをBlur時に発火
   const handleTopLevelNewColumnInputOnBlur = useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
     event.preventDefault();
-    const newColumnSpaceName = event.target.value;
+    const newColumnSpaceName = new TrimedFilledString(event.target.value);
     newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value = null;
     newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").blur();
     newTopLevelColumnSpaceFormRef.current.classList.add("hidden");
 
-    // 入力値が空なら何も何もしない
-    if (newColumnSpaceName === "") {
-      return;
+    // 新しいカラムスペースを追加
+    try {
+      const newColumnSpaces =  await createTopLevelColumnSpaceUseCase(newColumnSpaceName);
+      set(columnSpacesState, newColumnSpaces);
+    } catch (e) {
+      console.log(e.message);
     }
 
-    // 新しいカラムスペースを追加
-    const newColumnSpaces = await createTopLevelColumnSpaceUseCase(newColumnSpaceName)
-    set(columnSpacesState, newColumnSpaces)
   }, []);
 
   // カラムスペース追加ボタン押下
   const handleClickAddColumnSpaceButton = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
-    console.log(newTopLevelColumnSpaceFormRef.current)
     newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
     setImmediate(() => {
       newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
     })
   }, []);
 
-  // カラムスペース追加フォームsubmit
+  // ルートレベルのカラムスペース追加フォームsubmit
   // TODO 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
   const handleSubmitTopLevelNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const newColumnSpaceName = new TrimedFilledString(newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value);
     newTopLevelColumnSpaceFormRef.current.classList.add("hidden");
-    const newColumnSpaceName: string = (event.currentTarget.elements.namedItem("new-column-space-name") as HTMLInputElement).value;
-    (event.currentTarget.elements.namedItem("new-column-space-name") as HTMLInputElement).value = null;
-
-    // 入力値が空なら何も何もしない
-    if (newColumnSpaceName === "") {
-      newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").blur();
-      return;
-    }
+    newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").blur();
+    newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value = null;
 
     // 新しいカラムスペースを追加
-    const newColumnSpaces = await createTopLevelColumnSpaceUseCase(newColumnSpaceName)
-    set(columnSpacesState, newColumnSpaces)
+    try {
+      const newColumnSpaces = await createTopLevelColumnSpaceUseCase(newColumnSpaceName);
+      set(columnSpacesState, newColumnSpaces);
+    } catch (e) {
+      console.log(e.message);
+    }
+
   }, []);
 
     // カラムスペース追加フォームsubmit
   // TODO 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
   const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnSpaceId: string) => {
     event.preventDefault();
-
     const nodeId = columnSpaceId;
     const inputElem = newColumnSpacesFormRefs.current[nodeId].elements.namedItem("new-column-space-name");
-    const newColumnSpaceName = inputElem.value;
-
+    const newColumnSpaceName = new TrimedFilledString(inputElem.value);
     newColumnSpacesFormRefs.current[columnSpaceId].classList.add("hidden");
     inputElem.value = null;
     inputElem.blur();
 
-    // 入力値が空なら何も何もしない
-    if (newColumnSpaceName === "") {
-      newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").blur();
-      return;
+    // 指定IDのカラムスペースの子に新しいカラムスペースを追加
+    try {
+      const newColumnSpaces = await createDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
+      set(columnSpacesState, newColumnSpaces);
+      setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
+    } catch (e) {
+      console.log(e);
     }
 
-    // 指定IDのカラムスペースの子に新しいカラムスペースを追加
-    const newColumnSpaces = await createDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
-    set(columnSpacesState, newColumnSpaces);
-    setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
   }, []);
 
     // カラムスペース追加inputをBlur時に発火
   const handleNewColumnInputOnBlur = useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
     event.preventDefault();
-
-    const newColumnSpaceName = event.target.value;
+    const newColumnSpaceName = new TrimedFilledString(event.target.value);
     const nodeId = event.target.parentElement.dataset.id;
     const inputElem = newColumnSpacesFormRefs.current[nodeId].elements.namedItem("new-column-space-name");
-
     newColumnSpacesFormRefs.current[nodeId].classList.add("hidden");
     inputElem.value = null;
     inputElem.blur();
 
-    // 入力値が空なら何も何もしない
-    if (newColumnSpaceName === "") {
-      return;
+    // 指定IDのカラムスペースの子に新しいカラムスペースを追加
+    try {
+      const newColumnSpaces = await createDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
+      set(columnSpacesState, newColumnSpaces);
+      setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
+    } catch (e) {
+      console.log(e.message);
     }
 
-    // 指定IDのカラムスペースの子に新しいカラムスペースを追加
-    const newColumnSpaces = await createDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
-    set(columnSpacesState, newColumnSpaces);
-    setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
   }, []);
 
 
@@ -213,11 +217,14 @@ export const useColumnSpaceExplorerController = () => {
     const fromId = event.dataTransfer.getData("fromId");
     const toId = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id
 
-    if (columnSpaces.canMoveDescendantColumnSpace(fromId, toId)) {
+    try {
       const newColumnSpaces = await moveColumnSpaceUseCase(fromId, toId);
       setColumnSpaces(newColumnSpaces);
       setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, toId]);
+    } catch (e) {
+      console.log(e);
     }
+
   }, [columnSpaces]);
 
   // ColumnSpacesのツリーをレンダリング
@@ -233,11 +240,11 @@ export const useColumnSpaceExplorerController = () => {
                 onDragStart={handleDragStartOnNode}
                 onDragOver={handleDragOverOnNode}
                 onDrop={handleDropOnNode}
-              >{columnSpace.name}</div>
+              >{`${columnSpace.name}`}</div>
             }
             onContextMenu={handleRightClickOnColumnSpace}
             data-type={FileSystemEnum.ColumnSpace}
-            data-name={columnSpace.name}
+            data-name={`${columnSpace.name}`}
             data-id={columnSpace.id}
             data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
             data-has-columns={!!(columnSpace.hasColumns())}
@@ -258,13 +265,13 @@ export const useColumnSpaceExplorerController = () => {
                     draggable
                     key={column.id}
                     nodeId={column.id}
-                    label={column.name}
+                    label={`${column.name}`}
                     onContextMenu={handleRightClickOnColumn}
                     onDragStart={handleDragStartOnNode}
                     onDragOver={handleDragOverOnNode}
                     onDrop={handleDropOnNode}
                     data-type={FileSystemEnum.Column}
-                    data-name={column.name}
+                    data-name={`${column.name}`}
                     data-id={column.id}
                     //TODO collapsableとかcellsとかのあれこれの値も入れて使う時もあるかもなのでその時考慮して追加も考える
                   />

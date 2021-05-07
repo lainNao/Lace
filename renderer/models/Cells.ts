@@ -1,10 +1,14 @@
 import { Cell } from "./Cell";
 
+interface CellsConstructorArgs {
+  children: Cell[],
+}
+
 export class Cells {
 
   children: Cell[];
 
-  constructor(args?) {
+  constructor(args?: CellsConstructorArgs) {
     //TODO: 不変条件
     this.children = (args == undefined) ? [] : args.children;
   }
@@ -17,9 +21,8 @@ export class Cells {
     return new Cells({
       children: json.map((cell) => new Cell({  //TODO ここはポリモーフィズムやる
         id: cell.id,
-        // path: cell.path,
-        // name: cell.name,
-        // type: cell.type,
+        path: cell.path,
+        type: cell.type,
         relatedCells: cell.relatedCells
       })
     )});

@@ -2,8 +2,14 @@ import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesReposito
 import { ColumnSpace } from "../models/ColumnSpace";
 import { ColumnSpaces } from "../models/ColumnSpaces";
 import { Columns } from "../models/Columns";
+import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 
-export const createTopLevelColumnSpaceUseCase = async(newColumnSpaceName: string): Promise<ColumnSpaces> => {
+export const createTopLevelColumnSpaceUseCase = async(newColumnSpaceName: TrimedFilledString): Promise<ColumnSpaces> => {
+
+  if (!newColumnSpaceName.isValid()) {
+    throw new Error("名前が空です");
+  }
+
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
   rootColumnSpaces.addColumnSpace(new ColumnSpace({
@@ -13,4 +19,5 @@ export const createTopLevelColumnSpaceUseCase = async(newColumnSpaceName: string
   }));
   await columnSpacesRepository.save(rootColumnSpaces);
   return rootColumnSpaces;
+
 }

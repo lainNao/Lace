@@ -1,7 +1,8 @@
+import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 import { Column } from "./Column";
 
 interface ColumnsConstructorArgs {
-  children: Column[]
+  children: Column[],
 }
 
 export class Columns {
@@ -16,7 +17,7 @@ export class Columns {
     return new Columns({
       children: json.map((column) => new Column({
         id: column.id,
-        name: column.name,
+        name: new TrimedFilledString(column.name),
         type: column.type,
         collapsable: column.collapsable,
         cells: column.cells,

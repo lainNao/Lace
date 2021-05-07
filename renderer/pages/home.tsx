@@ -16,7 +16,7 @@ import { ColumnSpaceExplorer } from "../pages-partial/home/ColumnSpaceExplorer";
 // TODO ツリーの表示がもっさりしてるから別のライブラリに切り替えるか、または今のツリーのオプションを探す
 // TODO カラムスペース追加インプットの見た目
 // TODO カラムスペース追加時に一瞬ガクっとなる（高さが限界を超える場合）のをいつか直す
-// TODO コントローラーが肥大化してきたので、organismsごとにコンポーネント分けて、それぞれのサブコントローラーを作って運用するようにする
+// TODO 一番左のペインのボタン押下で表示する内容を切り替える
 const Home: React.FC = () => {
 
   const controller = useHomeController();

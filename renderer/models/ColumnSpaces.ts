@@ -1,3 +1,4 @@
+import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 import { Columns } from "./Columns";
 import { ColumnSpace } from "./ColumnSpace";
 
@@ -22,7 +23,7 @@ export class ColumnSpaces {
     return new ColumnSpaces({
       children: json.map((columnSpace) => new ColumnSpace({
         id: columnSpace.id,
-        name: columnSpace.name,
+        name: new TrimedFilledString(columnSpace.name),
         childColumnSpaces: ColumnSpaces.fromJSON(columnSpace.childColumnSpaces),
         columns: Columns.fromJSON(columnSpace.columns),
       }))
