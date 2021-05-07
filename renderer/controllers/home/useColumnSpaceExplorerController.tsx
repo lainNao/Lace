@@ -5,7 +5,7 @@ import { useRecoilCallback, useRecoilState, useRecoilValueLoadable } from 'recoi
 import columnSpacesState from '../../atoms/columnSpacesState';
 import { FileSystemEnum } from "../../enums/app"
 import { ColumnSpaces } from '../../models/ColumnSpaces';
-import { createColumnSpaceUseCase } from '../../usecases/createColumnSpaceUseCase';
+import { createTopLevelColumnSpaceUseCase } from '../../usecases/createTopLevelColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../../usecases/moveColumnSpaceUseCase';
 import { showColumnContextMenu } from '../../context-menus/showColumnContextMenu';
 import { showColumnSpaceContextMenu } from '../../context-menus/showColumnSpaceContextMenu';
@@ -88,8 +88,6 @@ export const useColumnSpaceExplorerController = () => {
     event.stopPropagation();
     showEmptySpaceContextMenu(event, {
       handleClickAddColumnSpace: () => {
-        newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").classList.add("hidden");
-
         newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
         setImmediate(() => {
           newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
@@ -112,13 +110,14 @@ export const useColumnSpaceExplorerController = () => {
     }
 
     // 新しいカラムスペースを追加
-    const newColumnSpaces = await createColumnSpaceUseCase(newColumnSpaceName)
+    const newColumnSpaces = await createTopLevelColumnSpaceUseCase(newColumnSpaceName)
     set(columnSpacesState, newColumnSpaces)
   }, []);
 
   // カラムスペース追加ボタン押下
   const handleClickAddColumnSpaceButton = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
+    console.log(newTopLevelColumnSpaceFormRef.current)
     newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
     setImmediate(() => {
       newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
@@ -140,7 +139,7 @@ export const useColumnSpaceExplorerController = () => {
     }
 
     // 新しいカラムスペースを追加
-    const newColumnSpaces = await createColumnSpaceUseCase(newColumnSpaceName)
+    const newColumnSpaces = await createTopLevelColumnSpaceUseCase(newColumnSpaceName)
     set(columnSpacesState, newColumnSpaces)
   }, []);
 
