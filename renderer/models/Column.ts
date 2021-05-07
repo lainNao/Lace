@@ -13,6 +13,8 @@ export class Column {
     const id = args.id ?? uuidv4();
 
     //TODO 不変条件、あといろいろ入れる
+    //TODO nameの左右のスペースはここでトリムしてしまってよいかな…？ファクトリー作る…？後に対応…
+
     this.id = id;
     this.name = args.name;
     this.type = "file"; //TODO 後でenum化

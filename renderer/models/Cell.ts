@@ -9,6 +9,8 @@ export class Cell {
 
   constructor(props) {
     //TODO 不変条件
+    //TODO nameの左右のスペースはここでトリムしてしまってよいかな…？ファクトリー作る…？後に対応…
+
     const id = props.id;
     this.id = id;
     // this.name = props.name;

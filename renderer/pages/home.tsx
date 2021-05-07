@@ -4,7 +4,8 @@ import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { useHomeController } from '../controllers/useHomeController';
+import { useHomeController } from '../controllers/home/useHomeController';
+import { ColumnSpaceExplorer } from "../pages-partial/home/ColumnSpaceExplorer";
 
 /*
 ファイルアップロードする前にはカラムスペースとカラムのUUIDのフォルダが必要なのでそれ作成しておくように実装を修正する
@@ -15,12 +16,12 @@ import { useHomeController } from '../controllers/useHomeController';
 // TODO ツリーの表示がもっさりしてるから別のライブラリに切り替えるか、または今のツリーのオプションを探す
 // TODO カラムスペース追加インプットの見た目
 // TODO カラムスペース追加時に一瞬ガクっとなる（高さが限界を超える場合）のをいつか直す
-
+// TODO コントローラーが肥大化してきたので、organismsごとにコンポーネント分けて、それぞれのサブコントローラーを作って運用するようにする
 const Home: React.FC = () => {
 
   const controller = useHomeController();
-  const currentMainDisplayedColumnUUID = "C23456789-C234-C234-C234-C23456789123"  //仮のモック
-  const currentColumnSpaceUUID = "123456789-1234-1234-1234-123456789123"; //仮のモック（これ今は半無限の深さになったので、道筋のUUIDの配列にするのがいいかも）
+  // const currentMainDisplayedColumnUUID = "C23456789-C234-C234-C234-C23456789123"  //仮のモック
+  // const currentColumnSpaceUUID = "123456789-1234-1234-1234-123456789123"; //仮のモック（これ今は半無限の深さになったので、道筋のUUIDの配列にするのがいいかも）
   // const currentMainColumnDatas = columnSpaces[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
 
   if (!controller.columnSpaces) {
@@ -44,26 +45,9 @@ const Home: React.FC = () => {
           <IconButton aria-label="edit" icon={<EditIcon />} />
         </div>
 
-        <div className="min-w-300px w-300px bg-gray-800 whitespace-pre overflow-y-auto p-3" onContextMenu={controller.handleRightClickOnEmptySpace}>
-          <div>
-            <span >カラムスペース</span>
-            <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={controller.handleClickAddColumnSpaceButton}/>
-          </div>
-          <TreeView
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-            className="select-none"
-            expanded={controller.expandedColumnSpaces}
-            selected={controller.selectedNodeId}
-            onNodeToggle={controller.handleTreeNodeToggle}
-          >
-            {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
-          </TreeView>
-
-          <form onSubmit={controller.handleSubmitTopLevelNewColumnSpaceForm} className="hidden ml-5" ref={controller.newTopLevelColumnSpaceFormRef} >
-            <input name="new-column-space-name" className="bg-gray-700" spellCheck={false} onBlur={controller.handleTopLevelNewColumnInputOnBlur}></input>
-          </form>
-        </div>
+        <ColumnSpaceExplorer
+          classeName="min-w-300px w-300px bg-gray-800 whitespace-pre overflow-y-auto p-3"
+        />
 
         <div className="min-w-300px overflow-y-auto p-3">
           {/* {Object.keys(currentMainColumnDatas).map((dataUUID,index) => {

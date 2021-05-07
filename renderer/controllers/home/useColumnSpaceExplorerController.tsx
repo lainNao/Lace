@@ -2,19 +2,19 @@ import React, {ReactElement, useCallback, useEffect, useState} from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import { useRecoilCallback, useRecoilState, useRecoilValueLoadable } from 'recoil';
-import columnSpacesState from '../atoms/columnSpacesState';
-import { FileSystemEnum } from "../enums/app"
-import { ColumnSpaces } from '../models/ColumnSpaces';
-import { createColumnSpaceUseCase } from '../usecases/createColumnSpaceUseCase';
-import { moveColumnSpaceUseCase } from '../usecases/moveColumnSpaceUseCase';
-import { showColumnContextMenu } from '../context-menus/showColumnContextMenu';
-import { showColumnSpaceContextMenu } from '../context-menus/showColumnSpaceContextMenu';
-import { showEmptySpaceContextMenu } from '../context-menus/showEmptySpaceContextMenu';
+import columnSpacesState from '../../atoms/columnSpacesState';
+import { FileSystemEnum } from "../../enums/app"
+import { ColumnSpaces } from '../../models/ColumnSpaces';
+import { createColumnSpaceUseCase } from '../../usecases/createColumnSpaceUseCase';
+import { moveColumnSpaceUseCase } from '../../usecases/moveColumnSpaceUseCase';
+import { showColumnContextMenu } from '../../context-menus/showColumnContextMenu';
+import { showColumnSpaceContextMenu } from '../../context-menus/showColumnSpaceContextMenu';
+import { showEmptySpaceContextMenu } from '../../context-menus/showEmptySpaceContextMenu';
 import { remote } from "electron"
-import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
-import { removeColumnSpaceUseCase } from '../usecases/removeColumnSpaceUseCase';
-import useSetupSettings from '../hooks/useSetupSettings';
-import { createDescendantColumnSpaceUseCase } from '../usecases/createDescendantColumnSpaceUseCase';
+import useSetupColumnSpaces from '../../hooks/useSetupColumnSpaces';
+import { removeColumnSpaceUseCase } from '../../usecases/removeColumnSpaceUseCase';
+import useSetupSettings from '../../hooks/useSetupSettings';
+import { createDescendantColumnSpaceUseCase } from '../../usecases/createDescendantColumnSpaceUseCase';
 
 const useStyles = makeStyles({
   label: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles({
 // TODO テーマとかどうするか
 
 // memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
-export const useHomeController = () => {
+export const useColumnSpaceExplorerController = () => {
   // メタ状態類
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   // UI状態類
