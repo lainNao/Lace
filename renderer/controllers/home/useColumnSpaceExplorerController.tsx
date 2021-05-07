@@ -196,7 +196,6 @@ export const useColumnSpaceExplorerController = () => {
 
   }, []);
 
-
   // ツリービュー展開のトグル
   const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
     localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));

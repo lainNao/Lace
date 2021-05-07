@@ -12,12 +12,12 @@ export const createDescendantColumnSpaceUseCase = async(parentColumnSpaceId: str
 
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
-  rootColumnSpaces.addDescendantColumnSpace(new ColumnSpace({
+  const newRootColumnSpaces = rootColumnSpaces.addDescendantColumnSpace(new ColumnSpace({
     "name": newColumnSpaceName,
     "childColumnSpaces": new ColumnSpaces(),
     "columns": new Columns(),
   }), parentColumnSpaceId);
-  await columnSpacesRepository.save(rootColumnSpaces);
-  return rootColumnSpaces;
+  await columnSpacesRepository.save(newRootColumnSpaces);
+  return newRootColumnSpaces;
 
 }

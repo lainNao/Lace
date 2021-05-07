@@ -6,6 +6,17 @@ interface ColumnSpacesConstructorArgs {
   children: ColumnSpace[],
 }
 
+// TODO ミュータブルなのかイミュータブルなのか曖昧な扱いしてるな。新しいインスタンスを返していても、古いのは変更しちゃっていたり。どっちかにしたほうがいい。方針調べて書き直して。
+/*// TODO 以下をまとめる
+  というか「～s」のシリーズはファーストクラスコレクション的なものであって、IDも何も無いしエンティティではない気がする
+  バリューオブジェクトとも言えるけど、別に同一性を比較することは無い
+  なのでそこらへん、イミュータブルとかミュータブルとかは特に制限無くて、使いやすい方にするのが解でいい気がする。あとでまとめて…
+    どっちかと言えばイミュータブルのほうがプライオリティ高い気がする。なぜなら「newColumnSpaces」的な変数にまた代入できるから（それにそんなに細々とした代入しないから問題置きないだろうし）
+      ただCPU負担は出るので、そんなに好み的に違いがないならミュータブルにしといたほうがいい。考えておく…。
+        というかイミュータブル風に扱ってるremove～も結局ミューテーションしちゃってるから、もうミュータブルな方向でいい気がする。いちいちイミュータブルな処理に書き直すの、今回ばかりは怠い気がする。
+          とりあえずミュータブルで、戻値はthisを返すようにした
+  ただしsがつかないやつはRelatedCell以外はエンティティだと思う。プログラム上でもミュータブルにするかどうかは、一般的にはするのかな。プログラム上ではイミュータブルにしてもいいらしいけどまあおまかせで。
+*/
 export class ColumnSpaces {
 
   children: ColumnSpace[];
@@ -15,8 +26,9 @@ export class ColumnSpaces {
     this.children = (args == undefined) ? [] : args.children;
   }
 
-  addColumnSpace(columnSpace: ColumnSpace): void {  //TODO: 失敗したら例外出す　というかここだけいわゆるミュータブルな感じになってる？エンティティはミュータブルでいいっぽいけどそこらへんまたあとで、、
+  addColumnSpace(columnSpace: ColumnSpace): ColumnSpaces {  //TODO: 失敗したら例外出す リポジトリ側かな？
     this.children.push(columnSpace);
+    return this;
   }
 
   static fromJSON(json) {
@@ -52,9 +64,7 @@ export class ColumnSpaces {
     for (let i=0; i<this.children.length; i++) {
       if (this.children[i].id === targetId) {
         this.children.splice(i, 1);
-        return new ColumnSpaces({
-          children: this.children
-        });
+        return this;
       }
     }
   }
@@ -74,9 +84,7 @@ export class ColumnSpaces {
   // 子に新規カラムスペースを追加
   addChildColumnSpace(columnSpace: ColumnSpace): ColumnSpaces {
     this.children.push(columnSpace);
-    return new ColumnSpaces({
-      children: this.children
-    });
+    return this;
   }
 
   // 子孫のカラムスペースに指定カラムスペースを追加

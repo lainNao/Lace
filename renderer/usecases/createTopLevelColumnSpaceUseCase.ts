@@ -12,12 +12,12 @@ export const createTopLevelColumnSpaceUseCase = async(newColumnSpaceName: Trimed
 
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
-  rootColumnSpaces.addColumnSpace(new ColumnSpace({
+  const newRootColumnSpaces = rootColumnSpaces.addColumnSpace(new ColumnSpace({
     "name": newColumnSpaceName,
     "childColumnSpaces": new ColumnSpaces(),
     "columns": new Columns(),
   }));
-  await columnSpacesRepository.save(rootColumnSpaces);
-  return rootColumnSpaces;
+  await columnSpacesRepository.save(newRootColumnSpaces);
+  return newRootColumnSpaces;
 
 }
