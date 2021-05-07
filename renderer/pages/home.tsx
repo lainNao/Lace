@@ -16,7 +16,6 @@ import { useHomeController } from '../controllers/useHomeController';
 // todo カラムスペース追加インプットの見た目
 // todo カラムスペース追加時に一瞬ガクっとなる（高さが限界を超える場合）のをいつか直す
 
-
 const Home: React.FC = () => {
 
   const controller = useHomeController();
@@ -61,8 +60,8 @@ const Home: React.FC = () => {
             {controller.generateColumnSpaceElementTree(controller.columnSpaces)}
           </TreeView>
 
-          <form onSubmit={controller.handleSubmitNewColumnSpaceForm} className={`${!controller.newColumnFormVisible && "hidden"}`}>
-            <input ref={controller.newColumnSpaceInputRef} name="new-column-space-name" className="bg-gray-700" spellCheck={false} onBlur={controller.handleNewColumnInputOnBlur}></input>
+          <form onSubmit={controller.handleSubmitTopLevelNewColumnSpaceForm} className="hidden" ref={controller.newTopLevelColumnSpaceFormRef} >
+            <input name="new-column-space-name" className="bg-gray-700" spellCheck={false} onBlur={controller.handleTopLevelNewColumnInputOnBlur}></input>
           </form>
         </div>
 

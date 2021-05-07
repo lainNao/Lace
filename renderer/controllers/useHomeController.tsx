@@ -14,6 +14,7 @@ import { remote } from "electron"
 import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 import { removeColumnSpaceUseCase } from '../usecases/removeColumnSpaceUseCase';
 import useSetupSettings from '../hooks/useSetupSettings';
+import { createNewDescendantColumnSpaceUseCase } from '../usecases/createNewDescendantColumnSpaceUseCase';
 
 const useStyles = makeStyles({
   label: {
@@ -30,16 +31,11 @@ export const useHomeController = () => {
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
-  const [newColumnFormVisible, setNewColumnFormVisible] = useState<boolean>(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const classes = useStyles()
   // ref
-  const newColumnSpaceInputRef = React.useRef(null);
-
-  const saveExpandedColumnSpaces = useCallback((expandedNodeIds: string[]) => {
-    localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));
-    setExpandedColumnSpaces(expandedNodeIds);
-  }, [setExpandedColumnSpaces]);
+  const newTopLevelColumnSpaceFormRef = React.useRef(null);
+  const newColumnSpacesFormRefs = React.useRef([]);
 
   // カラムスペースのコンテキストメニュー表示
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -62,7 +58,12 @@ export const useHomeController = () => {
           const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
           setColumnSpaces(newColumnSpaces);
         }
-      }
+      },
+      handleClickAddChildColumnSpace: async () => {
+        newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
+        newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
+      },
+      targetColumnSpaceDataset: targetDataset,
     });
   }, [columnSpaces]);
 
@@ -80,21 +81,23 @@ export const useHomeController = () => {
     event.stopPropagation();
     showEmptySpaceContextMenu(event, {
       handleClickAddColumnSpace: () => {
-        setNewColumnFormVisible(true);
+        newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").classList.add("hidden");
+
+        newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
         setImmediate(() => {
-          newColumnSpaceInputRef.current.focus();
-        })
+          newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
+        });
       }
     });
-  }, [newColumnSpaceInputRef, setNewColumnFormVisible, showEmptySpaceContextMenu]);
+  }, [showEmptySpaceContextMenu]);
 
   // カラムスペース追加inputをBlur時に発火
-  const handleNewColumnInputOnBlur = useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleTopLevelNewColumnInputOnBlur = useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
     event.preventDefault();
     const newColumnSpaceName = event.target.value;
-    newColumnSpaceInputRef.current.value = null;
-    newColumnSpaceInputRef.current.blur();
-    setNewColumnFormVisible(false);
+    newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value = null;
+    newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").blur();
+    newTopLevelColumnSpaceFormRef.current.classList.add("hidden");
 
     // 入力値が空なら何も何もしない
     if (newColumnSpaceName === "") {
@@ -104,46 +107,95 @@ export const useHomeController = () => {
     // 新しいカラムスペースを追加
     const newColumnSpaces = await createNewColumnSpaceUseCase(newColumnSpaceName)
     set(columnSpacesState, newColumnSpaces)
-  }, [setNewColumnFormVisible]);
+  }, []);
 
   // カラムスペース追加ボタン押下
   const handleClickAddColumnSpaceButton = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
-    setNewColumnFormVisible(true);
+    newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
     setImmediate(() => {
-      newColumnSpaceInputRef.current.focus();
+      newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
     })
-  }, [newColumnSpaceInputRef, setNewColumnFormVisible]);
-
+  }, []);
 
   // カラムスペース追加フォームsubmit
   // todo 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
-  const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitTopLevelNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setNewColumnFormVisible(false);
+    newTopLevelColumnSpaceFormRef.current.classList.add("hidden");
     const newColumnSpaceName: string = (event.currentTarget.elements.namedItem("new-column-space-name") as HTMLInputElement).value;
     (event.currentTarget.elements.namedItem("new-column-space-name") as HTMLInputElement).value = null;
 
     // 入力値が空なら何も何もしない
     if (newColumnSpaceName === "") {
-      newColumnSpaceInputRef.current.blur();
+      newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").blur();
       return;
     }
 
     // 新しいカラムスペースを追加
     const newColumnSpaces = await createNewColumnSpaceUseCase(newColumnSpaceName)
     set(columnSpacesState, newColumnSpaces)
-  }, [setNewColumnFormVisible]);
+  }, []);
+
+    // カラムスペース追加フォームsubmit
+  // todo 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
+  const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnSpaceId: string) => {
+    event.preventDefault();
+
+    const nodeId = columnSpaceId;
+    const inputElem = newColumnSpacesFormRefs.current[nodeId].elements.namedItem("new-column-space-name");
+    const newColumnSpaceName = inputElem.value;
+
+    newColumnSpacesFormRefs.current[columnSpaceId].classList.add("hidden");
+    inputElem.value = null;
+    inputElem.blur();
+
+    // 入力値が空なら何も何もしない
+    if (newColumnSpaceName === "") {
+      newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").blur();
+      return;
+    }
+
+    // 指定IDのカラムスペースの子に新しいカラムスペースを追加
+    const newColumnSpaces = await createNewDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
+    set(columnSpacesState, newColumnSpaces);
+    setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
+  }, []);
+
+    // カラムスペース追加inputをBlur時に発火
+  const handleNewColumnInputOnBlur = useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
+    event.preventDefault();
+
+    const newColumnSpaceName = event.target.value;
+    const nodeId = event.target.parentElement.dataset.id;
+    const inputElem = newColumnSpacesFormRefs.current[nodeId].elements.namedItem("new-column-space-name");
+
+    newColumnSpacesFormRefs.current[nodeId].classList.add("hidden");
+    inputElem.value = null;
+    inputElem.blur();
+
+    // 入力値が空なら何も何もしない
+    if (newColumnSpaceName === "") {
+      return;
+    }
+
+    // 指定IDのカラムスペースの子に新しいカラムスペースを追加
+    const newColumnSpaces = await createNewDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
+    set(columnSpacesState, newColumnSpaces);
+    setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
+  }, []);
+
 
   // ツリービュー展開のトグル
   const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
-    saveExpandedColumnSpaces(expandedNodeIds);
-  }, [saveExpandedColumnSpaces])
+    localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));
+    setExpandedColumnSpaces(expandedNodeIds);
+  }, []);
 
   // DnDでカラムスペースの移動の管理
   const handleDragStartOnNode = useCallback((event) => {
     event.dataTransfer.setData("fromId", (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id)
-  }, [])
+  }, []);
 
   // DnDでカラムスペースの移動の管理
   const handleDragOverOnNode = useCallback((event) => {
@@ -167,56 +219,60 @@ export const useHomeController = () => {
 
     return columnSpaces.children.map((columnSpace) => {
       return (
-        <TreeItem
-          key={columnSpace.id}
-          nodeId={columnSpace.id}
-          label={
-            <div draggable
-              onDragStart={handleDragStartOnNode}
-              onDragOver={handleDragOverOnNode}
-              onDrop={handleDropOnNode}
-            >{columnSpace.name}</div>
-          }
-          onContextMenu={handleRightClickOnColumnSpace}
-          data-type={FileSystemEnum.ColumnSpace}
-          data-name={columnSpace.name}
-          data-id={columnSpace.id}
-          data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
-          data-has-columns={!!(columnSpace.hasColumns())}
-          classes={{
-            label: classes.label,
-          }}
-          TransitionProps={{
-            "timeout": 0
-          }}
-
-        >
-          {columnSpace.canAddChildColumnSpace()
-            // カラムスペースを再帰レンダリング
-            ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
-            // 末端（カラム）をレンダリング
-            // todo ここだけTreeItemでなくてもよいかもしれない
-            : columnSpace.columns.children.map((column) =>
-                <TreeItem
-                  draggable
-                  key={column.id}
-                  nodeId={column.id}
-                  label={column.name}
-                  onContextMenu={handleRightClickOnColumn}
-                  onDragStart={handleDragStartOnNode}
-                  onDragOver={handleDragOverOnNode}
-                  onDrop={handleDropOnNode}
-                  data-type={FileSystemEnum.Column}
-                  data-name={column.name}
-                  data-id={column.id}
-                  //todo collapsableとかcellsとかのあれこれの値も入れて使う時もあるかもなのでその時考慮して追加も考える
-                />
-              )
-          }
-        </TreeItem>
+        <>
+          <TreeItem
+            key={columnSpace.id}
+            nodeId={columnSpace.id}
+            label={
+              <div draggable
+                onDragStart={handleDragStartOnNode}
+                onDragOver={handleDragOverOnNode}
+                onDrop={handleDropOnNode}
+              >{columnSpace.name}</div>
+            }
+            onContextMenu={handleRightClickOnColumnSpace}
+            data-type={FileSystemEnum.ColumnSpace}
+            data-name={columnSpace.name}
+            data-id={columnSpace.id}
+            data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
+            data-has-columns={!!(columnSpace.hasColumns())}
+            classes={{
+              label: classes.label,
+            }}
+            TransitionProps={{
+              "timeout": 0
+            }}
+          >
+            {columnSpace.canAddChildColumnSpace()
+              // カラムスペースを再帰レンダリング
+              ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
+              // 末端（カラム）をレンダリング
+              // todo ここだけTreeItemでなくてもよいかもしれない
+              : columnSpace.columns.children.map((column) =>
+                  <TreeItem
+                    draggable
+                    key={column.id}
+                    nodeId={column.id}
+                    label={column.name}
+                    onContextMenu={handleRightClickOnColumn}
+                    onDragStart={handleDragStartOnNode}
+                    onDragOver={handleDragOverOnNode}
+                    onDrop={handleDropOnNode}
+                    data-type={FileSystemEnum.Column}
+                    data-name={column.name}
+                    data-id={column.id}
+                    //todo collapsableとかcellsとかのあれこれの値も入れて使う時もあるかもなのでその時考慮して追加も考える
+                  />
+                )
+            }
+          </TreeItem>
+          <form className="ml-9 hidden" data-id={columnSpace.id} onSubmit={event => {handleSubmitNewColumnSpaceForm(event, columnSpace.id)}} ref={elem => newColumnSpacesFormRefs.current[columnSpace.id] = elem}>
+            <input name="new-column-space-name" className="bg-gray-700" spellCheck={false} onBlur={handleNewColumnInputOnBlur}></input>
+          </form>
+        </>
       )
     })
-  }, [handleDragStartOnNode, handleDragOverOnNode, handleDropOnNode, handleRightClickOnColumnSpace, handleRightClickOnColumn])
+  }, [handleDragStartOnNode, handleDragOverOnNode, handleDropOnNode, handleRightClickOnColumnSpace, handleRightClickOnColumn, handleNewColumnInputOnBlur])
 
   // D&Dの制御
   // useEffect(() => {
@@ -264,7 +320,6 @@ export const useHomeController = () => {
   return {
     //データ
     columnSpaces,
-    newColumnFormVisible,
     expandedColumnSpaces,
     selectedNodeId,
     //関数
@@ -272,10 +327,10 @@ export const useHomeController = () => {
     //イベントハンドラ
     handleClickAddColumnSpaceButton,
     handleRightClickOnEmptySpace,
-    handleSubmitNewColumnSpaceForm,
-    handleNewColumnInputOnBlur,
+    handleSubmitTopLevelNewColumnSpaceForm,
+    handleTopLevelNewColumnInputOnBlur,
     handleTreeNodeToggle,
     //他
-    newColumnSpaceInputRef,
+    newTopLevelColumnSpaceFormRef,
   }
 }
