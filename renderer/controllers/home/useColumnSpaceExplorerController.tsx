@@ -34,6 +34,7 @@ export const useColumnSpaceExplorerController = () => {
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
+  const [justBlured, setJustBlured] = useState<boolean>(false);
   const classes = useStyles()
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
@@ -49,22 +50,23 @@ export const useColumnSpaceExplorerController = () => {
 
     showColumnSpaceContextMenu(event, {
       handleClickDeleteColumnSpace: async () => {
-        const res = await remote.dialog.showMessageBox({
+        remote.dialog.showMessageBox({
           type: 'info',
           buttons: ['はい', "いいえ"],
           title: 'カラムスペースの削除',
           message: 'カラムスペースの削除',
           detail: `${targetDataset.name}を削除しますか？`,
-        });
-
-        if (res.response === 0) { //「はい」を選択した時
-          try {
-            const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
-            setColumnSpaces(newColumnSpaces);
-          } catch (e) {
-            console.log(e.message);
+        }).then(async (res) => {
+          if (res.response === 0) { //「はい」を選択した時
+            try {
+              const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
+              setColumnSpaces(newColumnSpaces);
+            } catch (e) {
+              console.log(e.message);
+            }
           }
-        }
+        })
+
       },
       handleClickAddChildColumnSpace: async () => {
         newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
@@ -108,24 +110,6 @@ export const useColumnSpaceExplorerController = () => {
     });
   }, [showEmptySpaceContextMenu]);
 
-  // カラムスペース追加inputをBlur時に発火
-  const handleTopLevelNewColumnInputOnBlur = useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
-    try {
-      event.preventDefault();
-      newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").blur();
-      newTopLevelColumnSpaceFormRef.current.classList.add("hidden");
-
-      // 新しいカラムスペースを追加
-      const newColumnSpaceName = new TrimedFilledString(event.target.value);
-      const newColumnSpaces =  await createTopLevelColumnSpaceUseCase(newColumnSpaceName);
-      set(columnSpacesState, newColumnSpaces);
-    } catch (e) {
-      console.log(e.message);
-    } finally {
-      newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value = null;
-    }
-  }, []);
-
   // カラムスペース追加ボタン押下
   const handleClickAddColumnSpaceButton = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
@@ -133,10 +117,9 @@ export const useColumnSpaceExplorerController = () => {
     setImmediate(() => {
       newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
     })
-  }, []);
+  }, [justBlured]);
 
   // ルートレベルのカラムスペース追加フォームsubmit
-  // TODO 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
   const handleSubmitTopLevelNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
     try {
       event.preventDefault();
@@ -153,10 +136,9 @@ export const useColumnSpaceExplorerController = () => {
       newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value = null;
     }
 
-  }, []);
+  }, [setJustBlured]);
 
     // カラムスペース追加フォームsubmit
-  // TODO 右クリメニューからの特定カラムスペース配下への追加も対応したい　ただし、ツリーの途中にinputを出す実装つらくなりそう。vscode方式辞めるか………？
   const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnSpaceId: string) => {
     try {
       event.preventDefault();
@@ -173,27 +155,6 @@ export const useColumnSpaceExplorerController = () => {
     } finally {
       newColumnSpacesFormRefs.current[columnSpaceId].elements.namedItem("new-column-space-name").value = null;
     }
-  }, []);
-
-    // カラムスペース追加inputをBlur時に発火
-  const handleNewColumnInputOnBlur = useRecoilCallback(({set}) => async (event: React.FocusEvent<HTMLInputElement>) => {
-    const nodeId = event.target.parentElement.dataset.id;
-    try {
-      event.preventDefault();
-      newColumnSpacesFormRefs.current[nodeId].classList.add("hidden");
-      newColumnSpacesFormRefs.current[nodeId].elements.namedItem("new-column-space-name").blur();
-
-      // 指定IDのカラムスペースの子に新しいカラムスペースを追加
-      const newColumnSpaceName = new TrimedFilledString(event.target.value);
-      const newColumnSpaces = await createDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
-      set(columnSpacesState, newColumnSpaces);
-      setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
-    } catch (e) {
-      console.log(e.message);
-    } finally {
-      newColumnSpacesFormRefs.current[nodeId].elements.namedItem("new-column-space-name").value = null;
-    }
-
   }, []);
 
   // ツリービュー展開のトグル
@@ -278,12 +239,12 @@ export const useColumnSpaceExplorerController = () => {
             }
           </TreeItem>
           <form className="ml-9 hidden" data-id={columnSpace.id} onSubmit={event => {handleSubmitNewColumnSpaceForm(event, columnSpace.id)}} ref={elem => newColumnSpacesFormRefs.current[columnSpace.id] = elem}>
-            <input name="new-column-space-name" className="bg-gray-700" spellCheck={false} onBlur={handleNewColumnInputOnBlur}></input>
+            <input name="new-column-space-name" className="bg-gray-700" spellCheck={false}></input>
           </form>
         </React.Fragment>
       )
     })
-  }, [handleDragStartOnNode, handleDragOverOnNode, handleDropOnNode, handleRightClickOnColumnSpace, handleRightClickOnColumn, handleNewColumnInputOnBlur])
+  }, [handleDragStartOnNode, handleDragOverOnNode, handleDropOnNode, handleRightClickOnColumnSpace, handleRightClickOnColumn])
 
   // D&Dの制御
   // useEffect(() => {
@@ -339,7 +300,6 @@ export const useColumnSpaceExplorerController = () => {
     handleClickAddColumnSpaceButton,
     handleRightClickOnEmptySpace,
     handleSubmitTopLevelNewColumnSpaceForm,
-    handleTopLevelNewColumnInputOnBlur,
     handleTreeNodeToggle,
     //他
     newTopLevelColumnSpaceFormRef,

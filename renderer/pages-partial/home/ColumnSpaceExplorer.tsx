@@ -43,7 +43,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       </TreeView>
 
       <form onSubmit={controller.handleSubmitTopLevelNewColumnSpaceForm} className="hidden ml-5" ref={controller.newTopLevelColumnSpaceFormRef} >
-        <input name="new-column-space-name" className="bg-gray-700" spellCheck={false} onBlur={controller.handleTopLevelNewColumnInputOnBlur}></input>
+        <input name="new-column-space-name" className="bg-gray-700" spellCheck={false}></input>
       </form>
 
     </div>
