@@ -32,6 +32,8 @@ const Home: React.FC = () => {
     )
   }
 
+  console.log(controller.selectedNodeId)
+
   return (
     <div className="flex flex-col h-screen">
       <div className="menu-bar bg-gray-900 webkit-app-region-drag">
@@ -57,6 +59,7 @@ const Home: React.FC = () => {
             defaultExpandIcon={<ChevronRightIcon />}
             className="select-none"
             expanded={controller.expandedColumnSpaces}
+            selected={controller.selectedNodeId}
             onNodeToggle={(event, expandedNodeIds) => controller.saveExpandedColumnSpaces(expandedNodeIds)}
           >
             {controller.generateColumnSpaceElementTree(controller.columnSpaces)}

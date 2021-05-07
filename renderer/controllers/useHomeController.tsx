@@ -30,6 +30,7 @@ export const useHomeController = () => {
   const newColumnSpaceInputRef = React.useRef(null);
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   const [newColumnFormVisible, setNewColumnFormVisible] = useState<boolean>(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
 
   const saveExpandedColumnSpaces = useCallback((expandedNodeIds: string[]) => {
@@ -43,6 +44,7 @@ export const useHomeController = () => {
     event.stopPropagation();
 
     const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
+    setSelectedNodeId(targetDataset.id);
 
     showColumnSpaceContextMenu(event, {
       handleClickDeleteColumnSpace: async () => {
@@ -65,6 +67,7 @@ export const useHomeController = () => {
   const handleRightClickOnColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
+    setSelectedNodeId((event.target as HTMLElement).parentElement.parentElement.dataset.id);
     showColumnContextMenu(event);
   }, []);
 
@@ -175,11 +178,15 @@ export const useHomeController = () => {
           classes={{
             label: classes.label,
           }}
+          TransitionProps={{
+            "timeout": 0
+          }}
+
         >
           {columnSpace.canAddChildColumnSpace()
             // カラムスペースを再帰レンダリング
             ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
-            // 末端をレンダリング（カラムスペース、またはカラム）
+            // 末端（カラム）をレンダリング
             // todo ここだけTreeItemでなくてもよいかもしれない
             : columnSpace.columns.children.map((column) =>
                 <TreeItem
@@ -191,9 +198,11 @@ export const useHomeController = () => {
                   onDragStart={handleDragStartOnNode}
                   onDragOver={handleDragOverOnNode}
                   onDrop={handleDropOnNode}
-                  TransitionProps={{
-                    "timeout": 100         //todo 効いてない…
-                  }}
+                  data-type={FileSystemEnum.Column}
+                  data-name={column.name}
+                  data-id={column.id}
+                  data-has-child-column-spaces={"false"}
+                  data-has-columns={"false"}
                 />
               )
           }
@@ -250,6 +259,7 @@ export const useHomeController = () => {
     columnSpaces,
     newColumnFormVisible,
     expandedColumnSpaces,
+    selectedNodeId,
     //関数
     generateColumnSpaceElementTree,
     saveExpandedColumnSpaces,
