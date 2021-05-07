@@ -226,9 +226,8 @@ export const useColumnSpaceExplorerController = () => {
 
     return columnSpaces.children.map((columnSpace) => {
       return (
-        <>
+        <React.Fragment key={columnSpace.id} >
           <TreeItem
-            key={columnSpace.id}
             nodeId={columnSpace.id}
             label={
               <div draggable
@@ -276,7 +275,7 @@ export const useColumnSpaceExplorerController = () => {
           <form className="ml-9 hidden" data-id={columnSpace.id} onSubmit={event => {handleSubmitNewColumnSpaceForm(event, columnSpace.id)}} ref={elem => newColumnSpacesFormRefs.current[columnSpace.id] = elem}>
             <input name="new-column-space-name" className="bg-gray-700" spellCheck={false} onBlur={handleNewColumnInputOnBlur}></input>
           </form>
-        </>
+        </React.Fragment>
       )
     })
   }, [handleDragStartOnNode, handleDragOverOnNode, handleDropOnNode, handleRightClickOnColumnSpace, handleRightClickOnColumn, handleNewColumnInputOnBlur])
