@@ -14,16 +14,24 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
   if (args.targetColumnSpaceDataset.hasColumns === "true") {
     // 子columnがある時
     contextMenu.append(new MenuItem({
-      label:"カラムの追加",
+      label:"カラムの追加（未実装）",
       //todo click部分を実装
     }));
-
   } else {
     // 子columnが無い時
+
     contextMenu.append(new MenuItem({
       label:"カラムスペースの追加",
       click: args.handleClickAddChildColumnSpace,
     }));
+
+    if (args.targetColumnSpaceDataset.hasChildColumnSpaces === "false") {
+      // 子childSpaceも無い時
+      contextMenu.append(new MenuItem({
+        label:"カラムの追加（未実装）",
+        //todo click部分を実装
+      }));
+    }
 
   }
 
