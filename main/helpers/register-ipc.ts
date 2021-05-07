@@ -8,6 +8,7 @@ export default function registerIpc() {
     return app.getPath('userData');
   })
 
+  // 基本データの保存先のパスを返す
   ipcMain.handle("read-save-dir-path", async (evnet) => {
     return path.join(app.getPath("documents"), app.getName());
   })
