@@ -26,12 +26,15 @@ const useStyles = makeStyles({
 
 // memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
 export const useHomeController = () => {
-  const classes = useStyles()
-  const newColumnSpaceInputRef = React.useRef(null);
+  // メタ状態類
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
+  // UI状態類
+  const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [newColumnFormVisible, setNewColumnFormVisible] = useState<boolean>(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
-  const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
+  const classes = useStyles()
+  // ref
+  const newColumnSpaceInputRef = React.useRef(null);
 
   const saveExpandedColumnSpaces = useCallback((expandedNodeIds: string[]) => {
     localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));
@@ -132,6 +135,11 @@ export const useHomeController = () => {
     set(columnSpacesState, newColumnSpaces)
   }, [setNewColumnFormVisible]);
 
+  // ツリービュー展開のトグル
+  const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
+    saveExpandedColumnSpaces(expandedNodeIds);
+  }, [saveExpandedColumnSpaces])
+
   // DnDでカラムスペースの移動の管理
   const handleDragStartOnNode = useCallback((event) => {
     event.dataTransfer.setData("fromId", (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id)
@@ -201,8 +209,7 @@ export const useHomeController = () => {
                   data-type={FileSystemEnum.Column}
                   data-name={column.name}
                   data-id={column.id}
-                  data-has-child-column-spaces={"false"}
-                  data-has-columns={"false"}
+                  //todo collapsableとかcellsとかのあれこれの値も入れて使う時もあるかもなのでその時考慮して追加も考える
                 />
               )
           }
@@ -262,12 +269,12 @@ export const useHomeController = () => {
     selectedNodeId,
     //関数
     generateColumnSpaceElementTree,
-    saveExpandedColumnSpaces,
     //イベントハンドラ
     handleClickAddColumnSpaceButton,
     handleRightClickOnEmptySpace,
     handleSubmitNewColumnSpaceForm,
     handleNewColumnInputOnBlur,
+    handleTreeNodeToggle,
     //他
     newColumnSpaceInputRef,
   }
