@@ -3,14 +3,14 @@ import { ColumnSpace } from "../models/ColumnSpace";
 import { ColumnSpaces } from "../models/ColumnSpaces";
 import { Columns } from "../models/Columns";
 
-export const createNewDescendantColumnSpaceUseCase = async(parentColumnSpaceId: string, newColumnSpaceName: string): Promise<ColumnSpaces> => {
+export const createColumnSpaceUseCase = async(newColumnSpaceName: string): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
-  rootColumnSpaces.addDescendantColumnSpace(new ColumnSpace({
+  rootColumnSpaces.addColumnSpace(new ColumnSpace({
     "name": newColumnSpaceName,
     "childColumnSpaces": new ColumnSpaces(),
     "columns": new Columns(),
-  }), parentColumnSpaceId);
+  }));
   await columnSpacesRepository.save(rootColumnSpaces);
   return rootColumnSpaces;
 }

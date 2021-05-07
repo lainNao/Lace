@@ -5,7 +5,7 @@ import { useRecoilCallback, useRecoilState, useRecoilValueLoadable } from 'recoi
 import columnSpacesState from '../atoms/columnSpacesState';
 import { FileSystemEnum } from "../enums/app"
 import { ColumnSpaces } from '../models/ColumnSpaces';
-import { createNewColumnSpaceUseCase } from '../usecases/createNewColumnSpaceUseCase';
+import { createColumnSpaceUseCase } from '../usecases/createColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../usecases/moveColumnSpaceUseCase';
 import { showColumnContextMenu } from '../context-menus/showColumnContextMenu';
 import { showColumnSpaceContextMenu } from '../context-menus/showColumnSpaceContextMenu';
@@ -14,7 +14,7 @@ import { remote } from "electron"
 import useSetupColumnSpaces from '../hooks/useSetupColumnSpaces';
 import { removeColumnSpaceUseCase } from '../usecases/removeColumnSpaceUseCase';
 import useSetupSettings from '../hooks/useSetupSettings';
-import { createNewDescendantColumnSpaceUseCase } from '../usecases/createNewDescendantColumnSpaceUseCase';
+import { createDescendantColumnSpaceUseCase } from '../usecases/createDescendantColumnSpaceUseCase';
 
 const useStyles = makeStyles({
   label: {
@@ -63,6 +63,13 @@ export const useHomeController = () => {
         newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
         newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
       },
+      handleClickAddChildColumn: async () => {
+        //todo 子カラム追加。ここそもそもカラム追加時のカラムタイプの選択とかいろいろあってまた強め作業になる
+        console.log("子カラム追加処理");
+        // const newColumnSpaces = await createColumnUseCase(targetDataset.id);
+        // setColumnSpaces(newColumnSpaces);
+
+      },
       targetColumnSpaceDataset: targetDataset,
     });
   }, [columnSpaces]);
@@ -105,7 +112,7 @@ export const useHomeController = () => {
     }
 
     // 新しいカラムスペースを追加
-    const newColumnSpaces = await createNewColumnSpaceUseCase(newColumnSpaceName)
+    const newColumnSpaces = await createColumnSpaceUseCase(newColumnSpaceName)
     set(columnSpacesState, newColumnSpaces)
   }, []);
 
@@ -133,7 +140,7 @@ export const useHomeController = () => {
     }
 
     // 新しいカラムスペースを追加
-    const newColumnSpaces = await createNewColumnSpaceUseCase(newColumnSpaceName)
+    const newColumnSpaces = await createColumnSpaceUseCase(newColumnSpaceName)
     set(columnSpacesState, newColumnSpaces)
   }, []);
 
@@ -157,7 +164,7 @@ export const useHomeController = () => {
     }
 
     // 指定IDのカラムスペースの子に新しいカラムスペースを追加
-    const newColumnSpaces = await createNewDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
+    const newColumnSpaces = await createDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
     set(columnSpacesState, newColumnSpaces);
     setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
   }, []);
@@ -180,7 +187,7 @@ export const useHomeController = () => {
     }
 
     // 指定IDのカラムスペースの子に新しいカラムスペースを追加
-    const newColumnSpaces = await createNewDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
+    const newColumnSpaces = await createDescendantColumnSpaceUseCase(nodeId, newColumnSpaceName);
     set(columnSpacesState, newColumnSpaces);
     setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, nodeId]);
   }, []);

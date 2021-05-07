@@ -3,6 +3,7 @@ import { BrowserWindow, MenuItem, remote } from "electron";
 interface ColumnSpaceContextMenuArgs {
   handleClickDeleteColumnSpace: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickAddChildColumnSpace: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
+  handleClickAddChildColumn: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   targetColumnSpaceDataset: any,
 }
 
@@ -13,9 +14,10 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
 
   if (args.targetColumnSpaceDataset.hasColumns === "true") {
     // 子columnがある時
+
     contextMenu.append(new MenuItem({
-      label:"カラムの追加（未実装）",
-      //todo click部分を実装
+      label:"カラムの追加",
+      click: args.handleClickAddChildColumn,
     }));
   } else {
     // 子columnが無い時
@@ -27,9 +29,10 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
 
     if (args.targetColumnSpaceDataset.hasChildColumnSpaces === "false") {
       // 子childSpaceも無い時
+
       contextMenu.append(new MenuItem({
-        label:"カラムの追加（未実装）",
-        //todo click部分を実装
+        label:"カラムの追加",
+        click: args.handleClickAddChildColumn,
       }));
     }
 
