@@ -3,6 +3,9 @@ export class TrimedFilledString {
   value: string;
 
   constructor(value: string) {
+    if (value === "") {
+      throw new Error("空です");
+    }
     this.value = value.trim();
   }
 
