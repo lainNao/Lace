@@ -264,7 +264,6 @@
                                 id: UUID,                //カラムのUUID
                                 name: string,            //カラム名
                                 type: enum,              //カラムのタイプ（file, bool, tag, text, markdown, select, radio, combo, event(javascriptで定義。任意のカラムの値が変更されたら発火するイベントを作れる。evalで実行)）
-                                collapsable: bool,       //コラプスするタイプかどうか（これがtrueなカラムがある場合、メディアの左側にコラプスアイコンつけることになる）
                                 cells: [                 //自カラムが持つデータ達
                                     各種データ             //自カラムデータのUUIDとデータ本体（実データの形式は、typeのenumによって変わる）
                                     ...

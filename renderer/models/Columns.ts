@@ -9,7 +9,6 @@ export class Columns {
   children: Column[];
 
   constructor(args?: ColumnsConstructorArgs) {
-    //TODO: 不変条件
     this.children = (args == undefined) ? [] : args.children;
   }
 
@@ -19,10 +18,14 @@ export class Columns {
         id: column.id,
         name: new TrimedFilledString(column.name),
         type: column.type,
-        collapsable: column.collapsable,
         cells: column.cells,
       })
     )});
+  }
+
+  push(column: Column): Columns {
+    this.children.push(column);
+    return this;
   }
 
   toJSON(key) {

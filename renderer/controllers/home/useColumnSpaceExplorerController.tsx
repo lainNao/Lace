@@ -3,7 +3,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import { useRecoilCallback, useRecoilState, useRecoilValueLoadable } from 'recoil';
 import columnSpacesState from '../../atoms/columnSpacesState';
-import { FileSystemEnum } from "../../enums/app"
+import { ColumnDataType, FileSystemEnum } from "../../enums/app"
 import { ColumnSpaces } from '../../models/ColumnSpaces';
 import { createTopLevelColumnSpaceUseCase } from '../../usecases/createTopLevelColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../../usecases/moveColumnSpaceUseCase';
@@ -17,6 +17,8 @@ import useSetupSettings from '../../hooks/useSetupSettings';
 import { createDescendantColumnSpaceUseCase } from '../../usecases/createDescendantColumnSpaceUseCase';
 import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
 import { createColumnUseCase } from '../../usecases/createColumnUseCase';
+import { useDisclosure } from '@chakra-ui/react';
+
 
 const useStyles = makeStyles({
   label: {
@@ -26,19 +28,27 @@ const useStyles = makeStyles({
 
 // TODO テーマとかどうするか
 // TODO ルート階層のカラムスペースに移動する処理思いついてなかった。作る。empty space部分にDnDしたらおなじみの処理すればいいだけ
+// TODO カラムの右側にカラムタイプをラベルで表示しておく（またはアイコンで左に）
+// TODO カラムのデータタイプの選択肢は多言語対応させたい（データとして格納するEnumとは別のまた見せる用の選択肢のEnumとか作ればいいかも）
+// TODO カラムをDnDで入れ替えたい
 
 // memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
 export const useColumnSpaceExplorerController = () => {
   // メタ状態類
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   // UI状態類
+  const classes = useStyles()
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const [justBlured, setJustBlured] = useState<boolean>(false);
-  const classes = useStyles()
+  const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
+  const [newColumnFormName, setNewColumnFormName] = useState<string>("");
+  const [newColumnFormId, setNewColumnFormId] = useState<string>(null);
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
+  const newColumnFormRef = React.useRef(null);
+
 
   // カラムスペースのコンテキストメニュー表示
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -65,7 +75,7 @@ export const useColumnSpaceExplorerController = () => {
               console.log(e.message);
             }
           }
-        })
+        });
 
       },
       handleClickAddChildColumnSpace: async () => {
@@ -73,15 +83,8 @@ export const useColumnSpaceExplorerController = () => {
         newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
       },
       handleClickAddChildColumn: async () => {
-        try {
-          //TODO 子カラム追加。ここそもそもカラム追加時のカラムタイプの選択とかいろいろあってまた強め作業になる。でもデータ作れば表示は別問題なのでデータの問題なのでそこまで難易度は高くない。ただセルのモデルとかも関わってくるのであれこれある
-          console.log("子カラム追加処理を実装");
-          // const newColumnSpaces = await createColumnUseCase(targetDataset.id);
-          // setColumnSpaces(newColumnSpaces);
-        } catch(e) {
-          console.log(e.message);
-        }
-
+        setNewColumnFormId(targetDataset.id);
+        openNewColumnForm();
       },
       targetColumnSpaceDataset: targetDataset,
     });
@@ -155,13 +158,41 @@ export const useColumnSpaceExplorerController = () => {
     } finally {
       newColumnSpacesFormRefs.current[columnSpaceId].elements.namedItem("new-column-space-name").value = null;
     }
-  }, []);
+  }, [setExpandedColumnSpaces]);
+
+  // カラム新規作成モーダルのsubmit
+  const handleSubmitNewColmnForm = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    try {
+      const newColumnSpaces = await createColumnUseCase(
+        new TrimedFilledString(newColumnFormRef.current.elements.namedItem("column-name").value),
+        newColumnFormId,
+        newColumnFormRef.current.elements.namedItem("column-type").value
+      );
+      setColumnSpaces(newColumnSpaces);
+    } catch (e) {
+      console.log(e.message);
+    } finally {
+      setNewColumnFormName("");
+      closeNewColumnForm();
+    }
+  }, [newColumnFormName, newColumnFormId, closeNewColumnForm])
+
+  // カラム新規作成モーダルのカラム名インプットのonchange
+  const handleChangeNewColumnNameInput = useCallback((event) => {
+    setNewColumnFormName(event.target.value);
+  }, [setExpandedColumnSpaces]);
+
+  // カラム新規作成モーダルのキャンセル押下
+  const handleClickNewColmnFormClose = useCallback((event) => {
+    console.log(newColumnFormName)
+    closeNewColumnForm();
+  }, [closeNewColumnForm]);
 
   // ツリービュー展開のトグル
   const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
     localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));
     setExpandedColumnSpaces(expandedNodeIds);
-  }, []);
+  }, [setExpandedColumnSpaces]);
 
   // DnDでカラムスペースの移動の管理
   const handleDragStartOnNode = useCallback((event) => {
@@ -185,7 +216,7 @@ export const useColumnSpaceExplorerController = () => {
     } catch (e) {
       console.log(e.message);
     }
-  }, [columnSpaces]);
+  }, [columnSpaces, setExpandedColumnSpaces]);
 
   // ColumnSpacesのツリーをレンダリング
   const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
@@ -294,6 +325,8 @@ export const useColumnSpaceExplorerController = () => {
     columnSpaces,
     expandedColumnSpaces,
     selectedNodeId,
+    isNewColumnFormOpen,
+    newColumnFormName,
     //関数
     generateColumnSpaceElementTree,
     //イベントハンドラ
@@ -301,7 +334,12 @@ export const useColumnSpaceExplorerController = () => {
     handleRightClickOnEmptySpace,
     handleSubmitTopLevelNewColumnSpaceForm,
     handleTreeNodeToggle,
+    closeNewColumnForm,
+    handleChangeNewColumnNameInput,
+    handleClickNewColmnFormClose,
+    handleSubmitNewColmnForm,
     //他
     newTopLevelColumnSpaceFormRef,
+    newColumnFormRef,
   }
 }

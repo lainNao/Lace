@@ -19,7 +19,6 @@ export class ColumnSpacesRepositoryJson {
           "id": "2222",
           "name": "test_file_column",
           "type": "file",
-          "collapsable": false,
           "cells": [
             {
               "id": "3333",

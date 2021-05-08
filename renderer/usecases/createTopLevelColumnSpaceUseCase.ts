@@ -7,7 +7,7 @@ import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 export const createTopLevelColumnSpaceUseCase = async(newColumnSpaceName: TrimedFilledString): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
-  const newRootColumnSpaces = rootColumnSpaces.addColumnSpace(new ColumnSpace({
+  const newRootColumnSpaces = rootColumnSpaces.push(new ColumnSpace({
     "name": newColumnSpaceName,
     "childColumnSpaces": new ColumnSpaces(),
     "columns": new Columns(),

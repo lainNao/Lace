@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { TrimedFilledString } from '../value-objects/TrimedFilledString';
+import { Column } from './Column';
 import { Columns } from './Columns';
 import { ColumnSpaces } from './ColumnSpaces';
 
@@ -27,10 +28,20 @@ export class ColumnSpace {
     this.columns = args.columns;
   }
 
-  canAddChildColumnSpace() {
-    return (
-      this.childColumnSpaces.children.length > 0
-    )
+  addColumn(column: Column): ColumnSpace {
+    if (!this.canAddColumn) {
+      throw new Error("カラムの追加ができません");
+    }
+    this.columns.push(column);
+    return this;
+  }
+
+  canAddColumn(): boolean {
+    return this.childColumnSpaces.children.length === 0;
+  }
+
+  canAddChildColumnSpace(): boolean {
+    return this.childColumnSpaces.children.length > 0;   //TODO ここの条件おかしくない？
   }
 
   hasColumns(): boolean {

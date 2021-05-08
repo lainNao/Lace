@@ -1,22 +1,21 @@
 import { v4 as uuidv4 } from 'uuid'
+import { ColumnDataType } from '../enums/app';
 import { TrimedFilledString } from '../value-objects/TrimedFilledString';
 import { Cells } from './Cells';
 
 interface ColumnConstructorArgs {
   id?: string,
   name: TrimedFilledString,
-  type: any, //TODO(enum)
-  collapsable: any, //TODO(bool)
-  cells: Cells, //TODO
+  type: ColumnDataType,
+  cells: Cells,
 }
 
 export class Column {
 
   id: string;
   name: TrimedFilledString;
-  type: any; //TODO(enum)
-  collapsable: any; //TODO(bool)
-  cells: Cells; //TODO
+  type: ColumnDataType;
+  cells: Cells;
 
   constructor(args: ColumnConstructorArgs) {
     const id = args.id ?? uuidv4();
@@ -25,8 +24,7 @@ export class Column {
 
     this.id = id;
     this.name = args.name;
-    this.type = "file"; //TODO 後でenum化
-    this.collapsable = args.collapsable;
+    this.type = args.type;
     this.cells = args.cells;
   }
 
