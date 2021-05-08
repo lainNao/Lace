@@ -49,9 +49,8 @@ export const useColumnSpaceExplorerController = () => {
   const newColumnSpacesFormRefs = React.useRef([]);
   const newColumnFormRef = React.useRef(null);
 
-
-  // カラムスペースのコンテキストメニュー表示
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    console.debug("カラムスペースのコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
 
@@ -90,16 +89,16 @@ export const useColumnSpaceExplorerController = () => {
     });
   }, [columnSpaces]);
 
-  // カラムのコンテキストメニュー表示
   const handleRightClickOnColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    console.debug("カラムのコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
     setSelectedNodeId((event.target as HTMLElement).parentElement.parentElement.dataset.id);
     showColumnContextMenu(event);
   }, []);
 
-  // エクスプローラーの無部分押下時のコンテキストメニュー表示
   const handleRightClickOnEmptySpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    console.debug("エクスプローラーの無部分押下時のコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
 
@@ -113,8 +112,8 @@ export const useColumnSpaceExplorerController = () => {
     });
   }, [showEmptySpaceContextMenu]);
 
-  // カラムスペース追加ボタン押下
   const handleClickAddColumnSpaceButton = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    console.debug("カラムスペース追加ボタン押下");
     event.preventDefault();
     newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
     setImmediate(() => {
@@ -122,8 +121,8 @@ export const useColumnSpaceExplorerController = () => {
     })
   }, [justBlured]);
 
-  // ルートレベルのカラムスペース追加フォームsubmit
   const handleSubmitTopLevelNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
+    console.debug("ルートレベルのカラムスペース追加フォームsubmit");
     try {
       event.preventDefault();
       newTopLevelColumnSpaceFormRef.current.classList.add("hidden");
@@ -141,8 +140,8 @@ export const useColumnSpaceExplorerController = () => {
 
   }, [setJustBlured]);
 
-    // カラムスペース追加フォームsubmit
   const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnSpaceId: string) => {
+    console.debug("カラムスペース追加フォームsubmit");
     try {
       event.preventDefault();
       newColumnSpacesFormRefs.current[columnSpaceId].classList.add("hidden");
@@ -160,8 +159,8 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, [setExpandedColumnSpaces]);
 
-  // カラム新規作成モーダルのsubmit
   const handleSubmitNewColmnForm = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    console.debug("カラム新規作成モーダルのsubmit");
     try {
       const newColumnSpaces = await createColumnUseCase(
         new TrimedFilledString(newColumnFormRef.current.elements.namedItem("column-name").value),
@@ -177,35 +176,34 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, [newColumnFormName, newColumnFormId, closeNewColumnForm])
 
-  // カラム新規作成モーダルのカラム名インプットのonchange
   const handleChangeNewColumnNameInput = useCallback((event) => {
+    console.debug("カラム新規作成モーダルのカラム名インプットのonchange");
     setNewColumnFormName(event.target.value);
   }, [setExpandedColumnSpaces]);
 
-  // カラム新規作成モーダルのキャンセル押下
   const handleClickNewColmnFormClose = useCallback((event) => {
-    console.log(newColumnFormName)
+    console.debug("カラム新規作成モーダルのキャンセル");
     closeNewColumnForm();
   }, [closeNewColumnForm]);
 
-  // ツリービュー展開のトグル
   const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
+    console.debug("ツリービュー展開のトグル");
     localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));
     setExpandedColumnSpaces(expandedNodeIds);
   }, [setExpandedColumnSpaces]);
 
-  // DnDでカラムスペースの移動の管理
   const handleDragStartOnNode = useCallback((event) => {
+    console.debug("DnDでカラムスペース/カラムの移動開始");
     event.dataTransfer.setData("fromId", (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id)
   }, []);
 
-  // DnDでカラムスペースの移動の管理
   const handleDragOverOnNode = useCallback((event) => {
+    console.debug("DnDでカラムスペース/カラムの移動中のマウスオーバー");
     event.preventDefault();
   }, []);
 
-  // DnDでカラムスペースの移動の管理
   const handleDropOnNode = useCallback(async(event) => {
+    console.debug("DnDでカラムスペース/カラムの移動中のドロップ");
     try {
       const fromId = event.dataTransfer.getData("fromId");
       const toId = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id
