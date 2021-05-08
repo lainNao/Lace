@@ -266,8 +266,10 @@ export const useColumnSpaceExplorerController = () => {
   const handleDropOnColumnSpace = useCallback(async(event) => {
     console.debug("カラムスペースへのドロップ");
 
-    lastAddedBorderElementRef.current.classList.remove("border-t-2");
-    lastAddedBorderElementRef.current.classList.remove("border-b-2");
+    if (lastAddedBorderElementRef.current) {
+      lastAddedBorderElementRef.current.classList.remove("border-t-2");
+      lastAddedBorderElementRef.current.classList.remove("border-b-2");
+    }
     // set(draggingNodeDatasetState, null);
 
     if (event.dataTransfer.getData("draggingNodeType") != FileSystemEnum.ColumnSpace) {  //TODO こういうアサーション？的なのを1行で書きたい。ライブラリか専用APIありそうなので探す

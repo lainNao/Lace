@@ -25,7 +25,7 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
   }));
 
   contextMenu.append(new MenuItem({
-    label:"削除",
+    label:"削除", //TODO 上に「----------」みたいな区切りを入れる。
     click: args.handleClickDeleteColumnSpace,
   }));
 
