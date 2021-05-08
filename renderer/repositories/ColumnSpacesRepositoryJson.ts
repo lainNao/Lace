@@ -38,7 +38,7 @@ export class ColumnSpacesRepositoryJson {
 
   async save(columnSpaces: ColumnSpaces): Promise<ColumnSpaces> {
     const userDataPath = await getSaveDirPath();
-    await fs.promises.writeFile(path.join(userDataPath, this.dbFilePath), JSON.stringify(columnSpaces, null, "\t"), "utf8")
+    await fs.promises.writeFile(path.join(userDataPath, this.dbFilePath), JSON.stringify(columnSpaces, null, "\t"), "utf8");
     return columnSpaces;
   }
 
