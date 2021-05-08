@@ -13,7 +13,7 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({
-    label:"カラムの追加（未実装）",
+    label:"カラムの追加",
     click: args.handleClickAddChildColumn,
     enabled: args.targetColumnSpaceDataset.hasChildColumnSpaces === "false",
   }));

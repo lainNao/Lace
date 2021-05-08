@@ -18,8 +18,7 @@ import { createDescendantColumnSpaceUseCase } from '../../usecases/createDescend
 import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
 import { createColumnUseCase } from '../../usecases/createColumnUseCase';
 import { useDisclosure } from '@chakra-ui/react';
-import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/draggingNodeDatasetState';
-import { cloneDeep } from "lodash";
+
 
 const useStyles = makeStyles({
   label: {
@@ -32,7 +31,7 @@ const useStyles = makeStyles({
 // TODO カラムの右側にカラムタイプをラベルで表示しておく（またはアイコンで左に）
 // TODO カラムのデータタイプの選択肢は多言語対応させたい（データとして格納するEnumとは別のまた見せる用の選択肢のEnumとか作ればいいかも）
 // TODO カラムをDnDで入れ替えたい
-// TODO expandedを変更する時、先祖も全部expandedに加えないといけないかも？（調べて）。なんかホットリロードされた時に先祖が閉じるっぽい現象がたまにある（単なるバグかもなので見てみて）
+// TODO カラム追加した後にexpandedに加えるのやってないな
 
 // memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
 export const useColumnSpaceExplorerController = () => {
@@ -42,16 +41,14 @@ export const useColumnSpaceExplorerController = () => {
   const classes = useStyles()
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
+  const [justBlured, setJustBlured] = useState<boolean>(false);
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormId, setNewColumnFormId] = useState<string>(null);
-  const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
   const newColumnFormRef = React.useRef(null);
-  const lastAddedBorderElementRef = React.useRef(null);
-  const isLeavingToParentColumnSpace = React.useRef(null);
 
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムスペースのコンテキストメニュー表示");
@@ -91,13 +88,13 @@ export const useColumnSpaceExplorerController = () => {
       },
       targetColumnSpaceDataset: targetDataset,
     });
-  }, []);
+  }, [columnSpaces]);
 
   const handleRightClickOnColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムのコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
-    setSelectedNodeId((event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id);
+    setSelectedNodeId((event.target as HTMLElement).dataset.id);
     showColumnContextMenu(event);
   }, []);
 
@@ -114,7 +111,7 @@ export const useColumnSpaceExplorerController = () => {
         });
       }
     });
-  }, []);
+  }, [showEmptySpaceContextMenu]);
 
   const handleClickAddColumnSpaceButton = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムスペース追加ボタン押下");
@@ -123,7 +120,7 @@ export const useColumnSpaceExplorerController = () => {
     setImmediate(() => {
       newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
     })
-  }, []);
+  }, [justBlured]);
 
   const handleSubmitTopLevelNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
     console.debug("ルートレベルのカラムスペース追加フォームsubmit");
@@ -142,7 +139,7 @@ export const useColumnSpaceExplorerController = () => {
       newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value = null;
     }
 
-  }, []);
+  }, [setJustBlured]);
 
   const handleSubmitNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnSpaceId: string) => {
     console.debug("カラムスペース追加フォームsubmit");
@@ -161,9 +158,9 @@ export const useColumnSpaceExplorerController = () => {
     } finally {
       newColumnSpacesFormRefs.current[columnSpaceId].elements.namedItem("new-column-space-name").value = null;
     }
-  }, []);
+  }, [setExpandedColumnSpaces]);
 
-  const handleClickCreateNewColumn = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleSubmitNewColmnForm = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラム新規作成モーダルのsubmit");
     try {
       const newColumnSpaces = await createColumnUseCase(
@@ -178,192 +175,61 @@ export const useColumnSpaceExplorerController = () => {
       setNewColumnFormName("");
       closeNewColumnForm();
     }
-  }, [newColumnFormId])
+  }, [newColumnFormName, newColumnFormId, closeNewColumnForm])
 
   const handleChangeNewColumnNameInput = useCallback((event) => {
     console.debug("カラム新規作成モーダルのカラム名インプットのonchange");
     setNewColumnFormName(event.target.value);
-  }, []);
+  }, [setExpandedColumnSpaces]);
 
   const handleClickNewColmnFormClose = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewColumnForm();
-  }, []);
+  }, [closeNewColumnForm]);
 
   const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
     console.debug("ツリービュー展開のトグル");
     localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));
     setExpandedColumnSpaces(expandedNodeIds);
-  }, []);
-
-  /* -----------------------------------------------------カラムスペースのDnD----------------------------------------------------------- */
+  }, [setExpandedColumnSpaces]);
 
   const handleDragStartOnColumnSpace = useCallback((event) => {
-    console.debug("カラムスペースのドラッグ開始");
-    event.dataTransfer.setData("columnSpaceId", (event.target as HTMLElement).dataset.id);
-    event.dataTransfer.setData("draggingNodeType", FileSystemEnum.ColumnSpace)
-    setDraggingNodeDataset(event.target.dataset);
-
+    console.debug("DnDでカラムスペース/カラムの移動開始");
+    event.dataTransfer.setData("fromId", (event.target as HTMLElement).dataset.id)
   }, []);
 
-  const handleDragEnterOnColumnSpace = useRecoilCallback(({snapshot}) => async(event: React.DragEvent<HTMLElement>) => {
-    console.debug("カラムスペースへのドラッグエンター");
+  const handleDragEndOnColumnSpace = useCallback((event) => {
+    // console.debug("DnDでカラムスペース/カラムの移動中のマウスドラッグエンター");
     event.preventDefault();
-    //TODO マウス乗せられたら、移動できるなら色つけるとかしたい　できればホバー時のみスタイル変わるのと組み合わせてCSSの追加削除じゃないので対応したい
 
-    const enteredColumnSpace = event.target as HTMLElement;
-    const enteredColumnSpaceDataset = enteredColumnSpace.dataset;
-    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
+    console.log(event.target as HTMLElement)
 
-    if (draggingNodeDataset && Number(draggingNodeDataset.type) === FileSystemEnum.Column && draggingNodeDataset.columnSpaceId === enteredColumnSpaceDataset.id) {
-      // カラムをドラッグしており、その親のカラムスペースへのエンターの場合
-      console.log("親だよ")
-      isLeavingToParentColumnSpace.current = true;
-      lastAddedBorderElementRef.current.classList.remove("border-b-2");
-      lastAddedBorderElementRef.current.classList.add("border-t-2");
-    } else {
-      // それ以外の普通のカラムスペースへのドラッグエンターの場合
-      if (lastAddedBorderElementRef.current) {
-        lastAddedBorderElementRef.current.classList.remove("border-b-2");
-        lastAddedBorderElementRef.current.classList.remove("border-t-2");
-      }
-    }
-
-    // if (event.dataTransfer.getData("columnSpaceId") !== targetDataset.columnSpaceId) { //TODO これ、ここでやる必要ないかも　ドメイン層で勝手にやるはず
-    //   return;
+    // if (関係ないのにonmouseなら) {
+    //   return
     // }
-
-  }, []);
-
-  const handleDragOverOnColumnSpace = useCallback((event) => {
-    // console.debug("カラムスペースへのドラッグオーバー");
-    event.preventDefault(); //NOTE: DragOverにてpreventDefaultしないとdropが発火しないため記述
-  }, []);
-
-
-  const handleDragLeaveOnColumnSpace = useCallback((event) => {
-    // console.debug("カラムスペースへのドラッグオーバー");
-    event.preventDefault(); //NOTE: DragOverにてpreventDefaultしないとdropが発火しないため記述
-    isLeavingToParentColumnSpace.current = false;
-  }, []);
-
-  const handleDropOnColumnSpace = useCallback(async(event) => {
-    console.debug("カラムスペースへのドロップ");
-
-    lastAddedBorderElementRef.current.classList.remove("border-t-2");
-    lastAddedBorderElementRef.current.classList.remove("border-b-2");
-    // set(draggingNodeDatasetState, null);
-
-    if (event.dataTransfer.getData("draggingNodeType") != FileSystemEnum.ColumnSpace) {  //TODO こういうアサーション？的なのを1行で書きたい。ライブラリか専用APIありそうなので探す
-      return;
-    }
-
-    try {
-      const fromId = event.dataTransfer.getData("columnSpaceId");
-      const toId = event.target.dataset.id;
-      const newColumnSpaces = await moveColumnSpaceUseCase(fromId, toId);
-      setColumnSpaces(newColumnSpaces);
-      setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, toId]);
-    } catch (e) {
-      console.log(e.message);
-    }
-  }, []);
-
-  /* -----------------------------------------------------カラムのDnD----------------------------------------------------------- */
-
-  const handleDragStartOnColumn = useCallback((event) => {
-    console.debug("カラムのドラッグ開始");
-    setDraggingNodeDataset(event.target.dataset);
-  }, []);
-
-  const handleDragEnterOnColumn = useRecoilCallback(({snapshot}) => async(event: React.DragEvent<HTMLElement>) => {
-    console.debug("カラムへのドラッグエンター");
-    event.preventDefault();
-
-    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
-    if (Number(draggingNodeDataset.type) === FileSystemEnum.ColumnSpace) {
-      return;
-    }
-
-    const enteredNode = (event.target as HTMLElement);
-    const enteredNodeDataset = enteredNode.parentElement.parentElement.parentElement.dataset;
-    enteredNode.classList.remove("border-t-2");
-
-    // 親となるカラムスペースへのEnterなら  //TODO ここありえないな。このイベントハンドラはカラムにしかくっつけてないから　まあ後で…
-    // if (Number(enteredNodeDataset.type) === FileSystemEnum.ColumnSpace) {
-    //   if (enteredNodeDataset.id === draggingNodeDataset.columnSpaceId) {
-    //     //トップにあるdivに対して　event.target.classList.add("border-t-2")
-    //   }
-    //   return;
-    // }
-
-    if (enteredNodeDataset.columnSpaceId === draggingNodeDataset.columnSpaceId) {
-      // 同じカラムスペースのカラムへのEnterなら
-      console.log(enteredNode)
-      enteredNode.classList.add("border-b-2");
-      enteredNodeDataset.addedBorder = "true";
-      lastAddedBorderElementRef.current = enteredNode;
-      return;
-    } else {
-      // 違うカラムスペースのカラムへのEnterなら
-      lastAddedBorderElementRef.current.classList.remove("border-b-2");
-      lastAddedBorderElementRef.current.classList.remove("border-t-2");
-    }
-
-  }, []);
-
-  const handleDragLeaveOnColumn = useRecoilCallback(({}) => async(event: React.DragEvent<HTMLElement>) => {
-    console.debug("カラムからのドラッグリーブ");
-    event.preventDefault();
-
-    const leavedNode = (event.target as HTMLElement);
-    const leavdNodeDataset = leavedNode.parentElement.parentElement.parentElement.dataset;
-    if (leavdNodeDataset.addedBorder === "true") {
-      leavedNode.classList.remove("border-b-2");
-      console.log(isLeavingToParentColumnSpace.current)
-      if (isLeavingToParentColumnSpace.current !== true) {
-        leavedNode.classList.remove("border-t-2");
-      }
-    }
-  }, []);
-
-  const handleDragOverOnColumn = useCallback((event) => {
-    // console.debug("カラムへのドラッグオーバー");
-    event.preventDefault(); //NOTE: DragOverにてpreventDefaultしないとdropが発火しないため記述
-  }, []);
-
-  const handleDropOnColumn = useRecoilCallback(({snapshot, set}) => async(event) => {
-    console.debug("カラムへのドロップ");
-
-    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
-    // const draggingNodeDatasetCopied = cloneDeep(draggingNodeDataset);
-    set(draggingNodeDatasetState, null);
-    if (Number(draggingNodeDataset.type) === FileSystemEnum.ColumnSpace) {
-      return;
-    }
-
-    lastAddedBorderElementRef.current.classList.remove("border-b-2");
-    lastAddedBorderElementRef.current = null;
-
-
-    // ここ、適切な位置でデリートして。下で使うなら保留するとかして。でもreturnされたら
-
-
-    // const targetDataset = event.target.dataset;
-    // if (event.dataTransfer.getData("columnSpaceId") !== targetDataset.columnSpaceId) { //TODO これ、ここでやる必要ないかも　ドメイン層で勝手にやるはず
-    //   return;
+    // if (親となるカラムスペースへのonmouseなら) {
+    //   トップにあるdivに対して　event.target.classList.add("border-t-2")
     // }
 
     // event.target.classList.add("border-b-2")
 
     // で、DROPした時にその状態を読み取って順番入れ替えて保存
 
+  }, []);
+
+  const handleDropOnColumnSpace = useCallback(async(event) => {
+    console.debug("DnDでカラムスペース/カラムの移動中のドロップ");
     try {
+      const fromId = event.dataTransfer.getData("fromId");
+      const toId = (event.target as HTMLElement).dataset.id;
 
-    } catch(e) {
-
+      const newColumnSpaces = await moveColumnSpaceUseCase(fromId, toId);
+      setColumnSpaces(newColumnSpaces);
+      setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, toId]);
+    } catch (e) {
+      console.log(e.message);
     }
-  }, [draggingNodeDataset]);
+  }, [columnSpaces, setExpandedColumnSpaces]);
 
   // ColumnSpacesのツリーをレンダリング
   const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
@@ -376,27 +242,25 @@ export const useColumnSpaceExplorerController = () => {
             label={
               <div
                 draggable
-                data-type={FileSystemEnum.ColumnSpace}
                 data-id={columnSpace.id}
+                data-type={FileSystemEnum.ColumnSpace}
                 data-name={`${columnSpace.name}`}
                 data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
                 data-has-columns={!!(columnSpace.hasColumns())}
-                onDragStart={handleDragStartOnColumnSpace}
-                onDragEnter={handleDragEnterOnColumnSpace}
-                onDragLeave={handleDragLeaveOnColumnSpace}
-                onDragOver={handleDragOverOnColumnSpace}
-                onDrop={handleDropOnColumnSpace}
-                onContextMenu={handleRightClickOnColumnSpace}
-                >{`${columnSpace.name}`}</div>
+              >{`${columnSpace.name}`}</div>
             }
+            onDragStart={handleDragStartOnColumnSpace}
+            onDragEnter={handleDragEndOnColumnSpace}
+            onDrop={handleDropOnColumnSpace}
+
+            onContextMenu={handleRightClickOnColumnSpace}
             classes={{
               label: classes.label,
             }}
             TransitionProps={{
               "timeout": 0
             }}
-          >
-            {columnSpace.canAddChildColumnSpace()
+          >{columnSpace.canAddChildColumnSpace()
               // カラムスペースを再帰レンダリング
               ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
               // 末端（カラム）をレンダリング
@@ -405,19 +269,19 @@ export const useColumnSpaceExplorerController = () => {
                     draggable
                     key={column.id}
                     nodeId={column.id}
-                    onDragStart={handleDragStartOnColumn}     //NOTE: なぜかこれがここでしか発火しないのでこっちに移動
-                    onDragEnter={e => handleDragEnterOnColumn(e)}
-                    onDragLeave={e => handleDragLeaveOnColumn(e)}
-                    onDragOver={handleDragOverOnColumn}
-                    onDrop={handleDropOnColumn}
-                    onContextMenu={handleRightClickOnColumn}
-                    data-type={FileSystemEnum.Column}
-                    data-id={column.id}
-                    data-column-space-id={columnSpace.id}
-                    data-name={`${column.name}`}
                     label={(
-                      <div className="font-sans text-blue-400 text-sm">{`${column.name}`}</div>
+                      <div
+                        data-id={column.id}
+                        data-type={FileSystemEnum.Column}
+                        data-name={`${column.name}`}
+                        data-column-space-id={columnSpace.id}
+                      >カラム{`${column.name}`}</div>
                     )}
+                    onContextMenu={handleRightClickOnColumn}
+                    // onDragStart={handleDragStartOnColumn}
+                    // onDragEnter={handleDragEnterOnColumn}
+                    // onDrop={handleDropOnColumn}
+                    //TODO collapsableとかcellsとかのあれこれの値も入れて使う時もあるかもなのでその時考慮して追加も考える
                   />
                 )
             }
@@ -428,7 +292,7 @@ export const useColumnSpaceExplorerController = () => {
         </React.Fragment>
       )
     })
-  }, []);
+  }, [handleDragStartOnColumnSpace, handleDragEndOnColumnSpace, handleDropOnColumnSpace, handleRightClickOnColumnSpace, handleRightClickOnColumn])
 
   // D&Dの制御
   // useEffect(() => {
@@ -490,7 +354,7 @@ export const useColumnSpaceExplorerController = () => {
     closeNewColumnForm,
     handleChangeNewColumnNameInput,
     handleClickNewColmnFormClose,
-    handleClickCreateNewColumn,
+    handleSubmitNewColmnForm,
     //他
     newTopLevelColumnSpaceFormRef,
     newColumnFormRef,

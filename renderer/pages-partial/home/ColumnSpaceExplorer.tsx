@@ -64,7 +64,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
           <ModalHeader>カラムの新規作成</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <form ref={controller.newColumnFormRef} className="mb-3">
+            <form ref={controller.newColumnFormRef} onSubmit={(e) => e.preventDefault()} className="mb-3">
               <div>カラム名</div>
               <Input name="column-name" onChange={controller.handleChangeNewColumnNameInput} />
 
@@ -83,7 +83,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={controller.handleSubmitNewColmnForm} isDisabled={controller.newColumnFormName.length === 0} colorScheme="blue" mr={3} >作成</Button>
+            <Button onClick={controller.handleClickCreateNewColumn} isDisabled={controller.newColumnFormName.length === 0} colorScheme="blue" mr={3} >作成</Button>
             <Button variant="ghost" onClick={controller.handleClickNewColmnFormClose}>キャンセル</Button>
           </ModalFooter>
         </ModalContent>
