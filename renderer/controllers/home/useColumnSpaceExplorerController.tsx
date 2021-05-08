@@ -53,6 +53,20 @@ export const useColumnSpaceExplorerController = () => {
   const lastAddedBorderElementRef = React.useRef(null);
   const isLeavingToParentColumnSpace = React.useRef(null);
 
+  /* -----------------------------------------------------一般----------------------------------------------------------- */
+
+  const handleClickColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    console.debug("カラムスペースのコンテキストメニュー表示");
+    event.preventDefault();
+    event.stopPropagation();
+
+    const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
+    setSelectedNodeId(targetDataset.id);
+
+  }, []);
+
+  /* -----------------------------------------------------コンテキストメニュー管理----------------------------------------------------------- */
+
   const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムスペースのコンテキストメニュー表示");
     event.preventDefault();
@@ -116,6 +130,8 @@ export const useColumnSpaceExplorerController = () => {
     });
   }, []);
 
+  /* -----------------------------------------------------各種フォーム管理----------------------------------------------------------- */
+
   const handleClickAddColumnSpaceButton = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムスペース追加ボタン押下");
     event.preventDefault();
@@ -164,7 +180,7 @@ export const useColumnSpaceExplorerController = () => {
   }, []);
 
   const handleClickCreateNewColumn = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    console.debug("カラム新規作成モーダルのsubmit");
+    console.debug("カラム新規作成モーダルの作成ボタン押下");
     try {
       const newColumnSpaces = await createColumnUseCase(
         new TrimedFilledString(newColumnFormRef.current.elements.namedItem("column-name").value),
@@ -405,6 +421,7 @@ export const useColumnSpaceExplorerController = () => {
                     draggable
                     key={column.id}
                     nodeId={column.id}
+                    onClick={handleClickColumn}
                     onDragStart={handleDragStartOnColumn}     //NOTE: なぜかこれがここでしか発火しないのでこっちに移動
                     onDragEnter={e => handleDragEnterOnColumn(e)}
                     onDragLeave={e => handleDragLeaveOnColumn(e)}

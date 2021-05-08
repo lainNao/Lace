@@ -7,19 +7,11 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({
-    label:"カラムを右クリしました",
+    label:"セルの追加（未実装）",
   }));
   contextMenu.append(new MenuItem({
-    label:"テスト1",
-    click:()=>{
-      dialog.showMessageBox({message:"コンテキストメニュー:テスト1クリック"})
-    }
+    label:"カラム名の変更（未実装）（これはf2でも発火するようにして）",
   }));
-  contextMenu.append(new MenuItem({
-    label:"テスト２",
-    click:()=>{
-      dialog.showMessageBox({message:"コンテキストメニュー:テスト２クリック"})
-    }
-  }));
+
   contextMenu.popup({window: remote.getCurrentWindow()});
 }
