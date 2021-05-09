@@ -73,6 +73,18 @@ export class ColumnSpaces {
     return this;
   }
 
+  // 子孫のカラムスペースを上書き
+  updateDescendantColumnSpace(columnSpace: ColumnSpace): ColumnSpaces {
+    for (let i=0; i<this.children.length; i++) {
+      if (this.children[i].id === columnSpace.id) {
+        this.children[i] = columnSpace;
+        return this;
+      }
+      this.children[i].childColumnSpaces.updateDescendantColumnSpace(columnSpace);
+    }
+    return this;
+  }
+
   // 子孫のカラムスペースに指定カラムスペースを追加
   addDescendantColumnSpace(columnSpace: ColumnSpace, toId: string): ColumnSpaces {
     for (let i=0; i<this.children.length; i++) {

@@ -5,7 +5,7 @@ import { ColumnDataType } from "../enums/app";
 import { Column } from "../models/Column";
 import { Cells } from "../models/Cells";
 
-export const createColumnUseCase = async(name: TrimedFilledString, toId: string, columnType: ColumnDataType): Promise<ColumnSpaces> => { //todo このcolumnType、enumになるはず
+export const createColumnUseCase = async(name: TrimedFilledString, toId: string, columnType: ColumnDataType): Promise<ColumnSpaces> => {
 
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();

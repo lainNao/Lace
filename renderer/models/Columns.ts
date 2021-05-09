@@ -1,3 +1,4 @@
+import { array_move } from "../modules/array";
 import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 import { Column } from "./Column";
 
@@ -30,6 +31,15 @@ export class Columns {
 
   toJSON(key) {
     return this.children;
+  }
+
+  findIndexOf(columnId: string): number {
+    return this.children.findIndex((column) => column.id === columnId);
+  }
+
+  moveColumnFromTo(fromIndex: number, toIndex: number): Columns {
+    this.children = array_move(this.children, fromIndex, toIndex);
+    return this;
   }
 
 }

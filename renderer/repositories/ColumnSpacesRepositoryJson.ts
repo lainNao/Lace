@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path';
 import { DB_FILE_PATH } from '../consts/path';
+import { ColumnSpace } from '../models/ColumnSpace';
 import { ColumnSpaces } from '../models/ColumnSpaces';
 import { getSaveDirPath } from '../modules/ipc';
 
@@ -8,6 +9,7 @@ import { getSaveDirPath } from '../modules/ipc';
 // TODO ファイルシステム触るみたいなことができる処理はもしかしたらメインプロセス側に移したほうが良いかも。というかnode.js全般？そうなると変更大変になる。まだ不明というか調べるの面倒なだけ
 export class ColumnSpacesRepositoryJson {
 
+  columnSpaces: ColumnSpaces;
   dbFilePath: string = DB_FILE_PATH;
   initialDB: any = [       //TODO モックなので後で直す
     {
@@ -42,6 +44,14 @@ export class ColumnSpacesRepositoryJson {
     return columnSpaces;
   }
 
+  async updateDescendantColumnSpace(columnSpace: ColumnSpace): Promise<ColumnSpaces> {
+    if (!this.columnSpaces) {
+      this.columnSpaces = await this.read();
+    }
+    this.columnSpaces = this.columnSpaces.updateDescendantColumnSpace(columnSpace);
+    return await this.save(this.columnSpaces);
+  }
+
   async readOrInitialize(): Promise<ColumnSpaces> {
     // TODO awaitしてるやつにtry-catch効かないかもなのであとで確認
     try {
@@ -54,7 +64,8 @@ export class ColumnSpacesRepositoryJson {
   async read(): Promise<ColumnSpaces> {
     const userDataPath = await getSaveDirPath();
     const fileString = await fs.promises.readFile(path.join(userDataPath, this.dbFilePath), "utf-8");
-    return ColumnSpaces.fromJSON(JSON.parse(fileString));
+    this.columnSpaces = ColumnSpaces.fromJSON(JSON.parse(fileString));
+    return this.columnSpaces;
   }
 
   async initialize(): Promise<ColumnSpaces> {

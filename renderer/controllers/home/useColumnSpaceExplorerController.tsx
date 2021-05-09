@@ -20,6 +20,7 @@ import { createColumnUseCase } from '../../usecases/createColumnUseCase';
 import { useDisclosure } from '@chakra-ui/react';
 import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/draggingNodeDatasetState';
 import { cloneDeep } from "lodash";
+import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
 
 const useStyles = makeStyles({
   label: {
@@ -234,7 +235,6 @@ export const useColumnSpaceExplorerController = () => {
 
     if (draggingNodeDataset && Number(draggingNodeDataset.type) === FileSystemEnum.Column && draggingNodeDataset.columnSpaceId === enteredColumnSpaceDataset.id) {
       // カラムをドラッグしており、その親のカラムスペースへのエンターの場合
-      console.log("親だよ")
       isLeavingToParentColumnSpace.current = true;
       lastAddedBorderElementRef.current.classList.remove("border-b-2");
       lastAddedBorderElementRef.current.classList.add("border-t-2");
@@ -264,27 +264,41 @@ export const useColumnSpaceExplorerController = () => {
     isLeavingToParentColumnSpace.current = false;
   }, []);
 
-  const handleDropOnColumnSpace = useCallback(async(event) => {
+  const handleDropOnColumnSpace = useRecoilCallback(({snapshot, set}) => async(event: React.DragEvent<HTMLElement>) => {
     console.debug("カラムスペースへのドロップ");
 
     if (lastAddedBorderElementRef.current) {
       lastAddedBorderElementRef.current.classList.remove("border-t-2");
       lastAddedBorderElementRef.current.classList.remove("border-b-2");
     }
-    // set(draggingNodeDatasetState, null);
+    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState);
+    if (draggingNodeDataset.type == FileSystemEnum.Column) {
 
-    if (event.dataTransfer.getData("draggingNodeType") != FileSystemEnum.ColumnSpace) {  //TODO こういうアサーション？的なのを1行で書きたい。ライブラリか専用APIありそうなので探す
+      if (draggingNodeDataset.columnSpaceId == (event.target as HTMLElement).dataset.id) {
+        // 親ならカラムをソートをする
+        try {
+          const newColumnSpaces = await changeColumnOrderUseCase(draggingNodeDataset.columnSpaceId, draggingNodeDataset.id);
+          setColumnSpaces(newColumnSpaces);
+        } catch(e) {
+          console.log(e.message);
+        }
+      }
+
+      set(draggingNodeDatasetState, null);
       return;
     }
 
+    // カラムスペースを移動する
     try {
       const fromId = event.dataTransfer.getData("columnSpaceId");
-      const toId = event.target.dataset.id;
+      const toId = (event.target as HTMLElement).dataset.id;
       const newColumnSpaces = await moveColumnSpaceUseCase(fromId, toId);
       setColumnSpaces(newColumnSpaces);
       setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, toId]);
     } catch (e) {
       console.log(e.message);
+    } finally {
+      set(draggingNodeDatasetState, null);
     }
   }, []);
 
@@ -299,7 +313,7 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("カラムへのドラッグエンター");
     event.preventDefault();
 
-    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
+    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState);
     if (Number(draggingNodeDataset.type) === FileSystemEnum.ColumnSpace) {
       return;
     }
@@ -308,17 +322,8 @@ export const useColumnSpaceExplorerController = () => {
     const enteredNodeDataset = enteredNode.parentElement.parentElement.parentElement.dataset;
     enteredNode.classList.remove("border-t-2");
 
-    // 親となるカラムスペースへのEnterなら  //TODO ここありえないな。このイベントハンドラはカラムにしかくっつけてないから　まあ後で…
-    // if (Number(enteredNodeDataset.type) === FileSystemEnum.ColumnSpace) {
-    //   if (enteredNodeDataset.id === draggingNodeDataset.columnSpaceId) {
-    //     //トップにあるdivに対して　event.target.classList.add("border-t-2")
-    //   }
-    //   return;
-    // }
-
     if (enteredNodeDataset.columnSpaceId === draggingNodeDataset.columnSpaceId) {
       // 同じカラムスペースのカラムへのEnterなら
-      console.log(enteredNode)
       enteredNode.classList.add("border-b-2");
       enteredNodeDataset.addedBorder = "true";
       lastAddedBorderElementRef.current = enteredNode;
@@ -327,6 +332,7 @@ export const useColumnSpaceExplorerController = () => {
       // 違うカラムスペースのカラムへのEnterなら
       lastAddedBorderElementRef.current.classList.remove("border-b-2");
       lastAddedBorderElementRef.current.classList.remove("border-t-2");
+      return;
     }
 
   }, []);
@@ -351,40 +357,41 @@ export const useColumnSpaceExplorerController = () => {
     event.preventDefault(); //NOTE: DragOverにてpreventDefaultしないとdropが発火しないため記述
   }, []);
 
-  const handleDropOnColumn = useRecoilCallback(({snapshot, set}) => async(event) => {
+  const handleDropOnColumn = useRecoilCallback(({snapshot, set}) => async(event: React.DragEvent<HTMLElement>) => {
     console.debug("カラムへのドロップ");
 
     const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
+    const targetColumnDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     // const draggingNodeDatasetCopied = cloneDeep(draggingNodeDataset);
     set(draggingNodeDatasetState, null);
 
+    if (lastAddedBorderElementRef.current) {
+      lastAddedBorderElementRef.current.classList.remove("border-b-2");
+      lastAddedBorderElementRef.current = null;
+    }
+
     // カラム以外のものがカラムにドロップされてもこれ以上することがないのでここでリターン
     if (Number(draggingNodeDataset.type) === FileSystemEnum.ColumnSpace) {
+      console.debug("カラムスペースをカラムにドロップすることに対するアクションは未定です");
       return;
     }
 
-    lastAddedBorderElementRef.current.classList.remove("border-b-2");
-    lastAddedBorderElementRef.current = null;
+    // 違うカラムスペースのもの同士ならDnDではすることがないのでここでリターン
+    if (targetColumnDataset.columnSpaceId !== draggingNodeDataset.columnSpaceId) {
+      console.debug("カラムスペースが異なります");
+      return;
+    }
 
-
-    // ここ、適切な位置でデリートして。下で使うなら保留するとかして。でもreturnされたら
-
-
-    // const targetDataset = event.target.dataset;
-    // if (event.dataTransfer.getData("columnSpaceId") !== targetDataset.columnSpaceId) { //TODO これ、ここでやる必要ないかも　ドメイン層で勝手にやるはず
-    //   return;
-    // }
-
-    // event.target.classList.add("border-b-2")
-
-    // で、DROPした時にその状態を読み取って順番入れ替えて保存
+    // DROPした時にその状態を読み取って順番入れ替えて保存
+    // TODO 親にドロップされたら、今ドラッグしてるやつを、指定のカラムスペースの先頭に移動すればいい（ただここはカラムスペースのところに処理書くことになる）
 
     try {
-
+      const newColumnSpaces = await changeColumnOrderUseCase(targetColumnDataset.columnSpaceId, draggingNodeDataset.id, targetColumnDataset.id);
+      setColumnSpaces(newColumnSpaces);
     } catch(e) {
-
+      console.log(e.message);
     }
-  }, [draggingNodeDataset]);
+  }, [columnSpaces, draggingNodeDataset]);
 
   // ColumnSpacesのツリーをレンダリング
   const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
