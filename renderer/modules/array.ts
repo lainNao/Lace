@@ -1,4 +1,4 @@
-// 配列の要素を指定インデックスに移動する（https://qiita.com/nowayoutbut/items/991515b32805e21f8892）
+// 配列の要素を指定インデックスに移動する
 export function array_move(array, fromIndex, toIndex) {
 	if (fromIndex === toIndex) {
 		return array;
