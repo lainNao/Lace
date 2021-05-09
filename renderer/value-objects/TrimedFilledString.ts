@@ -17,8 +17,4 @@ export class TrimedFilledString {
     return this.value;
   }
 
-  isValid(): boolean {
-    return this.value.length > 0;
-  }
-
 }
