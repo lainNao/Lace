@@ -150,7 +150,7 @@ export class ColumnSpaces {
 
   // 子カラムスペースを持つかどうか
   hasChildColumnSpace(): boolean {
-    return this.children.length > 0;   //TODO ここの条件おかしくない？これだけ…？
+    return this.children.length > 0;
   }
 
 }
