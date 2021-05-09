@@ -53,10 +53,10 @@ export class ColumnSpacesRepositoryJson {
   }
 
   async readOrInitialize(): Promise<ColumnSpaces> {
-    // TODO awaitしてるやつにtry-catch効かないかもなのであとで確認
     try {
       return await this.read();
     } catch {
+      // TODO これ、readに失敗しただけでイニシャライズしちゃうのはきついのでは…　絶対に良くないと思う…　readとinitializeは実行タイミングはユーザーの選択によって分けたほうがいいと思う…
       return await this.initialize()
     }
   }
