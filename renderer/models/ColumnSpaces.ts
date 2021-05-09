@@ -12,7 +12,7 @@ interface ColumnSpacesConstructorArgs {
 */
 export class ColumnSpaces {
 
-  children: ColumnSpace[];
+  private children: ColumnSpace[];
 
   constructor(args?: ColumnSpacesConstructorArgs) {
     this.children = (args == undefined) ? [] : args.children;
@@ -31,6 +31,10 @@ export class ColumnSpaces {
 
   toJSON(key) {
     return this.children;
+  }
+
+  mapChildren(callback: (value: ColumnSpace, index: number, array: ColumnSpace[]) => unknown): unknown[]  {
+    return this.children.map(callback);
   }
 
   // 子孫のカラムスペースから指定IDのものを探して返す

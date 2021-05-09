@@ -7,7 +7,7 @@ interface ColumnsConstructorArgs {
 }
 
 export class Columns {
-  children: Column[];
+  private children: Column[];
 
   constructor(args?: ColumnsConstructorArgs) {
     this.children = (args == undefined) ? [] : args.children;
@@ -22,6 +22,10 @@ export class Columns {
         cells: column.cells,
       })
     )});
+  }
+
+  mapChildren(callback: (value: Column, index: number, array: Column[]) => unknown): unknown[]  {
+    return this.children.map(callback);
   }
 
   push(column: Column): Columns {

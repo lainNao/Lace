@@ -6,7 +6,7 @@ interface RelatedCellsConstructorArgs {
 
 export class RelatedCells {
 
-  children: RelatedCell[];
+  private children: RelatedCell[];
 
   constructor(args?: RelatedCellsConstructorArgs) {
     //TODO: 不変条件
@@ -30,4 +30,7 @@ export class RelatedCells {
     return this.children;
   }
 
+  mapChildren(callback: (value: RelatedCell, index: number, array: RelatedCell[]) => unknown): unknown[]  {
+    return this.children.map(callback);
+  }
 }

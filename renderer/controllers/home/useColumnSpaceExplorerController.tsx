@@ -396,7 +396,7 @@ export const useColumnSpaceExplorerController = () => {
   // ColumnSpacesのツリーをレンダリング
   const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
 
-    return columnSpaces.children.map((columnSpace) => {
+    return columnSpaces.mapChildren((columnSpace) => {
       return (
         <React.Fragment key={columnSpace.id} >
           <TreeItem
@@ -428,7 +428,7 @@ export const useColumnSpaceExplorerController = () => {
               // カラムスペースを再帰レンダリング
               ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
               // 末端（カラム）をレンダリング
-              : columnSpace.columns.children.map((column) =>
+              : columnSpace.columns.mapChildren((column) =>
                   <TreeItem
                     draggable
                     key={column.id}

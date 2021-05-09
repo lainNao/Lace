@@ -4,7 +4,7 @@ export enum FileSystemEnum {
   Cell,
 }
 
-export enum ColumnDataType {
+export enum ColumnDataType {    //TODO ここ、最終的にポリモーフィズムで使われれうはずなので、このenumもどうなるかわからない。よりよい書き方あれば変更
   File = 0,   //これ「Sound」「Image」「Video」とかに分けなくて大丈夫？
   PlainText = 1,
   Markdown = 2,
