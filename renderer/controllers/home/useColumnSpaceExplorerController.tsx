@@ -407,7 +407,7 @@ export const useColumnSpaceExplorerController = () => {
                 data-type={FileSystemEnum.ColumnSpace}
                 data-id={columnSpace.id}
                 data-name={`${columnSpace.name}`}
-                data-has-child-column-spaces={!!(columnSpace.canAddChildColumnSpace())}
+                data-has-child-column-spaces={!!(columnSpace.hasChildColumnSpace())}
                 data-has-columns={!!(columnSpace.hasColumns())}
                 onDragStart={handleDragStartOnColumnSpace}
                 onDragEnter={handleDragEnterOnColumnSpace}
@@ -424,7 +424,7 @@ export const useColumnSpaceExplorerController = () => {
               "timeout": 0
             }}
           >
-            {columnSpace.canAddChildColumnSpace()
+            {columnSpace.hasChildColumnSpace()
               // カラムスペースを再帰レンダリング
               ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
               // 末端（カラム）をレンダリング

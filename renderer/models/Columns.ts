@@ -46,4 +46,9 @@ export class Columns {
     return this;
   }
 
+  // カラムを持っているか
+  hasColumns(): boolean {
+    return this.children.length > 0;
+  }
+
 }

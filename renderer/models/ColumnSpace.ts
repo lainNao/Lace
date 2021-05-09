@@ -37,15 +37,15 @@ export class ColumnSpace {
   }
 
   canAddColumn(): boolean {
-    return this.childColumnSpaces.children.length === 0;
+    return this.childColumnSpaces.canAddColumn();
   }
 
-  canAddChildColumnSpace(): boolean {
-    return this.childColumnSpaces.children.length > 0;   //TODO ここの条件おかしくない？
+  hasChildColumnSpace(): boolean {
+    return this.childColumnSpaces.hasChildColumnSpace();
   }
 
   hasColumns(): boolean {
-    return (this.columns == null || this.columns.children.length > 0)
+    return this.columns.hasColumns();
   }
 
 }

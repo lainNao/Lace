@@ -143,4 +143,14 @@ export class ColumnSpaces {
     return true;
   }
 
+  // 子カラムを追加できるかどうか
+  canAddColumn(): boolean {
+    return this.children.length === 0;
+  }
+
+  // 子カラムスペースを持つかどうか
+  hasChildColumnSpace(): boolean {
+    return this.children.length > 0;   //TODO ここの条件おかしくない？これだけ…？
+  }
+
 }
