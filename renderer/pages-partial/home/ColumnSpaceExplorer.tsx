@@ -118,11 +118,13 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
   return (
     <div data-is-root-space="true" className={`${props.classeName}`} onContextMenu={controller.handleRightClickOnEmptySpace}>
 
+      {/* TODO エクスプローラーの一番上の部分 */}
       <div>
         <span>カラムスペース</span>
         <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={controller.handleClickAddColumnSpaceButton}/>
       </div>
 
+      {/* ツリービュー */}
       <TreeView
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
@@ -134,10 +136,12 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
         {generateColumnSpaceElementTree(controller.columnSpaces)}
       </TreeView>
 
+      {/* トップレベルのカラムスペース追加フォーム */}
       <form onSubmit={controller.handleSubmitTopLevelNewColumnSpaceForm} className="hidden ml-5" ref={controller.newTopLevelColumnSpaceFormRef} >
         <input name="new-column-space-name" className="bg-gray-700" spellCheck={false}></input>
       </form>
 
+      {/* カラム新規作成モーダル */}
       <Modal isOpen={controller.isNewColumnFormOpen} onClose={controller.closeNewColumnForm}>
         <ModalOverlay />
         <ModalContent>
@@ -147,7 +151,6 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
             <form ref={controller.newColumnFormRef} onSubmit={(e) => e.preventDefault()} className="mb-3">
               <div>カラム名</div>
               <Input name="column-name" onChange={controller.handleChangeNewColumnNameInput} />
-
               <div className="mt-4">格納するデータタイプ</div>
               <Select name="column-type" >
                 {Object.values(ColumnDataType)
