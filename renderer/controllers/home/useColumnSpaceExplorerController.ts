@@ -22,7 +22,7 @@ import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCas
 // TODO ルート階層のカラムスペースに移動する処理思いついてなかった。作る。empty space部分にDnDしたらおなじみの処理すればいいだけ
 // TODO expandedを変更する時、先祖も全部expandedに加えないといけないかも？（調べて）。なんかホットリロードされた時に先祖が閉じるっぽい現象がたまにある（単なるバグかもなので見てみて）
 
-// memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
+//NOTE: 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
 export const useColumnSpaceExplorerController = () => {
   // メタ状態類
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
@@ -30,8 +30,8 @@ export const useColumnSpaceExplorerController = () => {
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
-  const [newColumnFormName, setNewColumnFormName] = useState<string>(""); //NOTE: 新しいカラムを追加する時の名前部分の入力値。こっちは正しい。下が紛らわしい
-  const [newColumnFormId, setNewColumnFormId] = useState<string>(null);   //NOTE: 新しいカラムを追加する対象のカラムスペースのID。名前紛らわしいから変えたい
+  const [newColumnFormName, setNewColumnFormName] = useState<string>("");
+  const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
@@ -87,7 +87,7 @@ export const useColumnSpaceExplorerController = () => {
         newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
       },
       handleClickAddChildColumn: async () => {
-        setNewColumnFormId(targetDataset.id);
+        setNewColumnFormParentId(targetDataset.id);
         openNewColumnForm();
         newColumnFormRef.current.elements.namedItem("column-name").focus();
       },
@@ -172,12 +172,12 @@ export const useColumnSpaceExplorerController = () => {
     try {
       const newColumnSpaces = await createColumnUseCase(
         new TrimedFilledString(newColumnFormRef.current.elements.namedItem("column-name").value),
-        newColumnFormId,
+        newColumnFormParentId,
         newColumnFormRef.current.elements.namedItem("column-type").value,
       );
       setColumnSpaces(newColumnSpaces);
-      if (!expandedColumnSpaces.includes(newColumnFormId)) {
-        setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, newColumnFormId]);
+      if (!expandedColumnSpaces.includes(newColumnFormParentId)) {
+        setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, newColumnFormParentId]);
       }
     } catch (e) {
       console.log(e.message);
@@ -185,7 +185,7 @@ export const useColumnSpaceExplorerController = () => {
       setNewColumnFormName("");
       closeNewColumnForm();
     }
-  }, [newColumnFormId])
+  }, [newColumnFormParentId])
 
   const handleChangeNewColumnNameInput = useCallback((event) => {
     console.debug("カラム新規作成モーダルのカラム名インプットのonchange");
@@ -234,10 +234,6 @@ export const useColumnSpaceExplorerController = () => {
         lastAddedBorderElementRef.current.classList.remove("border-t-2");
       }
     }
-
-    // if (event.dataTransfer.getData("columnSpaceId") !== targetDataset.columnSpaceId) { //TODO これ、ここでやる必要ないかも　ドメイン層で勝手にやるはず
-    //   return;
-    // }
 
   }, []);
 
