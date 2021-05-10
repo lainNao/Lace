@@ -19,13 +19,8 @@ import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/dragg
 import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
 
 
-// TODO テーマとかどうするか
 // TODO ルート階層のカラムスペースに移動する処理思いついてなかった。作る。empty space部分にDnDしたらおなじみの処理すればいいだけ
-// TODO カラムの右側にカラムタイプをラベルで表示しておく（またはアイコンで左に）
-// TODO カラムのデータタイプの選択肢は多言語対応させたい（データとして格納するEnumとは別のまた見せる用の選択肢のEnumとか作ればいいかも）
-// TODO カラムをDnDで入れ替えたい
 // TODO expandedを変更する時、先祖も全部expandedに加えないといけないかも？（調べて）。なんかホットリロードされた時に先祖が閉じるっぽい現象がたまにある（単なるバグかもなので見てみて）
-// TODO カラムは縦線でつなげたい（通じる言葉で書けない）。カラム今青文字で判断してるけどそれを青文字じゃなくて、左側に「|」の線置いて判断したい感じ
 
 // memo 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
 export const useColumnSpaceExplorerController = () => {
