@@ -22,11 +22,6 @@ import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/dragg
 import { cloneDeep } from "lodash";
 import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
 
-const useStyles = makeStyles({
-  label: {
-    fontSize: "15px"
-  },
-});
 
 // TODO テーマとかどうするか
 // TODO ルート階層のカラムスペースに移動する処理思いついてなかった。作る。empty space部分にDnDしたらおなじみの処理すればいいだけ
@@ -41,7 +36,6 @@ export const useColumnSpaceExplorerController = () => {
   // メタ状態類
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   // UI状態類
-  const classes = useStyles()
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
@@ -393,72 +387,6 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, [columnSpaces, draggingNodeDataset]);
 
-  // ColumnSpacesのツリーをレンダリング
-  const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
-
-    return columnSpaces.mapChildren((columnSpace) => {
-      return (
-        <React.Fragment key={columnSpace.id} >
-          <TreeItem
-            nodeId={columnSpace.id}
-            label={
-              <div
-                draggable
-                data-type={FileSystemEnum.ColumnSpace}
-                data-id={columnSpace.id}
-                data-name={`${columnSpace.name}`}
-                data-has-child-column-spaces={!!(columnSpace.hasChildColumnSpace())}
-                data-has-columns={!!(columnSpace.hasColumns())}
-                onDragStart={handleDragStartOnColumnSpace}
-                onDragEnter={handleDragEnterOnColumnSpace}
-                onDragLeave={handleDragLeaveOnColumnSpace}
-                onDragOver={handleDragOverOnColumnSpace}
-                onDrop={handleDropOnColumnSpace}
-                onContextMenu={handleRightClickOnColumnSpace}
-                >{`${columnSpace.name}`}</div>
-            }
-            classes={{
-              label: classes.label,
-            }}
-            TransitionProps={{
-              "timeout": 0
-            }}
-          >
-            {columnSpace.hasChildColumnSpace()
-              // カラムスペースを再帰レンダリング
-              ? generateColumnSpaceElementTree(columnSpace.childColumnSpaces)
-              // 末端（カラム）をレンダリング
-              : columnSpace.columns.mapChildren((column) =>
-                  <TreeItem
-                    draggable
-                    key={column.id}
-                    nodeId={column.id}
-                    onClick={handleClickColumn}
-                    onDragStart={handleDragStartOnColumn}     //NOTE: なぜかこれがここでしか発火しないのでこっちに移動
-                    onDragEnter={e => handleDragEnterOnColumn(e)}
-                    onDragLeave={e => handleDragLeaveOnColumn(e)}
-                    onDragOver={handleDragOverOnColumn}
-                    onDrop={handleDropOnColumn}
-                    onContextMenu={handleRightClickOnColumn}
-                    data-type={FileSystemEnum.Column}
-                    data-id={column.id}
-                    data-column-space-id={columnSpace.id}
-                    data-name={`${column.name}`}
-                    label={(
-                      <div className="font-sans text-blue-400 text-sm">{`${column.name}`}</div>
-                    )}
-                  />
-                )
-            }
-          </TreeItem>
-          <form className="ml-9 hidden" data-id={columnSpace.id} onSubmit={event => {handleSubmitNewColumnSpaceForm(event, columnSpace.id)}} ref={elem => newColumnSpacesFormRefs.current[columnSpace.id] = elem}>
-            <input name="new-column-space-name" className="bg-gray-700" spellCheck={false}></input>
-          </form>
-        </React.Fragment>
-      )
-    })
-  }, []);
-
   // D&Dの制御
   // useEffect(() => {
 
@@ -509,19 +437,33 @@ export const useColumnSpaceExplorerController = () => {
     selectedNodeId,
     isNewColumnFormOpen,
     newColumnFormName,
-    //関数
-    generateColumnSpaceElementTree,
+    //ref
+    newTopLevelColumnSpaceFormRef,
+    newColumnFormRef,
+    newColumnSpacesFormRefs,
     //イベントハンドラ
     handleClickAddColumnSpaceButton,
     handleRightClickOnEmptySpace,
     handleSubmitTopLevelNewColumnSpaceForm,
     handleTreeNodeToggle,
-    closeNewColumnForm,
     handleChangeNewColumnNameInput,
     handleClickNewColmnFormClose,
     handleClickCreateNewColumn,
+    handleRightClickOnColumn,
+    handleClickColumn,
+    handleDragOverOnColumn,
+    handleDropOnColumn,
+    handleDragEnterOnColumn,
+    handleDragLeaveOnColumn,
+    handleDragStartOnColumn,
+    handleDragOverOnColumnSpace,
+    handleDragLeaveOnColumnSpace,
+    handleDropOnColumnSpace,
+    handleDragEnterOnColumnSpace,
+    handleDragStartOnColumnSpace,
+    handleSubmitNewColumnSpaceForm,
+    handleRightClickOnColumnSpace,
     //他
-    newTopLevelColumnSpaceFormRef,
-    newColumnFormRef,
+    closeNewColumnForm,
   }
 }
