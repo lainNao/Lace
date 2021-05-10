@@ -116,7 +116,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
   }, []);
 
   return (
-    <div data-is-root-space="true" className={`${props.classeName}`} onContextMenu={controller.handleRightClickOnEmptySpace}>
+    <div className={`${props.classeName}`} onContextMenu={controller.handleRightClickOnEmptySpace}>
 
       {/* TODO エクスプローラーの一番上の部分 */}
       <div>
