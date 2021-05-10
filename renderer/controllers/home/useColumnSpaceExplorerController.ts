@@ -40,7 +40,7 @@ export const useColumnSpaceExplorerController = () => {
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
-  const [newColumnFormId, setNewColumnFormId] = useState<string>(null);
+  const [newColumnFormId, setNewColumnFormId] = useState<string>(null);   //NOTE: 新しいカラムを追加する対象のカラムスペースのID。名前紛らわしいから変えたい
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
@@ -181,9 +181,12 @@ export const useColumnSpaceExplorerController = () => {
       const newColumnSpaces = await createColumnUseCase(
         new TrimedFilledString(newColumnFormRef.current.elements.namedItem("column-name").value),
         newColumnFormId,
-        newColumnFormRef.current.elements.namedItem("column-type").value
+        newColumnFormRef.current.elements.namedItem("column-type").value,
       );
       setColumnSpaces(newColumnSpaces);
+      if (!expandedColumnSpaces.includes(newColumnFormId)) {
+        setExpandedColumnSpaces((currentExpanded) => [...currentExpanded, newColumnFormId]);
+      }
     } catch (e) {
       console.log(e.message);
     } finally {
@@ -206,7 +209,7 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("ツリービュー展開のトグル");
     localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedNodeIds));
     setExpandedColumnSpaces(expandedNodeIds);
-  }, []);
+  }, [expandedColumnSpaces]);
 
   /* -----------------------------------------------------カラムスペースのDnD----------------------------------------------------------- */
 
