@@ -1,10 +1,7 @@
 import React, {ReactElement, useCallback, useEffect, useState} from 'react';
-import TreeItem from '@material-ui/lab/TreeItem';
-import { makeStyles } from '@material-ui/core/styles';
-import { useRecoilCallback, useRecoilState, useRecoilValueLoadable } from 'recoil';
+import { useRecoilCallback, useRecoilState } from 'recoil';
 import columnSpacesState from '../../atoms/columnSpacesState';
-import { ColumnDataType, FileSystemEnum } from "../../enums/app"
-import { ColumnSpaces } from '../../models/ColumnSpaces';
+import { FileSystemEnum } from "../../enums/app"
 import { createTopLevelColumnSpaceUseCase } from '../../usecases/createTopLevelColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../../usecases/moveColumnSpaceUseCase';
 import { showColumnContextMenu } from '../../context-menus/showColumnContextMenu';
@@ -19,7 +16,6 @@ import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
 import { createColumnUseCase } from '../../usecases/createColumnUseCase';
 import { useDisclosure } from '@chakra-ui/react';
 import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/draggingNodeDatasetState';
-import { cloneDeep } from "lodash";
 import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
 
 

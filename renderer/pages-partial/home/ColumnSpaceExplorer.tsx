@@ -45,6 +45,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       <div>読込中</div>
     )
   }
+
   const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
 
     return columnSpaces.mapChildren((columnSpace) => {
