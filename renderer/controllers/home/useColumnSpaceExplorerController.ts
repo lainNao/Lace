@@ -39,7 +39,7 @@ export const useColumnSpaceExplorerController = () => {
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
-  const [newColumnFormName, setNewColumnFormName] = useState<string>("");
+  const [newColumnFormName, setNewColumnFormName] = useState<string>(""); //NOTE: 新しいカラムを追加する時の名前部分の入力値。こっちは正しい。下が紛らわしい
   const [newColumnFormId, setNewColumnFormId] = useState<string>(null);   //NOTE: 新しいカラムを追加する対象のカラムスペースのID。名前紛らわしいから変えたい
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
   // ref
@@ -98,6 +98,7 @@ export const useColumnSpaceExplorerController = () => {
       handleClickAddChildColumn: async () => {
         setNewColumnFormId(targetDataset.id);
         openNewColumnForm();
+        newColumnFormRef.current.elements.namedItem("column-name").focus();
       },
       targetColumnSpaceDataset: targetDataset,
     });
