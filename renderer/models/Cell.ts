@@ -29,7 +29,7 @@ export class Cell {
   get type() { return this._type; }
   get relatedCells() { return this._relatedCells; }
 
-  toJSON(key) {
+  toJSON(key) { //TODO この「key」とか他のtoJSONでも適当につけっぱにしてるけどなんなのか後でどうにかしたい全般的に
     return {
       id: this._id,
       path: this.path,
