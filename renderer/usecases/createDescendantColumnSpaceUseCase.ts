@@ -14,5 +14,4 @@ export const createDescendantColumnSpaceUseCase = async(parentColumnSpaceId: str
   }), parentColumnSpaceId);
   await columnSpacesRepository.save(newRootColumnSpaces);
   return newRootColumnSpaces;
-
 }
