@@ -128,8 +128,8 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
     <div
       className={`${props.classeName}`}
       onContextMenu={controller.handleRightClickOnEmptySpace}
-      onDrop={controller.handleDropOnEmptySpace}
       onDragOver={controller.handleDragOverOnEmptySpace}
+      onDrop={controller.handleDropOnEmptySpace}
     >
 
       {/* TODO エクスプローラーの一番上の部分 */}
