@@ -401,26 +401,6 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------他----------------------------------------------------------- */
 
-  // const addExpandedColumnSpace = useCallback((columnSpaceId: string) => {
-  //   console.debug("開いているカラムスペースリストに追加");
-  //   setExpandedColumnSpaces((previousExpandedColumnSpaces) => {
-  //     return Array.from(new Set([...previousExpandedColumnSpaces, columnSpaceId]));
-  //   });
-  // }, []);
-
-  // const setExpandedColumnSpaceAll = useCallback((columnSpaceIds: string[]) => {
-  //   console.debug("開いているカラムスペースリストにセット");
-  //   setExpandedColumnSpaces(columnSpaceIds);
-  // }, []);
-
-
-  // D&Dの制御
-  // useEffect(() => {
-
-  //   document.ondragover = document.ondrop = (e) => {
-  //     e.preventDefault();
-  //   }
-
   //   // いずれdocument.bodyへのドロップじゃないのに変えるべき
   //   // そもそもファイル類追加のときのみDnDを受け入れるようにする
   //   document.body.ondrop = async (e) => {
