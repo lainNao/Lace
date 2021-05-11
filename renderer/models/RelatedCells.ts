@@ -6,12 +6,14 @@ interface RelatedCellsConstructorArgs {
 
 export class RelatedCells {
 
-  private children: RelatedCell[];
+  private _children: RelatedCell[];
 
   constructor(args?: RelatedCellsConstructorArgs) {
     //TODO: 不変条件
-    this.children = (args == undefined) ? [] : args.children;
+    this._children = (args == undefined) ? [] : args.children;
   }
+
+  get children(): RelatedCell[] { return this._children}
 
   static fromJSON(json) {
     const children = json.map((relatedCell) => {
@@ -27,10 +29,10 @@ export class RelatedCells {
   }
 
   toJSON(key) {
-    return this.children;
+    return this._children;
   }
 
   mapChildren(callback: (value: RelatedCell, index: number, array: RelatedCell[]) => unknown): unknown[]  {
-    return this.children.map(callback);
+    return this._children.map(callback);
   }
 }

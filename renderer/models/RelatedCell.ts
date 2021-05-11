@@ -1,15 +1,27 @@
 
 export class RelatedCell {
-  id: string;
-  columnSpaceId: string;
-  cellId: string;
+  private _id: string;
+  private _columnSpaceId: string;
+  private _cellId: string;
 
   constructor(props) {
     //TODO 不変条件
     const id = props.id;
-    this.id = id;
-    this.columnSpaceId = props.columnSpaceId;
-    this.cellId = props.cellId;
+    this._id = id;
+    this._columnSpaceId = props.columnSpaceId;
+    this._cellId = props.cellId;
+  }
+
+  get id() { return this._id; }
+  get columnSpaceId() { return this._columnSpaceId; }
+  get cellId() { return this._cellId; }
+
+  toJSON(key) {
+    return {
+      id: this._id,
+      columnSpaceId: this._columnSpaceId,
+      cellId: this._cellId,
+    }
   }
 
 }

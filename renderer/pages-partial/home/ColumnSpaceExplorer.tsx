@@ -66,7 +66,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                 draggable
                 data-type={FileSystemEnum.ColumnSpace}
                 data-id={columnSpace.id}
-                data-name={`${columnSpace.name}`}
+                data-name={columnSpace.name}
                 data-has-child-column-spaces={!!(columnSpace.hasChildColumnSpace())}
                 data-has-columns={!!(columnSpace.hasColumns())}
                 onDragStart={controller.handleDragStartOnColumnSpace}
@@ -75,7 +75,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                 onDragOver={controller.handleDragOverOnColumnSpace}
                 onDrop={controller.handleDropOnColumnSpace}
                 onContextMenu={controller.handleRightClickOnColumnSpace}
-                >{`${columnSpace.name}`}</div>
+                >{columnSpace.name}</div>
             }
             classes={{
               label: classes.label,
@@ -103,7 +103,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                     data-type={FileSystemEnum.Column}
                     data-id={column.id}
                     data-column-space-id={columnSpace.id}
-                    data-name={`${column.name}`}
+                    data-name={column.name}
                     label={(
                       <div className="font-sans text-blue-400 text-sm">{`${column.name}`}</div>
                     )}

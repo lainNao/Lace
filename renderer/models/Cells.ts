@@ -6,12 +6,14 @@ interface CellsConstructorArgs {
 
 export class Cells {
 
-  private children: Cell[];
+  private _children: Cell[];
 
   constructor(args?: CellsConstructorArgs) {
     //TODO: 不変条件
-    this.children = (args == undefined) ? [] : args.children;
+    this._children = (args == undefined) ? [] : args.children;
   }
+
+  get children(): Cell[] { return this._children }
 
   addCell(cell: Cell): void {  //TODO: 失敗したら例外出す
     this.children.push(cell);
@@ -29,10 +31,10 @@ export class Cells {
   }
 
   toJSON(key) {
-    return this.children;
+    return this._children;
   }
 
   mapChildren(callback: (value: Cell, index: number, array: Cell[]) => unknown): unknown[]  {
-    return this.children.map(callback);
+    return this._children.map(callback);
   }
 }

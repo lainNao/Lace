@@ -7,10 +7,12 @@ interface ColumnsConstructorArgs {
 }
 
 export class Columns {
-  private children: Column[];
+  private _children: Column[];
+
+  get children(): Column[] { return this._children }
 
   constructor(args?: ColumnsConstructorArgs) {
-    this.children = (args == undefined) ? [] : args.children;
+    this._children = (args == undefined) ? [] : args.children;
   }
 
   static fromJSON(json) {
@@ -42,7 +44,7 @@ export class Columns {
   }
 
   moveColumnFromTo(fromIndex: number, toIndex: number): Columns {
-    this.children = array_move(this.children, fromIndex, toIndex);
+    this._children = array_move(this.children, fromIndex, toIndex);
     return this;
   }
 

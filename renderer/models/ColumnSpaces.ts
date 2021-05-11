@@ -12,11 +12,13 @@ interface ColumnSpacesConstructorArgs {
 */
 export class ColumnSpaces {
 
-  private children: ColumnSpace[];
+  private _children: ColumnSpace[];
 
   constructor(args?: ColumnSpacesConstructorArgs) {
-    this.children = (args == undefined) ? [] : args.children;
+    this._children = (args == undefined) ? [] : args.children;
   }
+
+  get children(): ColumnSpace[] { return this._children; }
 
   static fromJSON(json) {
     return new ColumnSpaces({
@@ -30,20 +32,20 @@ export class ColumnSpaces {
   }
 
   toJSON(key) {
-    return this.children;
+    return this._children;
   }
 
   mapChildren(callback: (value: ColumnSpace, index: number, array: ColumnSpace[]) => unknown): unknown[]  {
-    return this.children.map(callback);
+    return this._children.map(callback);
   }
 
   // 子孫のカラムスペースから指定IDのものを探して返す
   findDescendantColumnSpace(targetId: string): ColumnSpace {
-    for (let i=0; i<this.children.length; i++) {
-      if (this.children[i].id === targetId) {
-        return this.children[i];
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === targetId) {
+        return this._children[i];
       }
-      const columnSpace = this.children[i].childColumnSpaces.findDescendantColumnSpace(targetId);
+      const columnSpace = this._children[i].findDescendantColumnSpace(targetId);
       if (columnSpace) {
         return columnSpace;
       }
@@ -52,9 +54,9 @@ export class ColumnSpaces {
 
   // 子のカラムスペースから指定IDのものを削除
   removeChildColumnSpace(targetId: string): ColumnSpaces {
-    for (let i=0; i<this.children.length; i++) {
-      if (this.children[i].id === targetId) {
-        this.children.splice(i, 1);
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === targetId) {
+        this._children.splice(i, 1);
         return this;
       }
     }
@@ -63,53 +65,53 @@ export class ColumnSpaces {
 
   // 子孫のカラムスペースから指定IDのものを削除
   removeDescendantColumnSpace(targetId: string): ColumnSpaces {
-    for (let i=0; i<this.children.length; i++) {
-      if (this.children[i].id === targetId) {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === targetId) {
         return this.removeChildColumnSpace(targetId);
       }
-      this.children[i].childColumnSpaces.removeDescendantColumnSpace(targetId);
+      this._children[i].removeDescendantColumnSpace(targetId);
     }
     return this;
   }
 
   // 子に新規カラムスペースを追加
   push(columnSpace: ColumnSpace): ColumnSpaces {
-    this.children.push(columnSpace);
+    this._children.push(columnSpace);
     return this;
   }
 
   // 子孫のカラムスペースを上書き
   updateDescendantColumnSpace(columnSpace: ColumnSpace): ColumnSpaces {
-    for (let i=0; i<this.children.length; i++) {
-      if (this.children[i].id === columnSpace.id) {
-        this.children[i] = columnSpace;
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === columnSpace.id) {
+        this._children[i] = columnSpace;
         return this;
       }
-      this.children[i].childColumnSpaces.updateDescendantColumnSpace(columnSpace);
+      this._children[i].updateDescendantColumnSpace(columnSpace);
     }
     return this;
   }
 
   // 子孫のカラムスペースに指定カラムスペースを追加
   addDescendantColumnSpace(columnSpace: ColumnSpace, toId: string): ColumnSpaces {
-    for (let i=0; i<this.children.length; i++) {
-      if (this.children[i].id === toId) {
-        this.children[i].childColumnSpaces = this.children[i].childColumnSpaces.push(columnSpace);
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === toId) {
+        this._children[i].addChildColumnSpace(columnSpace);
         return this;
       }
-      this.children[i].childColumnSpaces.addDescendantColumnSpace(columnSpace, toId);
+      this._children[i].addDescendantColumnSpace(columnSpace, toId);
     }
     return this;
   }
 
   // 子孫のカラムスペースに指定カラムを追加
   addDescendantColumn(column: Column, toId: string): ColumnSpaces {
-    for (let i=0; i<this.children.length; i++) {
-      if (this.children[i].id === toId) {
-        this.children[i].addColumn(column);
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === toId) {
+        this._children[i].addColumn(column);
         return this;
       }
-      this.children[i].childColumnSpaces.addDescendantColumn(column, toId);
+      this._children[i].addDescendantColumn(column, toId);
     }
     return this;
   }
@@ -172,12 +174,12 @@ export class ColumnSpaces {
 
   // 子カラムを追加できるかどうか
   canAddColumn(): boolean {
-    return this.children.length === 0;
+    return this._children.length === 0;
   }
 
   // 子カラムスペースを持つかどうか
   hasChildColumnSpace(): boolean {
-    return this.children.length > 0;
+    return this._children.length > 0;
   }
 
 }

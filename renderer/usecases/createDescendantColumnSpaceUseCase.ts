@@ -13,7 +13,6 @@ export const createDescendantColumnSpaceUseCase = async(parentColumnSpaceId: str
     "columns": new Columns(),
   }), parentColumnSpaceId);
   await columnSpacesRepository.save(newRootColumnSpaces);
-  console.log(newRootColumnSpaces)
   return newRootColumnSpaces;
 
 }

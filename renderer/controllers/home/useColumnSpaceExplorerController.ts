@@ -73,7 +73,7 @@ export const useColumnSpaceExplorerController = () => {
               const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
               setColumnSpaces(newColumnSpaces);
             } catch (e) {
-              console.log(e.message);
+              console.log(e.stack);
             }
           }
         });
@@ -138,7 +138,7 @@ export const useColumnSpaceExplorerController = () => {
       const newColumnSpaces = await createTopLevelColumnSpaceUseCase(newColumnSpaceName);
       set(columnSpacesState, newColumnSpaces);
     } catch (e) {
-      console.log(e.message);
+      console.log(e.stack);
     } finally {
       newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value = null;
     }
@@ -160,7 +160,7 @@ export const useColumnSpaceExplorerController = () => {
         return Array.from(new Set([...previousExpandedColumnSpaces, columnSpaceId]));
       });
     } catch (e) {
-      console.log(e.message);
+      console.log(e.stack);
     } finally {
       newColumnSpacesFormRefs.current[columnSpaceId].elements.namedItem("new-column-space-name").value = null;
     }
@@ -179,7 +179,7 @@ export const useColumnSpaceExplorerController = () => {
         return Array.from(new Set([...previousExpandedColumnSpaces, newColumnFormParentId]));
       });
     } catch (e) {
-      console.log(e.message);
+      console.log(e.stack);
     } finally {
       setNewColumnFormName("");
       closeNewColumnForm();
@@ -211,7 +211,7 @@ export const useColumnSpaceExplorerController = () => {
       const newColumnSpaces = await moveColumnSpaceToTopLevelUseCase(event.dataTransfer.getData("columnSpaceId"));
       setColumnSpaces(newColumnSpaces);
     } catch (e) {
-      console.log(e.message);
+      console.log(e.stack);
     } finally {
       set(draggingNodeDatasetState, null);
     }
@@ -283,7 +283,7 @@ export const useColumnSpaceExplorerController = () => {
           const newColumnSpaces = await changeColumnOrderUseCase(draggingNodeDataset.columnSpaceId, draggingNodeDataset.id);
           setColumnSpaces(newColumnSpaces);
         } catch(e) {
-          console.log(e.message);
+          console.log(e.stack);
         }
       }
 
@@ -301,7 +301,7 @@ export const useColumnSpaceExplorerController = () => {
         return Array.from(new Set([...previousExpandedColumnSpaces, toId]));
       });
     } catch (e) {
-      console.log(e.message);
+      console.log(e.stack);
     } finally {
       set(draggingNodeDatasetState, null);
     }
@@ -395,7 +395,7 @@ export const useColumnSpaceExplorerController = () => {
       const newColumnSpaces = await changeColumnOrderUseCase(targetColumnDataset.columnSpaceId, draggingNodeDataset.id, targetColumnDataset.id);
       setColumnSpaces(newColumnSpaces);
     } catch(e) {
-      console.log(e.message);
+      console.log(e.stack);
     }
   }, [columnSpaces, draggingNodeDataset]);
 

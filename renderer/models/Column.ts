@@ -12,20 +12,34 @@ interface ColumnConstructorArgs {
 
 export class Column {
 
-  id: string;
-  name: TrimedFilledString;
-  type: ColumnDataType;
-  cells: Cells;
+  private _id: string;
+  private _name: TrimedFilledString;
+  private _type: ColumnDataType;
+  private _cells: Cells;
 
   constructor(args: ColumnConstructorArgs) {
     const id = args.id ?? uuidv4();
 
     //TODO 不変条件、あといろいろ入れる
 
-    this.id = id;
-    this.name = args.name;
-    this.type = args.type;
-    this.cells = args.cells;
+    this._id = id;
+    this._name = args.name;
+    this._type = args.type;
+    this._cells = args.cells;
+  }
+
+  get id() { return this._id; }
+  get name() { return this._name.value; }
+  get type() { return this._type; } //TODO ここ「.value()」とかにしなくて可？
+  get cells() { return this._cells; }
+
+  toJSON(key) {
+    return {
+      id: this._id,
+      name: this._name,
+      type: this._type,
+      cells: this._cells,
+    }
   }
 
 }
