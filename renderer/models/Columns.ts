@@ -9,11 +9,11 @@ interface ColumnsConstructorArgs {
 export class Columns {
   private _children: Column[];
 
-  get children(): Column[] { return this._children }
-
   constructor(args?: ColumnsConstructorArgs) {
     this._children = (args == undefined) ? [] : args.children;
   }
+
+  get children(): Column[] { return this._children }
 
   static fromJSON(json) {
     return new Columns({
