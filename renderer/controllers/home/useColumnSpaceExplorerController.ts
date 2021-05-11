@@ -19,11 +19,7 @@ import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/dragg
 import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
 import { moveColumnSpaceToTopLevelUseCase } from '../../usecases/moveColumnSpaceToTopeLevelUseCase';
 
-
-// TODO ルート階層のカラムスペースに移動する処理思いついてなかった。作る。empty space部分にDnDしたらおなじみの処理すればいいだけ
-// TODO expandedを変更する時、先祖も全部expandedに加えないといけないかも？（調べて）。なんかホットリロードされた時に先祖が閉じるっぽい現象がたまにある（単なるバグかもなので見てみて）
-
-//NOTE: 基本的にコントローラーでカラムスペースを扱う時は、高速化のためにidだけで扱う。別に直接columnSpacesをいじってもいいけどたぶん処理がサービス内とわりと二重になるから…
+//NOTE: 基本的にコントローラーでカラムスペースを扱う時はidだけで扱う。責務的に。
 export const useColumnSpaceExplorerController = () => {
   // メタ状態類
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
