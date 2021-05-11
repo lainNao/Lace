@@ -114,6 +114,16 @@ export class ColumnSpaces {
     return this;
   }
 
+  // 指定IDのカラムスペースを、トップレベルのカラムスペース配下に移動
+  moveColumnSpaceToTopLevel(id: string): ColumnSpaces {
+    if (!this.canMoveColumnSpaceToTopLevel(id)) {
+      throw new Error("移動できません");
+    }
+    const immigrant = this.findDescendantColumnSpace(id);
+    const newColumnSpaces = this.removeDescendantColumnSpace(id);
+    return newColumnSpaces.push(immigrant);
+  }
+
   // 指定IDのカラムスペースを、指定IDのカラムスペース配下に移動
   moveDescendantColumnSpace(id: string, toId: string): ColumnSpaces {
     if (!this.canMoveDescendantColumnSpace(id, toId)) {
@@ -125,17 +135,33 @@ export class ColumnSpaces {
   }
 
   // 指定IDのカラムスペースを、指定IDのカラムスペース配下に移動可能か
+  canMoveColumnSpaceToTopLevel(id: string): boolean {
+
+    // カラムスペースとして取得できない場合はもちろん移動できない
+    const columnSpace = this.findDescendantColumnSpace(id);
+    if (!columnSpace) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // 指定IDのカラムスペースを、指定IDのカラムスペース配下に移動可能か
   canMoveDescendantColumnSpace(id: string, toId: string): boolean {
+    // 自分と相手が同じなら移動できない
     const isSame: boolean = (id === toId);
     if (isSame) {
       return false;
     }
 
+    // カラムを持っている相手には移動できない
     const toColumnSpace = this.findDescendantColumnSpace(toId);
     if (!toColumnSpace || toColumnSpace.hasColumns()) {
       return false;
     }
 
+    // カラムスペースとして取得できない場合はもちろん移動できない
+    // NOTE: この本質的な判定をメソッドの一番上に持ってこないのは検索コスト削減のため
     const columnSpace = this.findDescendantColumnSpace(id);
     if (!columnSpace) {
       return false;
