@@ -111,7 +111,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                         <div
                           className="font-sans text-blue-400 text-sm"
                           ref={elem => controller.columnNameRefs.current[column.id] = elem}
-                        >{`${column.name}`}</div>
+                        >{column.name}</div>
                         <form
                           className="hidden"
                           data-id={column.id}
