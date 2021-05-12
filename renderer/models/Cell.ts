@@ -1,4 +1,3 @@
-import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 import { RelatedCells } from "./RelatedCells";
 
 interface CellConstructorArgs {
