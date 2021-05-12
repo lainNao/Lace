@@ -13,7 +13,7 @@ export class TrimedFilledString {
     return this._value;
   }
 
-  toJSON(key): string {
+  toJSON(): string {
     return this._value;
   }
 
