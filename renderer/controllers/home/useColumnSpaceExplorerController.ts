@@ -188,6 +188,27 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, []);
 
+
+  const handleSubmitNewColumnName = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnId: string) => {
+    console.debug("カラム名変更フォームsubmit");
+    event.preventDefault();
+
+    const newColumnName = newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").value;
+    /// 表示状態管理
+    newColumnNameInputRefs.current[columnId].classList.add("hidden");
+    newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").blur();
+    newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").value = null;
+    columnNameRefs.current[columnId].classList.remove("hidden");
+
+    try {
+      // 指定IDのカラムスペースの子に新しいカラムスペースを追加
+      const newColumnSpaces = await renameColumnUseCase(columnId, newColumnName);
+      set(columnSpacesState, newColumnSpaces);
+    } catch (e) {
+      console.log(e.stack);
+    }
+  }, []);
+
   const handleClickCreateNewColumn = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラム新規作成モーダルの作成ボタン押下");
     try {
@@ -461,25 +482,6 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, []);
 
-  const handleSubmitNewColumnName = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnId: string) => {
-    console.debug("カラム名変更フォームsubmit");
-    event.preventDefault();
-
-    const newColumnName = newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").value;
-    /// 表示状態管理
-    newColumnNameInputRefs.current[columnId].classList.add("hidden");
-    newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").blur();
-    newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").value = null;
-    columnNameRefs.current[columnId].classList.remove("hidden");
-
-    try {
-      // 指定IDのカラムスペースの子に新しいカラムスペースを追加
-      const newColumnSpaces = await renameColumnUseCase(columnId, newColumnName);
-      set(columnSpacesState, newColumnSpaces);
-    } catch (e) {
-      console.log(e.stack);
-    }
-  }, []);
 
   /* -----------------------------------------------------他----------------------------------------------------------- */
 
