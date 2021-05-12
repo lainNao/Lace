@@ -299,6 +299,7 @@ export const useColumnSpaceExplorerController = () => {
       lastAddedBorderElementRef.current.classList.remove("border-b-2");
     }
 
+    /// カラムのソート管理
     const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState);
     if (draggingNodeDataset.type == FileSystemEnum.Column) {
 
@@ -316,7 +317,7 @@ export const useColumnSpaceExplorerController = () => {
       return;
     }
 
-    // カラムスペースを移動する
+    /// カラムスペースを移動する
     try {
       const fromId = event.dataTransfer.getData("columnSpaceId");
       const toId = (event.target as HTMLElement).dataset.id;
@@ -414,9 +415,7 @@ export const useColumnSpaceExplorerController = () => {
       return;
     }
 
-    // DROPした時にその状態を読み取って順番入れ替えて保存
-    // TODO 親にドロップされたら、今ドラッグしてるやつを、指定のカラムスペースの先頭に移動すればいい（ただここはカラムスペースのところに処理書くことになる）
-
+    /// カラムのソート
     try {
       const newColumnSpaces = await changeColumnOrderUseCase(targetColumnDataset.columnSpaceId, draggingNodeDataset.id, targetColumnDataset.id);
       setColumnSpaces(newColumnSpaces);
