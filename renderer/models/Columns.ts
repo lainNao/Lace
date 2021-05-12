@@ -39,6 +39,14 @@ export class Columns {
     return this;
   }
 
+  findChildColumn(targetId: string): Column {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === targetId) {
+        return this._children[i];
+      }
+    }
+  }
+
   findIndexOf(columnId: string): number {
     return this.children.findIndex((column) => column.id === columnId);
   }
@@ -46,6 +54,15 @@ export class Columns {
   moveColumnFromTo(fromIndex: number, toIndex: number): Columns {
     this._children = array_move(this.children, fromIndex, toIndex);
     return this;
+  }
+
+  updateColumn(column: Column): Columns {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === column.id) {
+        this._children[i] = column;
+        return this;
+      }
+    }
   }
 
   removeColumn(targetId: string): Columns {

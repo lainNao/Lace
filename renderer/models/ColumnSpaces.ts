@@ -52,6 +52,14 @@ export class ColumnSpaces {
     }
   }
 
+  findDescendantColumn(targetId: string): Column {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].findDescendantColumn(targetId)) {
+        return this._children[i].findDescendantColumn(targetId);
+      }
+    }
+  }
+
   // 子のカラムスペースから指定IDのものを削除
   removeChildColumnSpace(targetId: string): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {
@@ -89,7 +97,7 @@ export class ColumnSpaces {
     return this;
   }
 
-  // 子孫のカラムスペースを上書き
+  // 子孫のカラムスペースを上書き（同じIDのものを探して上書き）
   updateDescendantColumnSpace(columnSpace: ColumnSpace): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {
       if (this._children[i].id === columnSpace.id) {
@@ -97,6 +105,15 @@ export class ColumnSpaces {
         return this;
       }
       this._children[i].updateDescendantColumnSpace(columnSpace);
+    }
+    return this;
+  }
+
+  // 子孫のカラムスペースを上書き（同じIDのものを探して上書き）
+  updateDescendantColumn(column: Column): ColumnSpaces {
+    //TODO　これ、一個もtrue返すの無かった場合throw Errorしたらよいのでは　→やってみたけどネストしてる時にもエラー出すから駄目だった。ネストしてるからいちいちエラー出せないんだよな…消せなかった判定どうしようか後で考えたい
+    for (let i=0; i<this._children.length; i++) {
+      this._children[i].updateDescendantColumn(column);
     }
     return this;
   }

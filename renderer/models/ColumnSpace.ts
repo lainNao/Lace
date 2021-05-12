@@ -46,6 +46,13 @@ export class ColumnSpace {
     return this._childColumnSpaces.findDescendantColumnSpace(targetId);
   }
 
+  findDescendantColumn(targetId: string): Column {
+    if (this._columns.hasColumn(targetId)) {
+      return this._columns.findChildColumn(targetId);
+    }
+    return this._childColumnSpaces.findDescendantColumn(targetId);
+  }
+
   addChildColumnSpace(columnSpace: ColumnSpace): ColumnSpace {  //TODO ここらへんの戻値本当にthisでいいか？全体的に後で勉強して変えるかもなところ
     this._childColumnSpaces.push(columnSpace);
     return this;
@@ -71,6 +78,18 @@ export class ColumnSpace {
 
   updateDescendantColumnSpace(columnSpace: ColumnSpace): ColumnSpaces {
     return this._childColumnSpaces.updateDescendantColumnSpace(columnSpace);
+  }
+
+  updateDescendantColumn(column: Column): boolean {
+    if (this._columns.hasColumn(column.id)) {
+      this._columns.updateColumn(column);
+    }
+
+    if (this._childColumnSpaces.updateDescendantColumn(column)) {
+      return true;
+    }
+
+    return false;
   }
 
   removeDescendantColumnSpace(targetId: string): ColumnSpaces {
