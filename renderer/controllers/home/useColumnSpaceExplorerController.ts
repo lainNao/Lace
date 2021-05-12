@@ -449,13 +449,14 @@ export const useColumnSpaceExplorerController = () => {
   const hanleKeyDownOnColumn = useCallback((event: React.KeyboardEvent) => {
     console.debug("選択されてるカラムにキーダウン");
 
-    //TODO 「A component is changing the controlled selected state of TreeView to be uncontrolled」エラーがたまに出るのでもしこれが問題ならf2で名前変更機能は一旦諦めて、そのコード全消しして。キャッチで握りつぶせるならして
+    //TODO 「A component is changing the controlled selected state of TreeView to be uncontrolled」エラーがたまに出るのでもしこれが問題ならf2で名前変更機能は一旦諦めて、そのコード全消しして。キャッチで握りつぶせるならして。もしかしたらinputのvalueをsetStateで管理したらいける可能性はあり
     if (event.key === "F2") {
       const target = (event.target as HTMLElement);
       const targetDataset = target.dataset;
 
       columnNameRefs.current[targetDataset.id].classList.add("hidden");
       newColumnNameInputRefs.current[targetDataset.id].classList.remove("hidden");
+      newColumnNameInputRefs.current[targetDataset.id].elements.namedItem("new-column-name").value = targetDataset.name;
       setImmediate(() => newColumnNameInputRefs.current[targetDataset.id].elements.namedItem("new-column-name").focus())
     }
   }, []);
@@ -467,9 +468,9 @@ export const useColumnSpaceExplorerController = () => {
     const newColumnName = newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").value;
     /// 表示状態管理
     newColumnNameInputRefs.current[columnId].classList.add("hidden");
-    columnNameRefs.current[columnId].classList.remove("hidden");
     newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").blur();
     newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").value = null;
+    columnNameRefs.current[columnId].classList.remove("hidden");
 
     try {
       // 指定IDのカラムスペースの子に新しいカラムスペースを追加
