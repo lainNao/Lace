@@ -36,6 +36,7 @@ export const useColumnSpaceExplorerController = () => {
   const newColumnFormRef = React.useRef(null);
   const lastAddedBorderElementRef = React.useRef(null);
   const isLeavingToParentColumnSpace = React.useRef(null);
+  const lastFilledColumnSpaceNodeRef = React.useRef(null);
 
   /* -----------------------------------------------------一般----------------------------------------------------------- */
 
@@ -217,6 +218,11 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, []);
 
+  const handleDragOverOnEmptySpace = useCallback((event) => {
+    // console.debug("emptyスペースへのドラッグオーバー");
+    event.preventDefault(); //NOTE: DragOverにてpreventDefaultしないとdropが発火しないため記述
+  }, []);
+
   const handleDragStartOnColumnSpace = useCallback((event) => {
     console.debug("カラムスペースのドラッグ開始");
     event.dataTransfer.setData("columnSpaceId", (event.target as HTMLElement).dataset.id);
@@ -233,6 +239,22 @@ export const useColumnSpaceExplorerController = () => {
     const enteredColumnSpaceDataset = enteredColumnSpace.dataset;
     const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
 
+    /// カラムスペースをDnDでの移動の管理
+    if (draggingNodeDataset && Number(draggingNodeDataset.type) === FileSystemEnum.ColumnSpace) {
+      const currentColumnSpaces = await snapshot.getPromise(columnSpacesState);
+      const targetColumnSpace = currentColumnSpaces.findDescendantColumnSpace(enteredColumnSpaceDataset.id);
+      if (draggingNodeDataset.id !== enteredColumnSpaceDataset.id && targetColumnSpace.canAddColumnSpace()) {
+        // カラムスペースをドラッグしており、ドラッグエンターした相手が自身ではなく、かつドロップ可能なカラムスペースな場合
+        enteredColumnSpace.classList.add("bg-gray-900");
+        lastFilledColumnSpaceNodeRef.current = enteredColumnSpace;
+      } else {
+        if (lastFilledColumnSpaceNodeRef.current) {
+          lastFilledColumnSpaceNodeRef.current.classList.remove("bg-gray-900");
+        }
+      }
+    }
+
+    /// カラムをDnDでのソートの管理
     if (draggingNodeDataset && Number(draggingNodeDataset.type) === FileSystemEnum.Column && draggingNodeDataset.columnSpaceId === enteredColumnSpaceDataset.id) {
       // カラムをドラッグしており、その親のカラムスペースへのエンターの場合
       isLeavingToParentColumnSpace.current = true;
@@ -255,14 +277,12 @@ export const useColumnSpaceExplorerController = () => {
 
 
   const handleDragLeaveOnColumnSpace = useCallback((event) => {
-    // console.debug("カラムスペースへのドラッグオーバー");
+    // console.debug("カラムスペースへのドラッグリーブ");
     event.preventDefault(); //NOTE: DragOverにてpreventDefaultしないとdropが発火しないため記述
     isLeavingToParentColumnSpace.current = false;
-  }, []);
 
-  const handleDragOverOnEmptySpace = useCallback((event) => {
-    // console.debug("emptyスペースへのドラッグオーバー");
-    event.preventDefault(); //NOTE: DragOverにてpreventDefaultしないとdropが発火しないため記述
+    const leavedNode = (event.target as HTMLElement);
+    leavedNode.classList.remove("bg-gray-900");
   }, []);
 
   const handleDropOnColumnSpace = useRecoilCallback(({snapshot, set}) => async(event: React.DragEvent<HTMLElement>) => {
@@ -270,10 +290,15 @@ export const useColumnSpaceExplorerController = () => {
     event.preventDefault();
     event.stopPropagation();
 
+    /// 色付けの管理
+    if (lastFilledColumnSpaceNodeRef.current) {
+      lastFilledColumnSpaceNodeRef.current.classList.remove("bg-gray-900");
+    }
     if (lastAddedBorderElementRef.current) {
       lastAddedBorderElementRef.current.classList.remove("border-t-2");
       lastAddedBorderElementRef.current.classList.remove("border-b-2");
     }
+
     const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState);
     if (draggingNodeDataset.type == FileSystemEnum.Column) {
 
@@ -346,6 +371,7 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("カラムからのドラッグリーブ");
     event.preventDefault();
 
+    /// 色付け管理
     const leavedNode = (event.target as HTMLElement);
     const leavdNodeDataset = leavedNode.parentElement.parentElement.parentElement.dataset;
     if (leavdNodeDataset.addedBorder === "true") {
