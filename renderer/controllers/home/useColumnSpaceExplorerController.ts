@@ -19,6 +19,9 @@ import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/dragg
 import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
 import { moveColumnSpaceToTopLevelUseCase } from '../../usecases/moveColumnSpaceToTopeLevelUseCase';
 import { removeColumnUseCase } from '../../usecases/removeColumnUseCase';
+import { renameColumnUseCase } from '../../usecases/renameColumnUseCase';
+
+//TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
 
 //NOTE: 基本的にコントローラーでカラムスペースを扱う時はidだけで扱う。責務的に。
 export const useColumnSpaceExplorerController = () => {
@@ -34,6 +37,8 @@ export const useColumnSpaceExplorerController = () => {
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
+  const columnNameRefs = React.useRef([]);
+  const newColumnNameInputRefs = React.useRef([]);
   const newColumnFormRef = React.useRef(null);
   const lastAddedBorderElementRef = React.useRef(null);
   const isLeavingToParentColumnSpace = React.useRef(null);
@@ -129,9 +134,7 @@ export const useColumnSpaceExplorerController = () => {
     showEmptySpaceContextMenu(event, {
       handleClickAddColumnSpace: () => {
         newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
-        setImmediate(() => {
-          newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
-        });
+        setImmediate(() => newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus());
       }
     });
   }, []);
@@ -142,9 +145,7 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("カラムスペース追加ボタン押下");
     event.preventDefault();
     newTopLevelColumnSpaceFormRef.current.classList.remove("hidden");
-    setImmediate(() => {
-      newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus();
-    })
+    setImmediate(() => newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").focus())
   }, []);
 
   const handleSubmitTopLevelNewColumnSpaceForm = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>) => {
@@ -415,7 +416,6 @@ export const useColumnSpaceExplorerController = () => {
 
     const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
     const targetColumnDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
-    // const draggingNodeDatasetCopied = cloneDeep(draggingNodeDataset);
     set(draggingNodeDatasetState, null);
 
     if (lastAddedBorderElementRef.current) {
@@ -442,7 +442,43 @@ export const useColumnSpaceExplorerController = () => {
     } catch(e) {
       console.log(e.stack);
     }
-  }, [columnSpaces, draggingNodeDataset]);
+  }, []);
+
+  /* -----------------------------------------------------キーイベント----------------------------------------------------------- */
+
+  const hanleKeyDownOnColumn = useCallback((event: React.KeyboardEvent) => {
+    console.debug("選択されてるカラムにキーダウン");
+
+    //TODO 「A component is changing the controlled selected state of TreeView to be uncontrolled」エラーがたまに出るのでもしこれが問題ならf2で名前変更機能は一旦諦めて、そのコード全消しして。キャッチで握りつぶせるならして
+    if (event.key === "F2") {
+      const target = (event.target as HTMLElement);
+      const targetDataset = target.dataset;
+
+      columnNameRefs.current[targetDataset.id].classList.add("hidden");
+      newColumnNameInputRefs.current[targetDataset.id].classList.remove("hidden");
+      setImmediate(() => newColumnNameInputRefs.current[targetDataset.id].elements.namedItem("new-column-name").focus())
+    }
+  }, []);
+
+  const handleSubmitNewColumnName = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnId: string) => {
+    console.debug("カラム名変更フォームsubmit");
+    event.preventDefault();
+
+    const newColumnName = newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").value;
+    /// 表示状態管理
+    newColumnNameInputRefs.current[columnId].classList.add("hidden");
+    columnNameRefs.current[columnId].classList.remove("hidden");
+    newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").blur();
+    newColumnNameInputRefs.current[columnId].elements.namedItem("new-column-name").value = null;
+
+    try {
+      // 指定IDのカラムスペースの子に新しいカラムスペースを追加
+      const newColumnSpaces = await renameColumnUseCase(columnId, newColumnName);
+      set(columnSpacesState, newColumnSpaces);
+    } catch (e) {
+      console.log(e.stack);
+    }
+  }, []);
 
   /* -----------------------------------------------------他----------------------------------------------------------- */
 
@@ -493,10 +529,14 @@ export const useColumnSpaceExplorerController = () => {
     newTopLevelColumnSpaceFormRef,
     newColumnFormRef,
     newColumnSpacesFormRefs,
+    newColumnNameInputRefs,
+    columnNameRefs,
     //イベントハンドラ
+    hanleKeyDownOnColumn,
     handleTreeNodeToggle,
     handleSubmitTopLevelNewColumnSpaceForm,
     handleSubmitNewColumnSpaceForm,
+    handleSubmitNewColumnName,
     handleChangeNewColumnNameInput,
     handleClickAddColumnSpaceButton,
     handleClickNewColmnFormClose,

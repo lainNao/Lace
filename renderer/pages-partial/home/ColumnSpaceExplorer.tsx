@@ -100,12 +100,27 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                     onDragOver={controller.handleDragOverOnColumn}
                     onDrop={controller.handleDropOnColumn}
                     onContextMenu={controller.handleRightClickOnColumn}
+                    onKeyDown={controller.hanleKeyDownOnColumn}
                     data-type={FileSystemEnum.Column}
                     data-id={column.id}
                     data-column-space-id={columnSpace.id}
                     data-name={column.name}
+                    tabIndex={0}
                     label={(
-                      <div className="font-sans text-blue-400 text-sm">{`${column.name}`}</div>
+                      <>
+                        <div
+                          className="font-sans text-blue-400 text-sm"
+                          ref={elem => controller.columnNameRefs.current[column.id] = elem}
+                        >{`${column.name}`}</div>
+                        <form
+                          className="hidden"
+                          data-id={column.id}
+                          onSubmit={event => {controller.handleSubmitNewColumnName(event, column.id)}}
+                          ref={elem => controller.newColumnNameInputRefs.current[column.id] = elem}
+                        >
+                          <input name="new-column-name" className="bg-gray-700" spellCheck={false}></input>
+                        </form>
+                      </>
                     )}
                   />
                 )
