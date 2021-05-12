@@ -246,7 +246,7 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------カラムスペースのDnD----------------------------------------------------------- */
 
-  const handleDropOnEmptySpace = useRecoilCallback(({snapshot, set}) => async(event: React.DragEvent<HTMLElement>) => {
+  const handleDropOnEmptySpace = useRecoilCallback(({set}) => async(event: React.DragEvent<HTMLElement>) => {
     console.debug("emptyスペースへのドロップ");
 
     // カラムスペースをトップレベルに移動する
@@ -470,7 +470,7 @@ export const useColumnSpaceExplorerController = () => {
   const hanleKeyDownOnColumn = useCallback((event: React.KeyboardEvent) => {
     console.debug("選択されてるカラムにキーダウン");
 
-    //TODO 「A component is changing the controlled selected state of TreeView to be uncontrolled」エラーがたまに出るのでもしこれが問題ならf2で名前変更機能は一旦諦めて、そのコード全消しして。キャッチで握りつぶせるならして。もしかしたらinputのvalueをsetStateで管理したらいける可能性はあり
+    //TODO 「A component is changing the controlled selected state of TreeView to be uncontrolled」というwarningがたまに出るのでもしこれが問題ならf2で名前変更機能は一旦諦めて、そのコード全消しして。キャッチで握りつぶせるならして。もしかしたらinputのvalueをsetStateで管理したらいける可能性はあり
     if (event.key === "F2") {
       const target = (event.target as HTMLElement);
       const targetDataset = target.dataset;
