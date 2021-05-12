@@ -20,7 +20,7 @@ export class ColumnSpacesRepositoryJson {
         {
           "id": "2222",
           "name": "test_file_column",
-          "type": "file",
+          "type": "0",
           "cells": [
             {
               "id": "3333",
