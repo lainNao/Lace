@@ -3,7 +3,7 @@ export class TrimedFilledString {
   value: string;
 
   constructor(value: string) {
-    if (value === "" || value === null || value === undefined) {
+    if (!value.trim() || value === null || value === undefined) {
       throw new Error("空です");
     }
     this.value = value.trim();
