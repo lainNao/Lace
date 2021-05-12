@@ -18,6 +18,7 @@ import { useDisclosure } from '@chakra-ui/react';
 import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/draggingNodeDatasetState';
 import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
 import { moveColumnSpaceToTopLevelUseCase } from '../../usecases/moveColumnSpaceToTopeLevelUseCase';
+import { removeColumnUseCase } from '../../usecases/removeColumnUseCase';
 
 //NOTE: 基本的にコントローラーでカラムスペースを扱う時はidだけで扱う。責務的に。
 export const useColumnSpaceExplorerController = () => {
@@ -78,7 +79,6 @@ export const useColumnSpaceExplorerController = () => {
             }
           }
         });
-
       },
       handleClickAddChildColumnSpace: async () => {
         newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
@@ -97,8 +97,28 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("カラムのコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
-    setSelectedNodeId((event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id);
-    showColumnContextMenu(event);
+    const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
+    setSelectedNodeId(targetDataset.id);
+    showColumnContextMenu(event, {
+      handleClickDeleteColumn: async () => {
+        remote.dialog.showMessageBox({
+          type: 'info',
+          buttons: ['はい', "いいえ"],
+          title: 'カラムの削除',
+          message: 'カラムの削除',
+          detail: `${targetDataset.name}を削除しますか？`,
+        }).then(async (res) => {
+          if (res.response === 0) { //「はい」を選択した時
+            try {
+              const newColumnSpaces = await removeColumnUseCase(targetDataset.id);
+              setColumnSpaces(newColumnSpaces);
+            } catch (e) {
+              console.log(e.stack);
+            }
+          }
+        });
+      },
+    });
   }, []);
 
   const handleRightClickOnEmptySpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {

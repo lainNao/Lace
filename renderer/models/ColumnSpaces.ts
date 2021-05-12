@@ -74,6 +74,20 @@ export class ColumnSpaces {
     return this;
   }
 
+  // 子孫のカラムから指定IDのものを削除
+  removeDescendantColumn(targetId: string): ColumnSpaces {
+    //TODO　この「一個もtrue返すのが無かったら例外を出す」というのは他のaddやmoveやremoveでも使えるのでやったほうがいいかな？以下参考にして他のもこんな感じでやれたらやって。またはもっといいのあったらそっちで。
+    const deleted = this._children.some(columnSpace => {
+      return columnSpace.removeDescendantColumn(targetId);
+    })
+
+    if (!deleted) {
+      throw new Error("削除できませんでした");
+    }
+
+    return this;
+  }
+
   // 子に新規カラムスペースを追加
   push(columnSpace: ColumnSpace): ColumnSpaces {
     this._children.push(columnSpace);

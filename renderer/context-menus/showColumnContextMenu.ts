@@ -1,6 +1,10 @@
-import { remote } from "electron";
+import { BrowserWindow, MenuItem, remote } from "electron";
 
-export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+interface ColumnContextMenuArgs {
+  handleClickDeleteColumn: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
+}
+
+export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, MouseEvent>, args: ColumnContextMenuArgs) => {
 
   const MenuItem = remote.MenuItem;
   const dialog = remote.dialog;
@@ -22,7 +26,8 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
     type: 'separator'
   }));
   contextMenu.append(new MenuItem({
-    label:"削除（未実装）",
+    label:"削除",
+    click: args.handleClickDeleteColumn,
   }));
 
   contextMenu.popup({window: remote.getCurrentWindow()});

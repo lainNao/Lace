@@ -48,9 +48,23 @@ export class Columns {
     return this;
   }
 
+  removeColumn(targetId: string): Columns {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === targetId) {
+        this._children.splice(i, 1);
+        return this;
+      }
+    }
+  }
+
   // カラムを持っているか
   hasColumns(): boolean {
     return this.children.length > 0;
+  }
+
+  // 指定のカラムを持っているか
+  hasColumn(columnId: string): boolean {
+    return this.children.some(column => column.id === columnId);
   }
 
 }

@@ -77,6 +77,19 @@ export class ColumnSpace {
     return this._childColumnSpaces.removeDescendantColumnSpace(targetId);
   }
 
+  removeDescendantColumn(targetId: string): boolean {
+    if (this._columns.hasColumn(targetId)) {
+      this._columns = this._columns.removeColumn(targetId);
+      return true;
+    }
+
+    if (this._childColumnSpaces.removeDescendantColumn(targetId)) {
+      return true;
+    }
+
+    return false;
+  }
+
   canAddColumnSpace(): boolean {
     return !this._columns.hasColumns();
   }
