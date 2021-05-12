@@ -76,15 +76,10 @@ export class ColumnSpaces {
 
   // 子孫のカラムから指定IDのものを削除
   removeDescendantColumn(targetId: string): ColumnSpaces {
-    //TODO　この「一個もtrue返すのが無かったら例外を出す」というのは他のaddやmoveやremoveでも使えるのでやったほうがいいかな？以下参考にして他のもこんな感じでやれたらやって。またはもっといいのあったらそっちで。
-    const deleted = this._children.some(columnSpace => {
-      return columnSpace.removeDescendantColumn(targetId);
-    })
-
-    if (!deleted) {
-      throw new Error("削除できませんでした");
+    //TODO　これ、一個もtrue返すの無かった場合throw Errorしたらよいのでは　→やってみたけどネストしてる時にもエラー出すから駄目だった。ネストしてるからいちいちエラー出せないんだよな…消せなかった判定どうしようか後で考えたい
+    for (let i=0; i<this._children.length; i++) {
+      this._children[i].removeDescendantColumn(targetId);
     }
-
     return this;
   }
 
