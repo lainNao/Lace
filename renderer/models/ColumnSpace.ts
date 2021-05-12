@@ -29,7 +29,7 @@ export class ColumnSpace {
   }
 
   get id() { return this._id; }
-  get name() { return this._name.value; }
+  get name() { return this._name.toString(); }
   get childColumnSpaces() {return this._childColumnSpaces; }
   get columns() { return this._columns; }
 

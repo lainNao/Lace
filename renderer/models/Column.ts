@@ -29,7 +29,7 @@ export class Column {
   }
 
   get id() { return this._id; }
-  get name() { return this._name.value; }
+  get name() { return this._name.toString(); }
   get type() { return this._type; } //TODO ここ「.value()」とかにしなくて可？
   get cells() { return this._cells; }
 
