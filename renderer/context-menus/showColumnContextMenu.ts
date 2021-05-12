@@ -11,7 +11,7 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({
-    label:"セルの追加（未実装）",
+    label:"セルの追加（未実装）（+ボタンとか下部においたりなんだりしてバルク作成できるようにして。または右側を編集モードにするだけとかにして）",
   }));
   contextMenu.append(new MenuItem({
     label:"カラム名の変更（未実装）（これはf2でも発火するようにして）",
