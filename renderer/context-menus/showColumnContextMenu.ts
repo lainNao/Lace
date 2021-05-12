@@ -1,6 +1,7 @@
 import { BrowserWindow, MenuItem, remote } from "electron";
 
 interface ColumnContextMenuArgs {
+  handleClickRenameColumn: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickDeleteColumn: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
 }
 
@@ -14,7 +15,8 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
     label:"セルの追加（未実装）（+ボタンとか下部においたりなんだりしてバルク作成できるようにして。または右側を編集モードにするだけとかにして）",
   }));
   contextMenu.append(new MenuItem({
-    label:"カラム名の変更（未実装）（これはf2でも発火するようにして）",
+    label:"カラム名の変更",
+    click: args.handleClickRenameColumn,
   }));
   contextMenu.append(new MenuItem({
     label:"メイン表示カラムに設定（未実装）",

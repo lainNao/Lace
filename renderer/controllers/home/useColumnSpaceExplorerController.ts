@@ -22,6 +22,7 @@ import { removeColumnUseCase } from '../../usecases/removeColumnUseCase';
 import { renameColumnUseCase } from '../../usecases/renameColumnUseCase';
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
+//TODO おそらく、「inputを出したまま右側で編集する」とかなるとバグるかもしれないので、そこを一応留意しておきたい。逆に右側で編集中に左側いじっても同じことになる可能性あり。フラグを足すことになるかも
 
 //NOTE: 基本的にコントローラーでカラムスペースを扱う時はidだけで扱う。責務的に。
 export const useColumnSpaceExplorerController = () => {
@@ -105,6 +106,12 @@ export const useColumnSpaceExplorerController = () => {
     const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     setSelectedNodeId(targetDataset.id);
     showColumnContextMenu(event, {
+      handleClickRenameColumn: () => {
+        columnNameRefs.current[targetDataset.id].classList.add("hidden");
+        newColumnNameInputRefs.current[targetDataset.id].classList.remove("hidden");
+        newColumnNameInputRefs.current[targetDataset.id].elements.namedItem("new-column-name").value = targetDataset.name;
+        setImmediate(() => newColumnNameInputRefs.current[targetDataset.id].elements.namedItem("new-column-name").focus())
+      },
       handleClickDeleteColumn: async () => {
         remote.dialog.showMessageBox({
           type: 'info',
