@@ -19,7 +19,10 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
     label:"ソートカラムに設定（未実装）（複数段のソートカラムの設定ができるように、押下後にモーダルを出してそこで決める）",
   }));
   contextMenu.append(new MenuItem({
-    label:"削除（未実装）", //TODO 上に「----------」みたいな区切りを入れる。
+    type: 'separator'
+  }));
+  contextMenu.append(new MenuItem({
+    label:"削除（未実装）",
   }));
 
   contextMenu.popup({window: remote.getCurrentWindow()});

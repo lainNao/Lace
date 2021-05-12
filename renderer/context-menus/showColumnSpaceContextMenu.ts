@@ -17,15 +17,16 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
     click: args.handleClickAddChildColumn,
     enabled: args.targetColumnSpaceDataset.hasChildColumnSpaces === "false",
   }));
-
   contextMenu.append(new MenuItem({
     label:"カラムスペースの追加",
     click: args.handleClickAddChildColumnSpace,
     enabled: args.targetColumnSpaceDataset.hasColumns === "false",
   }));
-
   contextMenu.append(new MenuItem({
-    label:"削除", //TODO 上に「----------」みたいな区切りを入れる。
+    type: 'separator'
+  }));
+  contextMenu.append(new MenuItem({
+    label:"削除",
     click: args.handleClickDeleteColumnSpace,
   }));
 
