@@ -33,7 +33,7 @@ export class Column {
   get type() { return this._type; } //TODO ここ「.value()」とかにしなくて可？
   get cells() { return this._cells; }
 
-  toJSON(key) {
+  toJSON() {
     return {
       id: this._id,
       name: this._name,

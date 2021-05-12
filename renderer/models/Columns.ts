@@ -26,6 +26,10 @@ export class Columns {
     )});
   }
 
+  toJSON() {
+    return this.children;
+  }
+
   mapChildren(callback: (value: Column, index: number, array: Column[]) => unknown): unknown[]  {
     return this.children.map(callback);
   }
@@ -33,10 +37,6 @@ export class Columns {
   push(column: Column): Columns {
     this.children.push(column);
     return this;
-  }
-
-  toJSON(key) {
-    return this.children;
   }
 
   findIndexOf(columnId: string): number {

@@ -28,7 +28,7 @@ export class RelatedCells {
     });
   }
 
-  toJSON(key) {
+  toJSON() {
     return this._children;
   }
 

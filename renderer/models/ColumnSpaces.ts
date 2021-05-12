@@ -31,7 +31,7 @@ export class ColumnSpaces {
     });
   }
 
-  toJSON(key) {
+  toJSON() {
     return this._children;
   }
 

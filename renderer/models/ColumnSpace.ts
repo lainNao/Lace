@@ -33,7 +33,7 @@ export class ColumnSpace {
   get childColumnSpaces() {return this._childColumnSpaces; }
   get columns() { return this._columns; }
 
-  toJSON(key) {
+  toJSON() {
     return {
       id: this._id,
       name: this._name,

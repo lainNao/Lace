@@ -16,7 +16,7 @@ export class RelatedCell {
   get columnSpaceId() { return this._columnSpaceId; }
   get cellId() { return this._cellId; }
 
-  toJSON(key) {
+  toJSON() {
     return {
       id: this._id,
       columnSpaceId: this._columnSpaceId,

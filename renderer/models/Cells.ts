@@ -30,7 +30,7 @@ export class Cells {
     )});
   }
 
-  toJSON(key) {
+  toJSON() {
     return this._children;
   }
 
