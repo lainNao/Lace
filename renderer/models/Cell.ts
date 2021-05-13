@@ -1,38 +1,36 @@
+import { v4 as uuidv4 } from 'uuid';
 import { RelatedCells } from "./RelatedCells";
 
 interface CellConstructorArgs {
   id?: string,
-  path: string,
   type: any, //TODO
   relatedCells: RelatedCells,
+  data: any,
 }
 
 export class Cell {
   private _id: string;
-  private _path: string; //TODO
-  private _type: any; //TODO
   private _relatedCells: RelatedCells;
+  private _data: any;
+  //TODO typeフィールドは消しました。Columnが持ってるのを頑張って参照してください。変なことになったら直してください
 
-  constructor(props: CellConstructorArgs) {
-    //TODO 不変条件  IDは生成する
+  constructor(args: CellConstructorArgs) {
+    //TODO 不変条件
+    const id = args.id ?? uuidv4();
 
-    const id = props.id;
     this._id = id;
-    //TODO pathとかどうするか。データタイプごとに違うからポリモーフィズムしたい
-    this._type = props.type;
-    this._relatedCells = props.relatedCells;
+    this._data = args.data;
+    this._relatedCells = args.relatedCells;
   }
 
   get id() { return this._id; }
-  get path() { return this._path; }
-  get type() { return this._type; }
+  get data() { return this._data; }
   get relatedCells() { return this._relatedCells; }
 
   toJSON() {
     return {
       id: this._id,
-      path: this.path,
-      type: this._type,
+      data: this._data,
       relatedCells: this._relatedCells,
     }
   }

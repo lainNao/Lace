@@ -24,9 +24,7 @@ export class ColumnSpacesRepositoryJson {
           "cells": [
             {
               "id": "3333",
-              "path": null,
-              "type": null,
-              "name": "sample_file",
+              "data": {},
               "relatedCells":[]
             }
           ]
