@@ -3,7 +3,6 @@ import { RelatedCells } from "./RelatedCells";
 
 interface CellConstructorArgs {
   id?: string,
-  type: any, //TODO
   relatedCells: RelatedCells,
   data: any,
 }

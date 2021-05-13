@@ -23,8 +23,7 @@ export class Cells {
     return new Cells({
       children: json.map((cell) => new Cell({  //TODO ここはポリモーフィズムやる
         id: cell.id,
-        path: cell.path,
-        type: cell.type,
+        data: cell.data,
         relatedCells: cell.relatedCells
       })
     )});
