@@ -22,7 +22,7 @@ import { TreeItem } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
 import { ColumnSpaces } from '../../models/ColumnSpaces';
 import { NewCellFormModal } from './NewCellFormModal';
-import { newCellFormModalBodyComponents } from '../../resources/ColumnDataType'
+import { newCellFormModalBodyComponents } from "./NewCellFormModal-partial"
 
 type Props = {
   classeName?: string;
@@ -189,7 +189,8 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
               <div className="mt-4">格納するデータタイプ</div>
               <Select name="column-type" >
                 {Object.values(ColumnDataType).map(key => {
-                  return <option key={key} value={ColumnDataType[key]}>{columnDataTypeStrings[key]()}</option>
+                  const columnDataType = ColumnDataType[key];
+                  return <option key={key} value={columnDataType}>{columnDataTypeStrings[columnDataType]}</option>
                 })}
               </Select>
             </form>
