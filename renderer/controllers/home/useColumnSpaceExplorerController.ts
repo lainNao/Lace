@@ -51,14 +51,18 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------一般----------------------------------------------------------- */
 
+  const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
+    console.debug("ツリービュー展開のトグル");
+    setExpandedColumnSpaces(expandedNodeIds);
+  }, [expandedColumnSpaces]);
+
   const handleClickColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    console.debug("カラムスペースのコンテキストメニュー表示");
+    console.debug("カラム左クリック");
     event.preventDefault();
     event.stopPropagation();
 
     const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     setSelectedNodeId(targetDataset.id);
-
   }, []);
 
   /* -----------------------------------------------------コンテキストメニュー管理----------------------------------------------------------- */
@@ -255,11 +259,6 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewColumnForm();
   }, []);
-
-  const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
-    console.debug("ツリービュー展開のトグル");
-    setExpandedColumnSpaces(expandedNodeIds);
-  }, [expandedColumnSpaces]);
 
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
 
