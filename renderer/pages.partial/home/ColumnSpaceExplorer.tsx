@@ -22,7 +22,7 @@ import { TreeItem } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
 import { ColumnSpaces } from '../../models/ColumnSpaces';
 import { NewCellFormModal } from './NewCellFormModal';
-import { newCellFormModalBodyComponents } from "./NewCellFormModal-partial"
+import { newCellFormModalBodyComponents } from "./NewCellFormModal.partial"
 
 type Props = {
   classeName?: string;

@@ -5,7 +5,7 @@ import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useHomeController } from '../controllers/home/useHomeController';
-import { ColumnSpaceExplorer } from "../pages-partial/home/ColumnSpaceExplorer";
+import { ColumnSpaceExplorer } from "../pages.partial/home/ColumnSpaceExplorer";
 
 /*
 ファイルアップロードする前にはカラムスペースとカラムのUUIDのフォルダが必要なのでそれ作成しておくように実装を修正する
