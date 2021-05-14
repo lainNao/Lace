@@ -1,4 +1,4 @@
-import React, {ReactElement, useCallback, useEffect, useState} from 'react';
+import React, {ReactElement, useMemo, useCallback, useEffect, useState} from 'react';
 import { useRecoilCallback, useRecoilState } from 'recoil';
 import columnSpacesState from '../../atoms/columnSpacesState';
 import { FileSystemEnum } from "../../resources/enums/app"
@@ -32,6 +32,7 @@ export const useColumnSpaceExplorerController = () => {
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
+  const [selectedColumnName, setSelectedColumnName] = useState<string>("");
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
   const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
@@ -40,7 +41,6 @@ export const useColumnSpaceExplorerController = () => {
   const [currentRightClickedColumnDataType, setCurrentRightClickedColumnDataType] = useState<ColumnDataType>(null);
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
-  const newCellFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
   const columnNameRefs = React.useRef([]);
   const newColumnNameInputRefs = React.useRef([]);
@@ -114,6 +114,7 @@ export const useColumnSpaceExplorerController = () => {
     const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     setSelectedNodeId(targetDataset.id);
     setCurrentRightClickedColumnDataType(ColumnDataType[targetDataset.columnType]);
+    setSelectedColumnName(targetDataset.name);
     showColumnContextMenu(event, {
       handleClickCreateNewCell: () => {
         openNewCellFormOpen();
@@ -262,19 +263,54 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
 
-  const handleNewCellFormCreateButtonClick = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    console.log(event);
+  const newCellFormHandlers = useCallback((columnDataType: ColumnDataType, formElements: any) => {
+    const handlers = {
+      // text
+      [ColumnDataType.Text]: () => {
+
+      },
+      [ColumnDataType.Markdown]: () => {
+
+      },
+      [ColumnDataType.Radio]: () => {
+
+      },
+      [ColumnDataType.Boolean]: () => {
+
+      },
+      // file
+      [ColumnDataType.Sound]: () => {
+
+      },
+      [ColumnDataType.Image]: () => {
+
+      },
+      [ColumnDataType.Video]: () => {
+
+      },
+    }
+    return handlers[columnDataType];
+  }, []);
+
+  const handleNewCellFormCreateButtonClick = useCallback(async (columnDataType: ColumnDataType, formData: any) => {
+    console.log(columnDataType, formData);
 
     //TODO ここ実装すること　「NewCellFormModalBody～.tsx」達と共に　　それでセルの作成機能は一応OKなはず
 
-  }, []);
+    try {
+      // newCellFormHandlers(newCellFormRef.current.dataset.columnDataType, newCellFormRef.current.elements)
+    } catch (e) {
 
-  const handleNewCellFormClose =useCallback((event) => {
+    }
+
+  }, [newCellFormHandlers]);
+
+  const handleNewCellFormClose = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewCellForm();
   }, []);
 
-  const handleNewCellFormCloseButtonClick =useCallback((event) => {
+  const handleNewCellFormCloseButtonClick = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewCellForm();
   }, []);
@@ -561,6 +597,7 @@ export const useColumnSpaceExplorerController = () => {
     columnSpaces,
     expandedColumnSpaces,
     selectedNodeId,
+    selectedColumnName,
     isNewColumnFormOpen,
     isNewCellFormOpen,
     newColumnFormName,
@@ -572,7 +609,6 @@ export const useColumnSpaceExplorerController = () => {
     newColumnSpacesFormRefs,
     newColumnNameInputRefs,
     columnNameRefs,
-    newCellFormRef,
     //イベントハンドラ
     hanleKeyDownOnColumn,
     handleTreeNodeToggle,

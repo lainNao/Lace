@@ -29,10 +29,12 @@
     "@types/recoil": "^0.0.1",
     "electron-serve": "^1.1.0",
     "electron-store": "^7.0.2",
+    "formik": "^2.2.6",
     "framer-motion": "^4.1.11",
     "lodash": "^4.17.21",
     "recoil": "^0.2.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@types/node": "^14.14.20",

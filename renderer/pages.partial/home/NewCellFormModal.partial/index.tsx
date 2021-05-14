@@ -1,11 +1,11 @@
-import { NewCellFormModalBodyText } from "./NewCellFormModalBodyText";
-import { NewCellFormModalBodyRadio } from "./NewCellFormModalBodyRadio";
-import { NewCellFormModalBodyMarkdown } from "./NewCellFormModalBodyMarkdown";
-import { NewCellFormModalBodyBoolean } from "./NewCellFormModalBodyBoolean";
-import { NewCellFormModalBodySound } from "./NewCellFormModalBodySound";
-import { NewCellFormModalBodyImage } from "./NewCellFormModalBodyImage";
-import { NewCellFormModalBodyVideo } from "./NewCellFormModalBodyVideo";
-import { NewCellFormModalBodyNull } from "./NewCellFormModalBodyNull";
+import { NewCellFormModalBodyText } from "./Text";
+import { NewCellFormModalBodyRadio } from "./Radio";
+import { NewCellFormModalBodyMarkdown } from "./Markdown";
+import { NewCellFormModalBodyBoolean } from "./Boolean";
+import { NewCellFormModalBodySound } from "./Sound";
+import { NewCellFormModalBodyImage } from "./Image";
+import { NewCellFormModalBodyVideo } from "./Video";
+import { NewCellFormModalBodyNull } from "./Null";
 import { ColumnDataType } from "../../../resources/ColumnDataType";
 
 export const newCellFormModalBodyComponents = {
