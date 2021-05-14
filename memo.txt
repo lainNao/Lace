@@ -4,9 +4,9 @@
 ■セルのポリモーフィズムの実装について
     ■モデル
     Cellクラス {
-    id,
-    relatedCells,
-    data: { typeごとに全くそれぞれなデータ構造でOK }
+        id,
+        relatedCells,
+        data: { typeごとに全くそれぞれなデータ構造でOK }        //というかこのデータの中身だけ軽くポリモーフィズムやる？うーん　なんか「CellData」的なインターフェースほしいかも
     }
     // ポリモーフィズムは↑のid, type, relatedCellsのみが限界
 

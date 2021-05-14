@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path';
-import { DB_FILE_PATH } from '../consts/path';
+import { DB_FILE_PATH } from '../resources/consts/path';
 import { ColumnSpace } from '../models/ColumnSpace';
 import { ColumnSpaces } from '../models/ColumnSpaces';
 import { getSaveDirPath } from '../modules/ipc';
@@ -19,8 +19,8 @@ export class ColumnSpacesRepositoryJson {
       "columns": [
         {
           "id": "2222",
-          "name": "test_file_column",
-          "type": "0",
+          "name": "test_text_column",
+          "type": "Text",
           "cells": [
             {
               "id": "3333",
@@ -42,6 +42,7 @@ export class ColumnSpacesRepositoryJson {
     return columnSpaces;
   }
 
+  // TODO これリポジトリのやつじゃないのでは？
   async updateDescendantColumnSpace(columnSpace: ColumnSpace): Promise<ColumnSpaces> {
     if (!this.columnSpaces) {
       this.columnSpaces = await this.read();

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { ColumnDataType } from '../enums/app';
+import { ColumnDataType } from "../resources/ColumnDataType";
 import { TrimedFilledString } from '../value-objects/TrimedFilledString';
 import { Cells } from './Cells';
 

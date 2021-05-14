@@ -1,7 +1,8 @@
 import React, {ReactElement, useCallback, useEffect, useState} from 'react';
 import { useRecoilCallback, useRecoilState } from 'recoil';
 import columnSpacesState from '../../atoms/columnSpacesState';
-import { FileSystemEnum } from "../../enums/app"
+import { FileSystemEnum } from "../../resources/enums/app"
+import { ColumnDataType } from "../../resources/ColumnDataType";
 import { createTopLevelColumnSpaceUseCase } from '../../usecases/createTopLevelColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../../usecases/moveColumnSpaceUseCase';
 import { showColumnContextMenu } from '../../context-menus/showColumnContextMenu';
@@ -32,11 +33,14 @@ export const useColumnSpaceExplorerController = () => {
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
+  const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
+  const [currentRightClickedColumnDataType, setCurrentRightClickedColumnDataType] = useState<ColumnDataType>(null);
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
+  const newCellFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
   const columnNameRefs = React.useRef([]);
   const newColumnNameInputRefs = React.useRef([]);
@@ -105,7 +109,11 @@ export const useColumnSpaceExplorerController = () => {
     event.stopPropagation();
     const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     setSelectedNodeId(targetDataset.id);
+    setCurrentRightClickedColumnDataType(ColumnDataType[targetDataset.columnType]);
     showColumnContextMenu(event, {
+      handleClickCreateNewCell: () => {
+        openNewCellFormOpen();
+      },
       handleClickRenameColumn: () => {
         columnNameRefs.current[targetDataset.id].classList.add("hidden");
         newColumnNameInputRefs.current[targetDataset.id].classList.remove("hidden");
@@ -216,6 +224,8 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, []);
 
+  /* -----------------------------------------------------カラム新規作成モーダルの管理----------------------------------------------------------- */
+
   const handleClickCreateNewColumn = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラム新規作成モーダルの作成ボタン押下");
     try {
@@ -250,6 +260,25 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("ツリービュー展開のトグル");
     setExpandedColumnSpaces(expandedNodeIds);
   }, [expandedColumnSpaces]);
+
+  /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
+
+  const handleNewCellFormCreateButtonClick = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    console.log(event);
+
+    //TODO ここ実装すること　「NewCellFormModalBody～.tsx」達と共に　　それでセルの作成機能は一応OKなはず
+
+  }, []);
+
+  const handleNewCellFormClose =useCallback((event) => {
+    console.debug("カラム新規作成モーダルのキャンセル");
+    closeNewCellForm();
+  }, []);
+
+  const handleNewCellFormCloseButtonClick =useCallback((event) => {
+    console.debug("カラム新規作成モーダルのキャンセル");
+    closeNewCellForm();
+  }, []);
 
   /* -----------------------------------------------------カラムスペースのDnD----------------------------------------------------------- */
 
@@ -534,13 +563,17 @@ export const useColumnSpaceExplorerController = () => {
     expandedColumnSpaces,
     selectedNodeId,
     isNewColumnFormOpen,
+    isNewCellFormOpen,
     newColumnFormName,
+    currentRightClickedColumnDataType,
+    openNewCellFormOpen,
     //ref
     newTopLevelColumnSpaceFormRef,
     newColumnFormRef,
     newColumnSpacesFormRefs,
     newColumnNameInputRefs,
     columnNameRefs,
+    newCellFormRef,
     //イベントハンドラ
     hanleKeyDownOnColumn,
     handleTreeNodeToggle,
@@ -567,6 +600,9 @@ export const useColumnSpaceExplorerController = () => {
     handleDropOnEmptySpace,
     handleDropOnColumnSpace,
     handleDropOnColumn,
+    handleNewCellFormClose,
+    handleNewCellFormCreateButtonClick,
+    handleNewCellFormCloseButtonClick,
     //他
     closeNewColumnForm,
   }

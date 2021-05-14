@@ -1,9 +1,9 @@
 import React from 'react';
 import Head from 'next/head';
 import type { AppProps } from 'next/app';
-import "../styles/global.css";
+import "../resources/styles/global.css";
 import { ChakraProvider } from "@chakra-ui/react"
-import dark from "../themes/dark"
+import dark from "../resources/themes/dark"
 import { RecoilRoot } from 'recoil';
 
 function App(props: AppProps) {

@@ -1,7 +1,7 @@
 import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesRepositoryJson";
 import { ColumnSpaces } from "../models/ColumnSpaces";
 import { TrimedFilledString } from "../value-objects/TrimedFilledString";
-import { ColumnDataType } from "../enums/app";
+import { ColumnDataType } from "../resources/ColumnDataType";
 import { Column } from "../models/Column";
 import { Cells } from "../models/Cells";
 

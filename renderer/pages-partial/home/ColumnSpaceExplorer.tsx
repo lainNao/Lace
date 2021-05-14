@@ -16,10 +16,13 @@ import {
   Select,
   Input,
 } from "@chakra-ui/react"
-import { ColumnDataType, FileSystemEnum } from '../../enums/app';
+import { FileSystemEnum } from '../../resources/enums/app';
+import { ColumnDataType, columnDataTypeStrings } from '../../resources/ColumnDataType'
 import { TreeItem } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
 import { ColumnSpaces } from '../../models/ColumnSpaces';
+import { NewCellFormModal } from './NewCellFormModal';
+import { newCellFormModalBodyComponents } from '../../resources/ColumnDataType'
 
 type Props = {
   classeName?: string;
@@ -102,6 +105,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                     onContextMenu={controller.handleRightClickOnColumn}
                     onKeyDown={controller.hanleKeyDownOnColumn}
                     data-type={FileSystemEnum.Column}
+                    data-column-type={column.type}
                     data-id={column.id}
                     data-column-space-id={columnSpace.id}
                     data-name={column.name}
@@ -138,6 +142,8 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       )
     })
   }, []);
+
+  const NewCellFormModalBody = newCellFormModalBodyComponents[controller.currentRightClickedColumnDataType];
 
   return (
     <div
@@ -182,14 +188,9 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
               <Input name="column-name" onChange={controller.handleChangeNewColumnNameInput} />
               <div className="mt-4">格納するデータタイプ</div>
               <Select name="column-type" >
-                {Object.values(ColumnDataType)
-                  .filter(key => isNaN(Number(key)))
-                  .map(key => {
-                    return (
-                      <option key={key} value={ColumnDataType[key]}>{key}</option>
-                    )
-                  })
-                }
+                {Object.values(ColumnDataType).map(key => {
+                  return <option key={key} value={ColumnDataType[key]}>{columnDataTypeStrings[key]()}</option>
+                })}
               </Select>
             </form>
           </ModalBody>
@@ -201,6 +202,17 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
         </ModalContent>
       </Modal>
 
+      {/* セル新規作成モーダル */}
+      <NewCellFormModal
+        columnDataType={controller.currentRightClickedColumnDataType}
+        isOpen={controller.isNewCellFormOpen}
+        onClose={controller.handleNewCellFormClose}
+        formRef={controller.newCellFormRef}
+        onClickCreateNewCell={controller.handleNewCellFormCreateButtonClick}
+        handleClickNewCellFormClose={controller.handleNewCellFormCloseButtonClick}
+      >
+        <NewCellFormModalBody  />
+      </NewCellFormModal>
     </div>
   )
 
