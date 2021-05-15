@@ -10,8 +10,8 @@ import {
   createVideoCellUseCase,
 } from "./createCellUseCase.partial";
 
-const makeSubUseCase = (cellDataType: CellDataType) => {
-  const handlers = {
+const makeSpecificUseCase = (cellDataType: CellDataType) => {
+  const usecases = {
     [CellDataType.Text]: createTextCellUseCase,
     [CellDataType.Markdown]: createMarkdownCellUseCase,
     [CellDataType.Radio]: createRadioCellUseCase,
@@ -20,7 +20,7 @@ const makeSubUseCase = (cellDataType: CellDataType) => {
     [CellDataType.Image]: createImageCellUseCase,
     [CellDataType.Video]: createVideoCellUseCase,
   }
-  return handlers[cellDataType];
+  return usecases[cellDataType];
 }
 
 export interface CreateCellUsecasesArgs {
@@ -29,6 +29,6 @@ export interface CreateCellUsecasesArgs {
 }
 
 export const createCellUseCase = async(columnDataset: ColumnDataset, cellData: any) => {
-  const subUsecase = makeSubUseCase(columnDataset.columnType);
-  return await subUsecase({columnDataset, cellData});
+  const targetUsecase = makeSpecificUseCase(columnDataset.columnType);
+  return await targetUsecase({columnDataset, cellData});
 }
