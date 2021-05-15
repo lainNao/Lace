@@ -17,7 +17,7 @@ import {
   Input,
 } from "@chakra-ui/react"
 import { FileSystemEnum } from '../../resources/enums/app';
-import { ColumnDataType, columnDataTypeStrings } from '../../resources/ColumnDataType'
+import { CellDataType, cellDataTypeStrings } from '../../resources/CellDataType'
 import { TreeItem } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
 import { ColumnSpaces } from '../../models/ColumnSpaces';
@@ -143,7 +143,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
     })
   }, []);
 
-  const NewCellFormModalBody = newCellFormModalBodyComponents[controller.currentRightClickedColumnDataType];
+  const NewCellFormModalBody = newCellFormModalBodyComponents[controller.selectedColumnDataset?.columnType];
 
   return (
     <div
@@ -188,14 +188,21 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
               <Input name="column-name" onChange={controller.handleChangeNewColumnNameInput} />
               <div className="mt-4">格納するデータタイプ</div>
               <Select name="column-type" >
-                {Object.values(ColumnDataType).map(key => {
-                  const columnDataType = ColumnDataType[key];
-                  return <option key={key} value={columnDataType}>{columnDataTypeStrings[columnDataType]}</option>
+                {Object.values(CellDataType).map(key => {
+                  const cellDataType = CellDataType[key];
+                  return <option key={key} value={cellDataType}>{cellDataTypeStrings[cellDataType]}</option>
                 })}
               </Select>
             </form>
+            {controller.currentModalFormErrors?.length > 0 &&
+              <div className="">
+                TODO ここきれいに表示するようにしといて　後これ以上モーダルが増えるなら、このエラーメッセージの状態もモーダルごとに分けて
+                {controller.currentModalFormErrors.map((errorMessage, index) => {
+                  <div key={index}>{errorMessage}</div>
+                })}
+              </div>
+            }
           </ModalBody>
-
           <ModalFooter>
             <Button onClick={controller.handleClickCreateNewColumn} isDisabled={controller.newColumnFormName.length === 0} colorScheme="blue" mr={3} >作成</Button>
             <Button variant="ghost" onClick={controller.handleClickNewColmnFormClose}>キャンセル</Button>
@@ -207,12 +214,13 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       <NewCellFormModal
         isOpen={controller.isNewCellFormOpen}
         onClose={controller.handleNewCellFormClose}
-        title={`${controller.selectedColumnName}に${columnDataTypeStrings[controller.currentRightClickedColumnDataType]}データ追加`}
+        title={`${controller.selectedColumnDataset?.name}に${cellDataTypeStrings[controller.selectedColumnDataset?.columnType]}データ追加`}
       >
         <NewCellFormModalBody
           onClickCreateNewCell={controller.handleNewCellFormCreateButtonClick}
           handleClickNewCellFormClose={controller.handleNewCellFormCloseButtonClick}
-          columnDataType={controller.currentRightClickedColumnDataType}
+          columnData={controller.selectedColumnDataset}
+          errors={controller.currentModalFormErrors}
         />
       </NewCellFormModal>
     </div>

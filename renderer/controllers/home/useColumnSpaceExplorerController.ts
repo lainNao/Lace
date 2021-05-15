@@ -2,7 +2,6 @@ import React, {ReactElement, useMemo, useCallback, useEffect, useState} from 're
 import { useRecoilCallback, useRecoilState } from 'recoil';
 import columnSpacesState from '../../atoms/columnSpacesState';
 import { FileSystemEnum } from "../../resources/enums/app"
-import { ColumnDataType } from "../../resources/ColumnDataType";
 import { createTopLevelColumnSpaceUseCase } from '../../usecases/createTopLevelColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../../usecases/moveColumnSpaceUseCase';
 import { showColumnContextMenu } from '../../context-menus/showColumnContextMenu';
@@ -21,6 +20,8 @@ import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCas
 import { moveColumnSpaceToTopLevelUseCase } from '../../usecases/moveColumnSpaceToTopeLevelUseCase';
 import { removeColumnUseCase } from '../../usecases/removeColumnUseCase';
 import { renameColumnUseCase } from '../../usecases/renameColumnUseCase';
+import { createCellUseCase } from '../../usecases/createCellUseCase';
+import { ColumnDataset } from '../../resources/types';
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
 //TODO おそらく、「inputを出したまま右側で編集する」とかなるとバグるかもしれないので、そこを一応留意しておきたい。逆に右側で編集中に左側いじっても同じことになる可能性あり。フラグを足すことになるかも
@@ -32,13 +33,13 @@ export const useColumnSpaceExplorerController = () => {
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
-  const [selectedColumnName, setSelectedColumnName] = useState<string>("");
+  const [selectedColumnDataset, setSelectedColumnDataset] = useState(null);
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
   const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
-  const [currentRightClickedColumnDataType, setCurrentRightClickedColumnDataType] = useState<ColumnDataType>(null);
+  const [currentModalFormErrors, setCurrentModalFormErrors] = useState<string[]>([]); //TODO これ使ってるところ動作確認現状一切してないので要チェック
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
@@ -113,8 +114,7 @@ export const useColumnSpaceExplorerController = () => {
     event.stopPropagation();
     const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     setSelectedNodeId(targetDataset.id);
-    setCurrentRightClickedColumnDataType(ColumnDataType[targetDataset.columnType]);
-    setSelectedColumnName(targetDataset.name);
+    setSelectedColumnDataset(targetDataset);
     showColumnContextMenu(event, {
       handleClickCreateNewCell: () => {
         openNewCellFormOpen();
@@ -208,7 +208,6 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, []);
 
-
   const handleSubmitNewColumnName = useRecoilCallback(({set}) => async (event: React.FormEvent<HTMLFormElement>, columnId: string) => {
     console.debug("カラム名変更フォームsubmit");
     event.preventDefault();
@@ -243,76 +242,53 @@ export const useColumnSpaceExplorerController = () => {
       setExpandedColumnSpaces((previousExpandedColumnSpaces) => {
         return Array.from(new Set([...previousExpandedColumnSpaces, newColumnFormParentId]));
       });
+      closeNewColumnForm();
     } catch (e) {
       console.log(e.stack);
+      setCurrentModalFormErrors([e.message]);
     } finally {
       setNewColumnFormName("");
-      closeNewColumnForm();
     }
   }, [newColumnFormParentId, expandedColumnSpaces])
 
   const handleChangeNewColumnNameInput = useCallback((event) => {
     console.debug("カラム新規作成モーダルのカラム名インプットのonchange");
     setNewColumnFormName(event.target.value);
+    setCurrentModalFormErrors([]);
   }, []);
 
   const handleClickNewColmnFormClose = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewColumnForm();
+    setCurrentModalFormErrors([]);
   }, []);
 
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
 
-  const newCellFormHandlers = useCallback((columnDataType: ColumnDataType, formElements: any) => {
-    const handlers = {
-      // text
-      [ColumnDataType.Text]: () => {
-
-      },
-      [ColumnDataType.Markdown]: () => {
-
-      },
-      [ColumnDataType.Radio]: () => {
-
-      },
-      [ColumnDataType.Boolean]: () => {
-
-      },
-      // file
-      [ColumnDataType.Sound]: () => {
-
-      },
-      [ColumnDataType.Image]: () => {
-
-      },
-      [ColumnDataType.Video]: () => {
-
-      },
-    }
-    return handlers[columnDataType];
-  }, []);
-
-  const handleNewCellFormCreateButtonClick = useCallback(async (columnDataType: ColumnDataType, formData: any) => {
-    console.log(columnDataType, formData);
-
-    //TODO ここ実装すること　「NewCellFormModalBody～.tsx」達と共に　　それでセルの作成機能は一応OKなはず
+  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any) => {
+    console.debug("新しいセルフォームの作成ボタン押下");
 
     try {
-      // newCellFormHandlers(newCellFormRef.current.dataset.columnDataType, newCellFormRef.current.elements)
+      const newColumnSpaces = await createCellUseCase(columnDataset, formData);
+      // set(columnSpacesState, newColumnSpaces);
+      closeNewCellForm();
     } catch (e) {
-
+      console.log(e.stack);
+      setCurrentModalFormErrors([e.message]);
     }
 
-  }, [newCellFormHandlers]);
+  }, []);
 
   const handleNewCellFormClose = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewCellForm();
+    setCurrentModalFormErrors([]);
   }, []);
 
   const handleNewCellFormCloseButtonClick = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewCellForm();
+    setCurrentModalFormErrors([]);
   }, []);
 
   /* -----------------------------------------------------カラムスペースのDnD----------------------------------------------------------- */
@@ -597,12 +573,11 @@ export const useColumnSpaceExplorerController = () => {
     columnSpaces,
     expandedColumnSpaces,
     selectedNodeId,
-    selectedColumnName,
+    selectedColumnDataset,
     isNewColumnFormOpen,
     isNewCellFormOpen,
     newColumnFormName,
-    currentRightClickedColumnDataType,
-    openNewCellFormOpen,
+    currentModalFormErrors,
     //ref
     newTopLevelColumnSpaceFormRef,
     newColumnFormRef,
@@ -639,6 +614,7 @@ export const useColumnSpaceExplorerController = () => {
     handleNewCellFormCreateButtonClick,
     handleNewCellFormCloseButtonClick,
     //他
+    openNewCellFormOpen,
     closeNewColumnForm,
   }
 }

@@ -1,6 +1,4 @@
-import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 import { Column } from "./Column";
-import { Columns } from "./Columns";
 import { ColumnSpace } from "./ColumnSpace";
 
 interface ColumnSpacesConstructorArgs {
@@ -14,19 +12,19 @@ export class ColumnSpaces {
 
   private _children: ColumnSpace[];
 
-  constructor(args?: ColumnSpacesConstructorArgs) {
-    this._children = (args == undefined) ? [] : args.children;
-  }
-
   get children(): ColumnSpace[] { return this._children; }
+
+  constructor(args?: ColumnSpacesConstructorArgs) {
+    this._children = (args == null) ? [] : args.children;
+  }
 
   static fromJSON(json) {
     return new ColumnSpaces({
-      children: json.map((columnSpace) => new ColumnSpace({
-        id: columnSpace.id,
-        name: new TrimedFilledString(columnSpace.name),
-        childColumnSpaces: ColumnSpaces.fromJSON(columnSpace.childColumnSpaces),
-        columns: Columns.fromJSON(columnSpace.columns),
+      children: json.map((columnSpaceJson) => ColumnSpace.fromJSON({
+        id: columnSpaceJson.id,
+        name: columnSpaceJson.name,
+        childColumnSpaces: columnSpaceJson.childColumnSpaces,
+        columns: columnSpaceJson.columns,
       }))
     });
   }

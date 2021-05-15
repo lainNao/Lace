@@ -1,21 +1,33 @@
 import { v4 as uuidv4 } from 'uuid'
-import { ColumnDataType } from "../resources/ColumnDataType";
+import { CellDataType } from "../resources/CellDataType";
 import { TrimedFilledString } from '../value-objects/TrimedFilledString';
 import { Cells } from './Cells';
 
 interface ColumnConstructorArgs {
   id?: string,
   name: TrimedFilledString,
-  type: ColumnDataType,
+  type: CellDataType,
   cells: Cells,
+}
+
+interface FromJsonArgs {
+  id: string,
+  name: string,
+  type: string,
+  cells: string,
 }
 
 export class Column {
 
   private _id: string;
   private _name: TrimedFilledString;
-  private _type: ColumnDataType;
+  private _type: CellDataType;
   private _cells: Cells;
+
+  get id() { return this._id; }
+  get name() { return this._name.toString(); }
+  get type() { return this._type; }
+  get cells() { return this._cells; }
 
   constructor(args: ColumnConstructorArgs) {
     const id = args.id ?? uuidv4();
@@ -28,10 +40,14 @@ export class Column {
     this._cells = args.cells;
   }
 
-  get id() { return this._id; }
-  get name() { return this._name.toString(); }
-  get type() { return this._type; } //TODO ここ「.value()」とかにしなくて可？
-  get cells() { return this._cells; }
+  static fromJSON(json: FromJsonArgs) {
+    return new Column({
+      id: json.id,
+      name: new TrimedFilledString(json.name),
+      type: CellDataType[json.type],
+      cells: Cells.fromJSON(json.cells),
+    });
+  }
 
   toJSON() {
     return {

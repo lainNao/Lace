@@ -6,18 +6,18 @@ import { NewCellFormModalBodySound } from "./Sound";
 import { NewCellFormModalBodyImage } from "./Image";
 import { NewCellFormModalBodyVideo } from "./Video";
 import { NewCellFormModalBodyNull } from "./Null";
-import { ColumnDataType } from "../../../resources/ColumnDataType";
+import { CellDataType } from "../../../resources/CellDataType";
 
 export const newCellFormModalBodyComponents = {
   // text
-  [ColumnDataType.Text]: NewCellFormModalBodyText,
-  [ColumnDataType.Markdown]: NewCellFormModalBodyMarkdown,
-  [ColumnDataType.Radio]: NewCellFormModalBodyRadio,
-  [ColumnDataType.Boolean]: NewCellFormModalBodyBoolean,
+  [CellDataType.Text]: NewCellFormModalBodyText,
+  [CellDataType.Markdown]: NewCellFormModalBodyMarkdown,
+  [CellDataType.Radio]: NewCellFormModalBodyRadio,
+  [CellDataType.Boolean]: NewCellFormModalBodyBoolean,
   // file
-  [ColumnDataType.Sound]: NewCellFormModalBodySound,
-  [ColumnDataType.Image]: NewCellFormModalBodyImage,
-  [ColumnDataType.Video]: NewCellFormModalBodyVideo,
+  [CellDataType.Sound]: NewCellFormModalBodySound,
+  [CellDataType.Image]: NewCellFormModalBodyImage,
+  [CellDataType.Video]: NewCellFormModalBodyVideo,
   // フォールバック
   null: NewCellFormModalBodyNull,
   undefined: NewCellFormModalBodyNull,

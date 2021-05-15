@@ -11,12 +11,24 @@ interface ColumnSpaceConstructorArgs {
   columns: Columns,
 }
 
+interface FromJsonArgs {
+  id: string,
+  name: string,
+  childColumnSpaces: string,
+  columns: string,
+}
+
 export class ColumnSpace {
 
   private _id: string;
   private _name: TrimedFilledString;
   private _childColumnSpaces: ColumnSpaces;
   private _columns: Columns;
+
+  get id() { return this._id; }
+  get name() { return this._name.toString(); }
+  get childColumnSpaces() {return this._childColumnSpaces; }
+  get columns() { return this._columns; }
 
   constructor(args: ColumnSpaceConstructorArgs) {
     const id = args.id ?? uuidv4();
@@ -28,10 +40,14 @@ export class ColumnSpace {
     this._columns = args.columns;
   }
 
-  get id() { return this._id; }
-  get name() { return this._name.toString(); }
-  get childColumnSpaces() {return this._childColumnSpaces; }
-  get columns() { return this._columns; }
+  static fromJSON(json: FromJsonArgs) {
+    return new ColumnSpace({
+      id: json.id,
+      name: new TrimedFilledString(json.name),
+      childColumnSpaces: ColumnSpaces.fromJSON(json.childColumnSpaces),
+      columns: Columns.fromJSON(json.columns),
+    })
+  }
 
   toJSON() {
     return {

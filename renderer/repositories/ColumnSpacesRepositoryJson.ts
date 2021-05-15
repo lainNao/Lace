@@ -24,7 +24,10 @@ export class ColumnSpacesRepositoryJson {
           "cells": [
             {
               "id": "3333",
-              "data": {},
+              "data": {
+                "text": "テスト文章です"
+              },
+              "type": "Text",
               "relatedCells":[]
             }
           ]

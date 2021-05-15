@@ -1,5 +1,4 @@
 import { array_move } from "../modules/array";
-import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 import { Column } from "./Column";
 
 interface ColumnsConstructorArgs {
@@ -9,17 +8,17 @@ interface ColumnsConstructorArgs {
 export class Columns {
   private _children: Column[];
 
-  constructor(args?: ColumnsConstructorArgs) {
-    this._children = (args == undefined) ? [] : args.children;
-  }
-
   get children(): Column[] { return this._children }
+
+  constructor(args?: ColumnsConstructorArgs) {
+    this._children = (args == null) ? [] : args.children;
+  }
 
   static fromJSON(json) {
     return new Columns({
-      children: json.map((column) => new Column({
+      children: json.map((column) => Column.fromJSON({
         id: column.id,
-        name: new TrimedFilledString(column.name),
+        name: column.name,
         type: column.type,
         cells: column.cells,
       })

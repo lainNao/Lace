@@ -8,12 +8,11 @@ export class Cells {
 
   private _children: Cell[];
 
-  constructor(args?: CellsConstructorArgs) {
-    //TODO: 不変条件
-    this._children = (args == undefined) ? [] : args.children;
-  }
-
   get children(): Cell[] { return this._children }
+
+  constructor(args?: CellsConstructorArgs) {
+    this._children = (args == null) ? [] : args.children;
+  }
 
   addCell(cell: Cell): void {  //TODO: 失敗したら例外出す
     this.children.push(cell);
@@ -21,9 +20,10 @@ export class Cells {
 
   static fromJSON(json) {
     return new Cells({
-      children: json.map((cell) => new Cell({  //TODO ここはポリモーフィズムやる
+      children: json.map((cell) => Cell.fromJSON({
         id: cell.id,
         data: cell.data,
+        type: cell.type,
         relatedCells: cell.relatedCells
       })
     )});
