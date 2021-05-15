@@ -38,30 +38,30 @@ export class ColumnSpaces {
   }
 
   // 子孫のカラムスペースから指定IDのものを探して返す
-  findDescendantColumnSpace(targetId: string): ColumnSpace {
+  findDescendantColumnSpace(targetColumnSpaceId: string): ColumnSpace {
     for (let i=0; i<this._children.length; i++) {
-      if (this._children[i].id === targetId) {
+      if (this._children[i].id === targetColumnSpaceId) {
         return this._children[i];
       }
-      const columnSpace = this._children[i].findDescendantColumnSpace(targetId);
+      const columnSpace = this._children[i].findDescendantColumnSpace(targetColumnSpaceId);
       if (columnSpace) {
         return columnSpace;
       }
     }
   }
 
-  findDescendantColumn(targetId: string): Column {
+  findDescendantColumn(targetColumnId: string): Column {
     for (let i=0; i<this._children.length; i++) {
-      if (this._children[i].findDescendantColumn(targetId)) {
-        return this._children[i].findDescendantColumn(targetId);
+      if (this._children[i].findDescendantColumn(targetColumnId)) {
+        return this._children[i].findDescendantColumn(targetColumnId);
       }
     }
   }
 
   // 子のカラムスペースから指定IDのものを削除
-  removeChildColumnSpace(targetId: string): ColumnSpaces {
+  removeChildColumnSpace(targetColumnSpaceId: string): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {
-      if (this._children[i].id === targetId) {
+      if (this._children[i].id === targetColumnSpaceId) {
         this._children.splice(i, 1);
         return this;
       }
@@ -70,21 +70,21 @@ export class ColumnSpaces {
   }
 
   // 子孫のカラムスペースから指定IDのものを削除
-  removeDescendantColumnSpace(targetId: string): ColumnSpaces {
+  removeDescendantColumnSpace(targetColumnSpaceId: string): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {
-      if (this._children[i].id === targetId) {
-        return this.removeChildColumnSpace(targetId);
+      if (this._children[i].id === targetColumnSpaceId) {
+        return this.removeChildColumnSpace(targetColumnSpaceId);
       }
-      this._children[i].removeDescendantColumnSpace(targetId);
+      this._children[i].removeDescendantColumnSpace(targetColumnSpaceId);
     }
     return this;
   }
 
   // 子孫のカラムから指定IDのものを削除
-  removeDescendantColumn(targetId: string): ColumnSpaces {
+  removeDescendantColumn(targetColumnId: string): ColumnSpaces {
     //TODO　これ、一個もtrue返すの無かった場合throw Errorしたらよいのでは　→やってみたけどネストしてる時にもエラー出すから駄目だった。ネストしてるからいちいちエラー出せないんだよな…消せなかった判定どうしようか後で考えたい
     for (let i=0; i<this._children.length; i++) {
-      this._children[i].removeDescendantColumn(targetId);
+      this._children[i].removeDescendantColumn(targetColumnId);
     }
     return this;
   }
@@ -117,54 +117,54 @@ export class ColumnSpaces {
   }
 
   // 子孫のカラムスペースに指定カラムスペースを追加
-  addDescendantColumnSpace(columnSpace: ColumnSpace, toId: string): ColumnSpaces {
+  addDescendantColumnSpace(columnSpace: ColumnSpace, targetColumnSpaceId: string): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {
-      if (this._children[i].id === toId) {
+      if (this._children[i].id === targetColumnSpaceId) {
         this._children[i].addChildColumnSpace(columnSpace);
         return this;
       }
-      this._children[i].addDescendantColumnSpace(columnSpace, toId);
+      this._children[i].addDescendantColumnSpace(columnSpace, targetColumnSpaceId);
     }
     return this;
   }
 
   // 子孫のカラムスペースに指定カラムを追加
-  addDescendantColumn(column: Column, toId: string): ColumnSpaces {
+  addDescendantColumn(column: Column, targetColumnSpaceId: string): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {
-      if (this._children[i].id === toId) {
+      if (this._children[i].id === targetColumnSpaceId) {
         this._children[i].addColumn(column);
         return this;
       }
-      this._children[i].addDescendantColumn(column, toId);
+      this._children[i].addDescendantColumn(column, targetColumnSpaceId);
     }
     return this;
   }
 
   // 指定IDのカラムスペースを、トップレベルのカラムスペース配下に移動
-  moveColumnSpaceToTopLevel(id: string): ColumnSpaces {
-    if (!this.canMoveColumnSpaceToTopLevel(id)) {
+  moveColumnSpaceToTopLevel(targetColumnSpaceId: string): ColumnSpaces {
+    if (!this.canMoveColumnSpaceToTopLevel(targetColumnSpaceId)) {
       throw new Error("移動できません");
     }
-    const immigrant = this.findDescendantColumnSpace(id);
-    const newColumnSpaces = this.removeDescendantColumnSpace(id);
+    const immigrant = this.findDescendantColumnSpace(targetColumnSpaceId);
+    const newColumnSpaces = this.removeDescendantColumnSpace(targetColumnSpaceId);
     return newColumnSpaces.push(immigrant);
   }
 
   // 指定IDのカラムスペースを、指定IDのカラムスペース配下に移動
-  moveDescendantColumnSpace(id: string, toId: string): ColumnSpaces {
-    if (!this.canMoveDescendantColumnSpace(id, toId)) {
+  moveDescendantColumnSpace(columnSpaceId: string, targetColumnSpaceId: string): ColumnSpaces {
+    if (!this.canMoveDescendantColumnSpace(columnSpaceId, targetColumnSpaceId)) {
       throw new Error("移動できません");
     }
-    const immigrant = this.findDescendantColumnSpace(id);
-    const newColumnSpaces = this.removeDescendantColumnSpace(id);
-    return newColumnSpaces.addDescendantColumnSpace(immigrant, toId);
+    const immigrant = this.findDescendantColumnSpace(columnSpaceId);
+    const newColumnSpaces = this.removeDescendantColumnSpace(columnSpaceId);
+    return newColumnSpaces.addDescendantColumnSpace(immigrant, targetColumnSpaceId);
   }
 
   // 指定IDのカラムスペースを、指定IDのカラムスペース配下に移動可能か
-  canMoveColumnSpaceToTopLevel(id: string): boolean {
+  canMoveColumnSpaceToTopLevel(columnSpaceId: string): boolean {
 
     // カラムスペースとして取得できない場合はもちろん移動できない
-    const columnSpace = this.findDescendantColumnSpace(id);
+    const columnSpace = this.findDescendantColumnSpace(columnSpaceId);
     if (!columnSpace) {
       return false;
     }
@@ -173,22 +173,22 @@ export class ColumnSpaces {
   }
 
   // 指定IDのカラムスペースを、指定IDのカラムスペース配下に移動可能か
-  canMoveDescendantColumnSpace(id: string, toId: string): boolean {
+  canMoveDescendantColumnSpace(columnSpaceId: string, targetColumnSpaceId: string): boolean {
     // 自分と相手が同じなら移動できない
-    const isSame: boolean = (id === toId);
+    const isSame: boolean = (columnSpaceId === targetColumnSpaceId);
     if (isSame) {
       return false;
     }
 
     // カラムを持っている相手には移動できない
-    const toColumnSpace = this.findDescendantColumnSpace(toId);
+    const toColumnSpace = this.findDescendantColumnSpace(targetColumnSpaceId);
     if (!toColumnSpace || toColumnSpace.hasColumns()) {
       return false;
     }
 
     // カラムスペースとして取得できない場合はもちろん移動できない
     // NOTE: この本質的な判定をメソッドの一番上に持ってこないのは検索コスト削減のため
-    const columnSpace = this.findDescendantColumnSpace(id);
+    const columnSpace = this.findDescendantColumnSpace(columnSpaceId);
     if (!columnSpace) {
       return false;
     }
