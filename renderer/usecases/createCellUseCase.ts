@@ -10,22 +10,22 @@ import {
   createVideoCellUseCase,
 } from "./createCellUseCase.partial";
 
-const makeSpecificUseCase = (cellDataType: CellDataType) => {
-  const usecases = {
-    [CellDataType.Text]: createTextCellUseCase,
-    [CellDataType.Markdown]: createMarkdownCellUseCase,
-    [CellDataType.Radio]: createRadioCellUseCase,
-    [CellDataType.Boolean]: createBooleanCellUseCase,
-    [CellDataType.Sound]: createSoundCellUseCase,
-    [CellDataType.Image]: createImageCellUseCase,
-    [CellDataType.Video]: createVideoCellUseCase,
-  }
-  return usecases[cellDataType];
-}
-
 export interface CreateCellUsecasesArgs {
   columnDataset: ColumnDataset,
   cellData: any
+}
+
+const makeSpecificUseCase = (cellDataType: CellDataType) => {
+  switch (cellDataType) {
+    case CellDataType.Text: return createTextCellUseCase;
+    case CellDataType.Markdown: return createMarkdownCellUseCase;
+    case CellDataType.Boolean: return createBooleanCellUseCase;
+    case CellDataType.Radio: return createRadioCellUseCase;
+    case CellDataType.Image: return createSoundCellUseCase;
+    case CellDataType.Sound: return createSoundCellUseCase;
+    case CellDataType.Video: return createVideoCellUseCase;
+    default: throw new Error("不明なCellDataTypeです");
+  }
 }
 
 export const createCellUseCase = async(columnDataset: ColumnDataset, cellData: any) => {
