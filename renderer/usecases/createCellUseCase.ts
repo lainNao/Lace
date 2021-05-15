@@ -1,12 +1,14 @@
 import { ColumnDataset } from "../resources/types";
 import { CellDataType } from "../resources/CellDataType";
-import { createBooleanCellUseCase } from "./createCellUseCase.partial/createBooleanCellUseCase";
-import { createImageCellUseCase } from "./createCellUseCase.partial/createImageCellUseCase";
-import { createMarkdownCellUseCase } from "./createCellUseCase.partial/createMarkdownCellUseCase";
-import { createRadioCellUseCase } from "./createCellUseCase.partial/createRadioCellUseCase";
-import { createSoundCellUseCase } from "./createCellUseCase.partial/createSoundCellUseCase";
-import { createTextCellUseCase } from "./createCellUseCase.partial/createTextCellUseCase";
-import { createVideoCellUseCase } from "./createCellUseCase.partial/createVideoCellUseCase";
+import {
+  createBooleanCellUseCase,
+  createImageCellUseCase,
+  createMarkdownCellUseCase,
+  createRadioCellUseCase,
+  createSoundCellUseCase,
+  createTextCellUseCase,
+  createVideoCellUseCase,
+} from "./createCellUseCase.partial";
 
 const makeSubUseCase = (cellDataType: CellDataType) => {
   const handlers = {
