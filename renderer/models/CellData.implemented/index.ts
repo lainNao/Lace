@@ -1,17 +1,15 @@
-import { BooleanCellData } from "./BooleanCellData";
-import { ImageCellData } from "./ImageCellData";
-import { MarkdownCellData } from "./MarkdownCellData";
-import { RadioCellData } from "./RadioCellData";
-import { SoundCellData } from "./SoundCellData";
 import { TextCellData } from "./TextCellData";
+import { MarkdownCellData } from "./MarkdownCellData";
+import { TableCellData } from "./TableCellData";
+import { ImageCellData } from "./ImageCellData";
+import { SoundCellData } from "./SoundCellData";
 import { VideoCellData } from "./VideoCellData";
 
 export {
-  BooleanCellData,
-  ImageCellData,
-  MarkdownCellData,
-  RadioCellData,
-  SoundCellData,
   TextCellData,
+  MarkdownCellData,
+  TableCellData,
+  ImageCellData,
+  SoundCellData,
   VideoCellData,
 }

@@ -1,6 +1,6 @@
 import { CellData } from "../CellData";
 
-export class BooleanCellData implements CellData {
+export class ChordProgressionCellData implements CellData {
 
   constructor(args) {
     //TODO 不変条件
@@ -11,7 +11,7 @@ export class BooleanCellData implements CellData {
     throw new Error("Method not implemented.");
   }
 
-  static fronJSON() {
+  static fronJSON(json) {
     throw new Error("Method not implemented.");
   }
 

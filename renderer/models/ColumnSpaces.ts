@@ -1,3 +1,5 @@
+import { ErrorTwoTone } from "@material-ui/icons";
+import { Cell } from "./Cell";
 import { Column } from "./Column";
 import { ColumnSpace } from "./ColumnSpace";
 
@@ -138,6 +140,21 @@ export class ColumnSpaces {
       this._children[i].addDescendantColumn(column, targetColumnSpaceId);
     }
     return this;
+  }
+
+  // 子孫のカラムスペースに指定カラムを追加
+  addDescendantCell(cell: Cell, targetColumnSpaceId: string, targetColumnId: string): ColumnSpaces {
+    //TODO 実装する
+    throw new Error("Not Implemented");
+    return
+    // for (let i=0; i<this._children.length; i++) {
+    //   if (this._children[i].id === targetColumnSpaceId) {
+    //     this._children[i].addColumn(column);
+    //     return this;
+    //   }
+    //   this._children[i].addDescendantColumn(column, targetColumnSpaceId);
+    // }
+    // return this;
   }
 
   // 指定IDのカラムスペースを、トップレベルのカラムスペース配下に移動

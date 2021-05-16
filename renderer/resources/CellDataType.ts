@@ -1,16 +1,14 @@
 
-export enum CellDataType {    //TODO ここ、最終的にポリモーフィズムで使われれうはずなので、このenumもどうなるかわからない。よりよい書き方あれば変更
+export enum CellDataType {
   // text
   Text = "Text",
   Markdown = "Markdown",
-  Boolean = "Boolean",
-  Radio = "Radio",
+  Table = "Table",
+  ChordProgression = "ChordProgression",
   // file
   Image = "Image",
   Sound = "Sound",
   Video = "Video",
-
-  //TODO 随時追加
 }
 
 export const cellDataTypeStrings = {    //TODO 多言語で返すようにしといて。できるのか知らんけど
@@ -20,11 +18,11 @@ export const cellDataTypeStrings = {    //TODO 多言語で返すようにしと
   get [CellDataType.Markdown]() {
     return "マークダウン";
   },
-  get [CellDataType.Boolean]() {
-    return "真偽値";
+  get [CellDataType.Table]() {
+    return "テーブル";
   },
-  get [CellDataType.Radio]() {
-    return "ラジオ";
+  get [CellDataType.ChordProgression]() {
+    return "コード進行";
   },
   get [CellDataType.Image]() {
     return "画像";

@@ -1,6 +1,6 @@
 import { CellData } from "../CellData";
 
-export class RadioCellData implements CellData {
+export class TableCellData implements CellData {
 
   constructor(args) {
     //TODO 不変条件

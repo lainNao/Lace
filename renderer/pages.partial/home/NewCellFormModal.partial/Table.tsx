@@ -10,10 +10,10 @@ import {
   Input,
 } from "@chakra-ui/react"
 
-export const NewCellFormModalBodyRadio = () => {
+export const NewCellFormModalBodyTable = () => {
   return (
     <div>
-      Radio
+      Table
     </div>
   )
 }

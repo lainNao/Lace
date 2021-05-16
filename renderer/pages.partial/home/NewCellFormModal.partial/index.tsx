@@ -1,7 +1,7 @@
 import { NewCellFormModalBodyText } from "./Text";
-import { NewCellFormModalBodyRadio } from "./Radio";
+import { NewCellFormModalBodyChordProgression } from "./ChordProgression";
 import { NewCellFormModalBodyMarkdown } from "./Markdown";
-import { NewCellFormModalBodyBoolean } from "./Boolean";
+import { NewCellFormModalBodyTable } from "./Table";
 import { NewCellFormModalBodySound } from "./Sound";
 import { NewCellFormModalBodyImage } from "./Image";
 import { NewCellFormModalBodyVideo } from "./Video";
@@ -12,8 +12,8 @@ export const newCellFormModalBodyComponents = {
   // text
   [CellDataType.Text]: NewCellFormModalBodyText,
   [CellDataType.Markdown]: NewCellFormModalBodyMarkdown,
-  [CellDataType.Radio]: NewCellFormModalBodyRadio,
-  [CellDataType.Boolean]: NewCellFormModalBodyBoolean,
+  [CellDataType.ChordProgression]: NewCellFormModalBodyChordProgression,
+  [CellDataType.Table]: NewCellFormModalBodyTable,
   // file
   [CellDataType.Sound]: NewCellFormModalBodySound,
   [CellDataType.Image]: NewCellFormModalBodyImage,

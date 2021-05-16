@@ -1,17 +1,17 @@
-import { createBooleanCellUseCase } from "./createBooleanCellUseCase";
+import { createTableCellUseCase } from "./createTableCellUseCase";
 import { createImageCellUseCase } from "./createImageCellUseCase";
 import { createMarkdownCellUseCase } from "./createMarkdownCellUseCase";
-import { createRadioCellUseCase } from "./createRadioCellUseCase";
 import { createSoundCellUseCase } from "./createSoundCellUseCase";
 import { createTextCellUseCase } from "./createTextCellUseCase";
 import { createVideoCellUseCase } from "./createVideoCellUseCase";
+import { createChordProgressionCellUseCase } from "./createChordProgressionCellUseCase";
 
 export {
-  createBooleanCellUseCase,
+  createTableCellUseCase,
   createImageCellUseCase,
   createMarkdownCellUseCase,
-  createRadioCellUseCase,
   createSoundCellUseCase,
   createTextCellUseCase,
   createVideoCellUseCase,
+  createChordProgressionCellUseCase,
 }

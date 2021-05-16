@@ -21,6 +21,7 @@ export class ColumnSpacesRepositoryJson {
           "id": "2222",
           "name": "test_text_column",
           "type": "Text",
+          "relatedPaneDisplayType": "VNormal",
           "cells": [
             {
               "id": "3333",

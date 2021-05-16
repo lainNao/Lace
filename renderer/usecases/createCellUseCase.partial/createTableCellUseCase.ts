@@ -1,5 +1,5 @@
 import { CreateCellUsecasesArgs } from "../createCellUseCase";
 
-export const createRadioCellUseCase = async(args: CreateCellUsecasesArgs) => {
+export const createTableCellUseCase = async(args: CreateCellUsecasesArgs) => {
   return "TODO";
 }
