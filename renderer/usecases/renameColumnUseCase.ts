@@ -1,6 +1,5 @@
 import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesRepositoryJson";
-import { ColumnSpaces } from "../models/ColumnSpaces";
-import { Column } from "../models/Column";
+import { ColumnSpaces, Column } from "../models/ColumnSpaces";
 import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 
 //TODO 適当に作っといたけど動作確認一切してないので、カラムのリネームのUI作ったら確かめて

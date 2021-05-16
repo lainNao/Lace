@@ -1,5 +1,5 @@
 import { CellDataType } from "../resources/CellDataType";
-import { CellData } from "../models/CellData";
+import { CellData } from "../models/ColumnSpaces/CellData";
 import {
   TextCellData,
   MarkdownCellData,
@@ -7,7 +7,7 @@ import {
   ImageCellData,
   SoundCellData,
   VideoCellData,
-} from "../models/CellData.implemented"
+} from "../models/ColumnSpaces/CellData.implemented"
 
 export class CellDataFactory {
 

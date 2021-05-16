@@ -1,4 +1,4 @@
-import { Button, Textarea } from "@chakra-ui/react"
+import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, useDisclosure } from "@chakra-ui/react"
 import React from 'react';
 import { useFormik } from 'formik';
 import yup from '../../../modules/yup';
@@ -18,6 +18,9 @@ export interface NewTextCellFormFormData {
 // TODO ここ、同じカラムスペースのカラム達をデータで持ってきて、関連セルを選択させるようなUIにすることが必要　そのUIどういう見た目にしてどういう実装ができるのか問題がある　そのデータはオブジェクトの配列でユースケースに送るんだろうけど　結構重労働なところだ…
 // TODO そのUIたぶんマルチモーダルがいい（別ウィンドウは表示位置とかで結局UX悪そう）　マルチモーダルを頑張って…　でその出す新しいモーダルでは、同一カラムスペースにあるカラムを選択するセレクトボックスが一個あって、それを選択するとセル一覧が並ぶ感じだと思う　無限スクロール対策したほうがいいと思う
 export const NewCellFormModalBodyText: React.FC<Props> = (props) => {
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
 
   const formik = useFormik({
     initialValues: {
@@ -49,11 +52,37 @@ export const NewCellFormModalBodyText: React.FC<Props> = (props) => {
           })}
         </div>
       }
+
+      <Button onClick={onOpen}>他カラムセルとの関連付け</Button>
+
       <div className="float-right mt-3 mb-2">
-        <Button type="submit" isDisabled={!(formik.isValid && formik.dirty)} colorScheme="blue" mr={3} >作成</Button>
+        <Button type="submit" isDisabled={!(formik.isValid && formik.dirty)} colorScheme="blue" mr={3} >完了</Button>
         <Button variant="ghost" onClick={props.handleClickNewCellFormClose}>キャンセル</Button>
       </div>
       {/* TODO たぶん関連づけの操作もこのモーダル上でできるようにしたほうがいいと思う */}
+
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>他カラムセルとの関連付け</ModalHeader>
+            <ModalCloseButton />
+
+            <ModalBody>
+              ここ、関連付けをどのネスト先まで関連付けるかもあるのと、あと表示タイプ（RelatedPaneDisplayType）の設定もあるから、ちょっとまた重いと思う。
+              あと、そのネストを再現するためにRelatedCellsの他にもRelatedColumns的なモデルもいると思う（単なるjsonでいいとは思うけど）
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} onClick={onClose}>
+                確定
+              </Button>
+              <Button variant="ghost">キャンセル</Button>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      </Modal>
+
     </form>
   )
 }

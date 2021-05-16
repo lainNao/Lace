@@ -1,4 +1,4 @@
-import { array_move } from "../modules/array";
+import { array_move } from "../../modules/array";
 import { Column } from "./Column";
 
 interface ColumnsConstructorArgs {

@@ -1,6 +1,5 @@
 import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesRepositoryJson";
-import { ColumnSpaces } from "../models/ColumnSpaces";
-import { ColumnSpace } from "../models/ColumnSpace";
+import { ColumnSpace, ColumnSpaces } from "../models/ColumnSpaces";
 import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 
 //NOTE: 第三引数が省略されたら、第二引数のカラムを0番目に移動する

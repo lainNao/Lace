@@ -24,7 +24,6 @@ export class Cells {
         id: cell.id,
         data: cell.data,
         type: cell.type,
-        relatedCells: cell.relatedCells
       })
     )});
   }

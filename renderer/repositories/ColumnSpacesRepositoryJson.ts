@@ -1,8 +1,7 @@
 import fs from 'fs'
 import path from 'path';
 import { DB_FILE_PATH } from '../resources/consts/path';
-import { ColumnSpace } from '../models/ColumnSpace';
-import { ColumnSpaces } from '../models/ColumnSpaces';
+import { ColumnSpace, ColumnSpaces } from '../models/ColumnSpaces';
 import { getSaveDirPath } from '../modules/ipc';
 
 // TODO 例外処理
@@ -21,15 +20,13 @@ export class ColumnSpacesRepositoryJson {
           "id": "2222",
           "name": "test_text_column",
           "type": "Text",
-          "relatedPaneDisplayType": "VNormal",
           "cells": [
             {
               "id": "3333",
+              "type": "Text",
               "data": {
                 "text": "テスト文章です"
-              },
-              "type": "Text",
-              "relatedCells":[]
+              }
             }
           ]
         }

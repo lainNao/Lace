@@ -1,7 +1,5 @@
 import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesRepositoryJson";
-import { ColumnSpace } from "../models/ColumnSpace";
-import { ColumnSpaces } from "../models/ColumnSpaces";
-import { Columns } from "../models/Columns";
+import { ColumnSpaces, ColumnSpace, Columns } from "../models/ColumnSpaces";
 import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 
 export const createTopLevelColumnSpaceUseCase = async(newColumnSpaceName: TrimedFilledString): Promise<ColumnSpaces> => {

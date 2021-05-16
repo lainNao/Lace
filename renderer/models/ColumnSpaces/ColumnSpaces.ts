@@ -1,4 +1,3 @@
-import { ErrorTwoTone } from "@material-ui/icons";
 import { Cell } from "./Cell";
 import { Column } from "./Column";
 import { ColumnSpace } from "./ColumnSpace";
