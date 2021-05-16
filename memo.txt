@@ -203,83 +203,86 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                 ...
             ]
 
-        ■関連集約（ソート形式や右ペインの表示形式や関連セルを保持する）
+        ■関連セル集約
             {
                 カラムスペースのUUID: {
 
-                    // 表示形式の保存
-                    displaySettings: [
-                        {
-                            // 表示設定名
-                            name: "フレーズ別要素、とかの名前",
+                     //このセルの関連セル達を保存
+                     セルのUUID: {
 
-                            //ソートに使うカラム
-                            sortColumns: [カラムID, カラムID, ... ],
+                         // 関連セル達を、カラムIDをキーに保存
+                         カラムID: [セルID, セルId,...],
+                         ...
+                     },
+                     ...
 
-                            // メイン表示する中央カラム
-                            mainColumn: カラムID,
+                }
+            }
 
-                            // 関連セルの表示形式
-                            relatedCellsDisplaySetting: [
-                                {
-                                    // 表示形式
-                                    type: 表示形式のenum,            //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
-                                                                    //CustomList（任意の表示。詳しくは、自分の創作技法集の表示に合わせる感じなのでそっち参照。簡単）
+        ■関連セル表示形式集約（ソート形式や右ペインの表示形式を保持する）
+            {
+                // 絡むスペースごとの表示形式の保存
+                カラムスペースのUUID: [
 
-                                    // type別の詳細設定。現状CustomListの場合とHListSeparatorの場合だけで、それ以外の場合はnull
-                                    typeDetails: {
+                    {
+                        // 表示形式ID
+                        id: UUID,
 
-                                        /* HListSeparatorの場合 */
-                                        separator: "、とかのセパレータ文字"
+                        // 表示設定名
+                        name: "フレーズ別要素、とかの名前",
+
+                        //ソートに使うカラム
+                        sortColumns: [カラムID, カラムID, ... ],
+
+                        // メイン表示する中央カラム
+                        mainColumn: カラムID,
+
+                        // 関連セルの表示形式
+                        relatedCellsDisplaySetting: [
+                            {
+                                // 表示形式
+                                type: 表示形式のenum,            //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
+                                                                //CustomList（任意の表示。詳しくは、自分の創作技法集の表示に合わせる感じなのでそっち参照。簡単）
+
+                                // type別の詳細設定。現状CustomListの場合とHListSeparatorの場合だけで、それ以外の場合はnull
+                                typeDetails: {
+
+                                    /* HListSeparatorの場合 */
+                                    separator: "、とかのセパレータ文字"
 
 
 
-                                        /* CustomListの場合 */
+                                    /* CustomListの場合 */
 
-                                        // タイトル（CustomListじゃない場合、カラム名がタイトルとして使われる）
-                                        title: "曲例、とか",
+                                    // タイトル（CustomListじゃない場合、カラム名がタイトルとして使われる）
+                                    title: "曲例、とか",
 
-                                        // カラム達の設定
-                                        columns: [
-                                            {
-                                                columnId: カラムID,
+                                    // カラム達の設定
+                                    columns: [
+                                        {
+                                            columnId: カラムID,
 
-                                                prefix: "つけたい前置文字。nullable",
+                                            prefix: "つけたい前置文字。nullable",
 
-                                                suffix: "つけたい後置文字。nullable",
+                                            suffix: "つけたい後置文字。nullable",
 
-                                                // このカラムの前に改行かつインデントを入れるか（何言ってるかわからない場合自分の創作技法集の表示参照）
-                                                needBreakLine: 真偽値,
+                                            // このカラムの前に改行かつインデントを入れるか（何言ってるかわからない場合自分の創作技法集の表示参照）
+                                            needBreakLine: 真偽値,
 
-                                            },
-                                            ...
-                                        ]
+                                        },
+                                        ...
+                                    ]
 
-                                    }
+                                }
 
-                                },
-                                ...
-                            ]
-
-                        },
-                        ...
-
-                    ],
-
-                    // 関連セルの保存
-                    relatedCells: {
-
-                        //このセルの関連セル達を保存
-                        セルのUUID: {
-
-                            // 関連セル達を、カラムIDをキーに保存
-                            カラムID: [セルID, セルId,...],
+                            },
                             ...
-                        },
-                        ...
-                    }
+                        ]
+
+                    },
                     ...
-                },
+
+                ],
                 ...
             }
 
