@@ -232,14 +232,14 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                         // 表示設定名
                         name: "フレーズ別要素、とかの名前",
 
-                        //ソートに使うカラム
+                        //ソートに使うカラム（降順昇順とかのサブパターンもあるだろうけどどうする…？後で…）
                         sortColumns: [カラムID, カラムID, ... ],
 
                         // メイン表示する中央カラム
                         mainColumn: カラムID,
 
                         // 関連セルの表示形式
-                        relatedCellsDisplaySetting: [
+                        relatedCellsDisplaySettings: [
                             {
                                 // 表示形式
                                 type: 表示形式のenum,            //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
