@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
-import { Column } from './Column';
-import { Columns } from './Columns';
-import { ColumnSpaces } from './ColumnSpaces';
+import { Column, Columns, ColumnSpaces } from '.';
 
 interface ColumnSpaceConstructorArgs {
   id?: string,

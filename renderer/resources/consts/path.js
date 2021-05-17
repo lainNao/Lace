@@ -1,1 +1,1 @@
-export const DB_FILE_PATH = "db/database.json";
+export const DB_DIR_PATH = "db/";

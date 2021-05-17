@@ -1,5 +1,5 @@
 import { array_move } from "../../modules/array";
-import { Column } from "./Column";
+import { Column } from ".";
 
 interface ColumnsConstructorArgs {
   children: Column[],

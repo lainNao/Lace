@@ -1,6 +1,4 @@
-import { Cell } from "./Cell";
-import { Column } from "./Column";
-import { ColumnSpace } from "./ColumnSpace";
+import { Cell, Column, ColumnSpace } from ".";
 
 interface ColumnSpacesConstructorArgs {
   children: ColumnSpace[],

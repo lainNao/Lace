@@ -1,15 +1,10 @@
-import fs from 'fs'
-import path from 'path';
-import { DB_FILE_PATH } from '../resources/consts/path';
 import { ColumnSpace, ColumnSpaces } from '../models/ColumnSpaces';
-import { getSaveDirPath } from '../modules/ipc';
+import { RepositoryJson } from './RepositoryJson';
 
-// TODO 例外処理
-// TODO ファイルシステム触るみたいなことができる処理はもしかしたらメインプロセス側に移したほうが良いかも。というかnode.js全般？そうなると変更大変になる。まだ不明というか調べるの面倒なだけ
-export class ColumnSpacesRepositoryJson {
+export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
 
-  columnSpaces: ColumnSpaces;
-  dbFilePath: string = DB_FILE_PATH;
+  model = ColumnSpaces;
+  dbFileName: string = "database.json";
   initialDB: any = [       //TODO モックなので後で直す
     {
       "id": "1111",
@@ -35,109 +30,17 @@ export class ColumnSpacesRepositoryJson {
   ]
 
   constructor() {
-  }
-
-  async save(columnSpaces: ColumnSpaces): Promise<ColumnSpaces> {
-    const userDataPath = await getSaveDirPath();
-    await fs.promises.writeFile(path.join(userDataPath, this.dbFilePath), JSON.stringify(columnSpaces, null, "\t"), "utf8");
-    return columnSpaces;
+    super();
   }
 
   // TODO これリポジトリのやつじゃないのでは？
   async updateDescendantColumnSpace(columnSpace: ColumnSpace): Promise<ColumnSpaces> {
-    if (!this.columnSpaces) {
-      this.columnSpaces = await this.read();
+    if (!this.data) {
+      this.data = await this.read();
     }
-    this.columnSpaces = this.columnSpaces.updateDescendantColumnSpace(columnSpace);
-    return await this.save(this.columnSpaces);
+    this.data = this.data.updateDescendantColumnSpace(columnSpace);
+    return await this.save(this.data);
   }
 
-  async readOrInitialize(): Promise<ColumnSpaces> {
-    try {
-      return await this.read();
-    } catch {
-      // TODO これ、readに失敗しただけでイニシャライズしちゃうのはきついのでは…　絶対に良くないと思う…　readとinitializeは実行タイミングはユーザーの選択によって分けたほうがいいと思う…
-      return await this.initialize()
-    }
-  }
-
-  async read(): Promise<ColumnSpaces> {
-    const userDataPath = await getSaveDirPath();
-    const fileString = await fs.promises.readFile(path.join(userDataPath, this.dbFilePath), "utf-8");
-    this.columnSpaces = ColumnSpaces.fromJSON(JSON.parse(fileString));
-    return this.columnSpaces;
-  }
-
-  async initialize(): Promise<ColumnSpaces> {
-    const userDataPath = await getSaveDirPath();
-    const dbPath = path.join(userDataPath, this.dbFilePath);
-    const dbDir = path.dirname(dbPath);
-
-    // フォルダ無いならフォルダ作る
-    if (!fs.existsSync(dbDir)) {
-      await fs.promises.mkdir(dbDir, { recursive: true });
-    }
-
-    // 初期DBファイル作成
-    await fs.promises.writeFile(dbPath, JSON.stringify(this.initialDB, null, "\t"), "utf8");
-    return ColumnSpaces.fromJSON(this.initialDB);
-  }
-
-  // async uploadFile(fileObject, targetColumnUUID): Promise<columnSpacesType> {
-  //   const filePath = await this.getSavePathWithoutDuplication(fileObject.name, targetColumnUUID);
-  //   const realFilePath = this.publicPath + filePath;
-  //   const currentcolumnSpaces = await this.readDB();
-
-  //   let newcolumnSpaces = Object.assign({}, currentcolumnSpaces);
-  //   // newcolumnSpaces[this.currentColumnSpaceUUID].columns[targetColumnUUID].datas[uuidv4()] = {
-  //   //   path: filePath,
-  //   //   type: fileObject.type,
-  //   //   name: parse(realFilePath).name + parse(realFilePath).ext,
-  //   //   childsColumnsDatas: {},    //この時点では空にし、後々セットする時にこの中身は持たせる。なぜならば、ここでファイル取り込みした後にchild_columnsの中の要素が増える可能性があるため。
-  //   // };
-
-  //   // エラーハンドリングもする。サービス側で一括でやったほうがいいかも
-  //   copyFileSync(fileObject.path, realFilePath)
-  //   this.saveFile(newcolumnSpaces);
-
-  //   console.log("DB書き出し完了");
-  //   return newcolumnSpaces;
-  // }
-
-  // private createColumnSpaceDirectory(columnSpaceName: string): string | void {
-  //   // エラーハンドリングもする。サービス側で一括でやったほうがいいかも
-  //   if (!existsSync(columnSpaceName)){
-  //     mkdirSync(columnSpaceName);
-  //   } else {
-  //     throw new Error("既に存在しています");
-  //   }
-  // }
-
-
-
-  // private async getCellSaveDirectoryOf(targetColumnUUID: string): Promise<string> {
-  //   const userDataPath = await getSaveDirPath();
-  //   return path.join(userDataPath, "userdata/column_spaces", targetColumnUUID) + "/";
-  // }
-
-  // private getSaveFileName(saveDirectory, fileName, extension) {
-  //   for (let i=0; ; i++) {
-  //     const path = (i === 0)
-  //       ? this.publicPath + saveDirectory + fileName + extension
-  //       : this.publicPath + saveDirectory + fileName + `(${i})` + extension
-
-  //     const samePathExists = fs.existsSync(path)
-  //     if (samePathExists) {
-  //       continue;
-  //     }
-  //     return path
-  //   }
-  // }
-
-  // private async getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): Promise<string> {
-  //   const saveDirectory = await this.getCellSaveDirectoryOf(targetColumnUUID);
-  //   const saveFileName = this.getSaveFileName(this.publicPath, path.parse(filenameWithExtension).name, path.parse(filenameWithExtension).ext);
-  //   return saveDirectory + saveFileName;
-  // }
 
 }
