@@ -13,7 +13,7 @@ export default function useSetupColumnSpaces() {
       const columnSpaces = await columnSpacesRepository.readOrInitialize()
       setColumnSpaces(columnSpaces)
     })()
-  }, [setColumnSpaces])
+  }, [])
 
   return [columnSpaces, setColumnSpaces] as const;
 

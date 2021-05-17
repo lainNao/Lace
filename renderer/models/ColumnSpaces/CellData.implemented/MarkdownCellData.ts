@@ -1,18 +1,32 @@
 import { CellData } from "../CellData";
 
-export class MarkdownCellData implements CellData {
+interface ConstructorArgs {
+  text: string,
+}
 
-  constructor(args) {
-    //TODO 不変条件
-    //TODO 実装
+interface FromJsonArgs {
+  text: string,
+}
+
+export class MarkdownCellData implements CellData {
+  private _text: string;
+
+  get text() { return this._text; }
+
+  constructor(args: ConstructorArgs) {
+    this._text = args.text;
   }
 
   toJSON() {
-    throw new Error("Method not implemented.");
+    return {
+      text: this._text,
+    }
   }
 
-  static fronJSON(json) {
-    throw new Error("Method not implemented.");
+  static fronJSON(json: FromJsonArgs): CellData {
+    return new MarkdownCellData({
+      text: json.text,
+    });
   }
 
 }

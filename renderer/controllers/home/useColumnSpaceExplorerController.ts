@@ -22,6 +22,7 @@ import { removeColumnUseCase } from '../../usecases/removeColumnUseCase';
 import { renameColumnUseCase } from '../../usecases/renameColumnUseCase';
 import { createCellUseCase } from '../../usecases/createCellUseCase';
 import { ColumnDataset } from '../../resources/types';
+import { RelatedCells } from '../../models/RelatedCells';
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
 //TODO おそらく、「inputを出したまま右側で編集する」とかなるとバグるかもしれないので、そこを一応留意しておきたい。逆に右側で編集中に左側いじっても同じことになる可能性あり。フラグを足すことになるかも
@@ -265,11 +266,11 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
 
-  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any) => {
+  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any, newRelatedCells: RelatedCells) => {
     console.debug("新しいセルフォームの作成ボタン押下");
 
     try {
-      const newColumnSpaces = await createCellUseCase(columnDataset, formData);
+      const newColumnSpaces = await createCellUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData, newRelatedCells);
       // set(columnSpacesState, newColumnSpaces);
       closeNewCellForm();
     } catch (e) {

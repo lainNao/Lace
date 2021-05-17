@@ -34,6 +34,13 @@ const useStyles = makeStyles({
   },
 });
 
+export type NewCellFormModalBodyProps = {
+  errors: string[],
+  columnData: any,
+  onClickCreateNewCell: any, //TODO
+  handleClickNewCellFormClose: any, //TODO
+}
+
 //TODO テーマとかどうするか
 //TODO カラムの横幅を変えられるやつを導入したい resizable panel react とか split pane とかググればそれっぽいの出てくる　react-split-paneがシンプルでよい？re-resizableの方が？
 //TODO あとslackみたいにカーソルがエクスプローラー側にある時だけエクスプローラー側にスクロールバー出したい

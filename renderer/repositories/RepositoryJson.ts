@@ -65,7 +65,7 @@ export class RepositoryJson<T> {
   async initialize(): Promise<T> {
     assert(this.model, "modelが設定されていません");
     assert(this.model.fromJSON, "modelにfromJSONが定義されていません");
-    assert(this.initialDB, "initialDBが設定されていません")
+    assert(this.initialDB, "initialDBが設定されていません");
 
     const saveDirPath = await this.getSaveDirAbsolutePath();
     const dbPath = path.join(saveDirPath, this.dbFileRelativePath);
