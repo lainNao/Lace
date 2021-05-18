@@ -1,23 +1,13 @@
 import React, { useCallback } from 'react';
 import { Button, IconButton } from "@chakra-ui/react"
-import { SearchIcon, EditIcon, AddIcon } from "@chakra-ui/icons"
+import { AddIcon } from "@chakra-ui/icons"
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useColumnSpaceExplorerController } from '../../controllers/home/useColumnSpaceExplorerController';
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Select,
-  Input,
-} from "@chakra-ui/react"
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Select, Input } from "@chakra-ui/react"
 import { FileSystemEnum } from '../../resources/enums/app';
-import { CellDataType, cellDataTypeStrings } from '../../resources/CellDataType'
+import { CellDataType, cellDataTypeIcons, cellDataTypeStrings } from '../../resources/CellDataType'
 import { TreeItem } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
 import { ColumnSpaces } from '../../models/ColumnSpaces';
@@ -35,7 +25,6 @@ const useStyles = makeStyles({
 });
 
 export type NewCellFormModalBodyProps = {
-  errors: string[],
   columnData: any,
   onClickCreateNewCell: any, //TODO
   handleClickNewCellFormClose: any, //TODO
@@ -122,11 +111,14 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                         <div
                           className="font-sans text-blue-400 text-sm"
                           ref={elem => controller.columnNameRefs.current[column.id] = elem}
-                        >{column.name}</div>
+                        >
+                          {cellDataTypeIcons(column.type, "w-3 h-3 inline-block mr-2")}
+                          {column.name}
+                        </div>
                         <form
                           className="hidden"
                           data-id={column.id}
-                          onSubmit={event => {controller.handleSubmitNewColumnName(event, column.id)}}
+                          onSubmit={event => controller.handleSubmitNewColumnName(event, column.id)}
                           ref={elem => controller.newColumnNameInputRefs.current[column.id] = elem}
                         >
                           <input name="new-column-name" className="bg-gray-700" spellCheck={false}></input>
@@ -153,84 +145,79 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
   const NewCellFormModalBody = newCellFormModalBodyComponents[controller.selectedColumnDataset?.columnType];
 
   return (
-    <div
-      className={`${props.classeName}`}
-      onContextMenu={controller.handleRightClickOnEmptySpace}
-      onDragOver={controller.handleDragOverOnEmptySpace}
-      onDrop={controller.handleDropOnEmptySpace}
-    >
-
-      {/* TODO エクスプローラーの一番上の部分 */}
-      <div>
-        <span>カラムスペース</span>
-        <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={controller.handleClickAddColumnSpaceButton}/>
-      </div>
-
-      {/* ツリービュー */}
-      <TreeView
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
-        className="select-none"
-        expanded={controller.expandedColumnSpaces}
-        selected={controller.selectedNodeId}
-        onNodeToggle={controller.handleTreeNodeToggle}
+    <>
+      <div
+        className={`${props.classeName}`}
+        onContextMenu={controller.handleRightClickOnEmptySpace}
+        onDragOver={controller.handleDragOverOnEmptySpace}
+        onDrop={controller.handleDropOnEmptySpace}
       >
-        {generateColumnSpaceElementTree(controller.columnSpaces)}
-      </TreeView>
 
-      {/* トップレベルのカラムスペース追加フォーム */}
-      <form onSubmit={controller.handleSubmitTopLevelNewColumnSpaceForm} className="hidden ml-5" ref={controller.newTopLevelColumnSpaceFormRef} >
-        <input name="new-column-space-name" className="bg-gray-700" spellCheck={false}></input>
-      </form>
+        {/* TODO エクスプローラーの一番上の部分 */}
+        <div>
+          <span>カラムスペース</span>
+          <IconButton className="ml-3" aria-label="add" icon={<AddIcon />} onClick={controller.handleClickAddColumnSpaceButton}/>
+        </div>
+
+        {/* ツリービュー */}
+        <TreeView
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpandIcon={<ChevronRightIcon />}
+          className="select-none"
+          expanded={controller.expandedColumnSpaces}
+          selected={controller.selectedNodeId}
+          onNodeToggle={controller.handleTreeNodeToggle}
+        >
+          {generateColumnSpaceElementTree(controller.columnSpaces)}
+        </TreeView>
+
+        {/* トップレベルのカラムスペース追加フォーム */}
+        <form onSubmit={controller.handleSubmitTopLevelNewColumnSpaceForm} className="hidden ml-5" ref={controller.newTopLevelColumnSpaceFormRef} >
+          <input name="new-column-space-name" className="bg-gray-700" spellCheck={false}></input>
+        </form>
+
+      </div>
 
       {/* カラム新規作成モーダル */}
       <Modal isOpen={controller.isNewColumnFormOpen} onClose={controller.closeNewColumnForm}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>カラムの新規作成</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <form ref={controller.newColumnFormRef} onSubmit={(e) => e.preventDefault()} className="mb-3">
-              <div>カラム名</div>
-              <Input name="column-name" onChange={controller.handleChangeNewColumnNameInput} />
-              <div className="mt-4">格納するデータタイプ</div>
-              <Select name="column-type" >
-                {Object.values(CellDataType).map(key => {
-                  const cellDataType = CellDataType[key];
-                  return <option key={key} value={cellDataType}>{cellDataTypeStrings[cellDataType]}</option>
-                })}
-              </Select>
-            </form>
-            {controller.currentModalFormErrors?.length > 0 &&
-              <div className="">
-                TODO ここきれいに表示するようにしといて　後これ以上モーダルが増えるなら、このエラーメッセージの状態もモーダルごとに分けて
-                {controller.currentModalFormErrors.map((errorMessage, index) => {
-                  <div key={index}>{errorMessage}</div>
-                })}
-              </div>
-            }
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={controller.handleClickCreateNewColumn} isDisabled={controller.newColumnFormName.length === 0} colorScheme="blue" mr={3} >作成</Button>
-            <Button variant="ghost" onClick={controller.handleClickNewColmnFormClose}>キャンセル</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>カラムの新規作成</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <form ref={controller.newColumnFormRef} onSubmit={(e) => e.preventDefault()} className="mb-3">
+                <div>カラム名</div>
+                <Input name="column-name" onChange={controller.handleChangeNewColumnNameInput} />
+                <div className="mt-4">格納するデータタイプ</div>
+                <Select name="column-type" >
+                  {Object.values(CellDataType).map(key => {
+                    const cellDataType = CellDataType[key];
+                    return <option key={key} value={cellDataType}>{cellDataTypeStrings[cellDataType]}</option>
+                  })}
+                </Select>
+              </form>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={controller.handleClickCreateNewColumn} isDisabled={controller.newColumnFormName.length === 0} colorScheme="blue" mr={3} >作成</Button>
+              <Button variant="ghost" onClick={controller.handleClickNewColmnFormClose}>キャンセル</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
 
       {/* セル新規作成モーダル */}
       <NewCellFormModal
-        isOpen={controller.isNewCellFormOpen}
-        onClose={controller.handleNewCellFormClose}
-        title={`${controller.selectedColumnDataset?.name}に${cellDataTypeStrings[controller.selectedColumnDataset?.columnType]}データ追加`}
-      >
-        <NewCellFormModalBody
-          onClickCreateNewCell={controller.handleNewCellFormCreateButtonClick}
-          handleClickNewCellFormClose={controller.handleNewCellFormCloseButtonClick}
-          columnData={controller.selectedColumnDataset}
-          errors={controller.currentModalFormErrors}
-        />
-      </NewCellFormModal>
-    </div>
+          isOpen={controller.isNewCellFormOpen}
+          onClose={controller.handleNewCellFormClose}
+          title={`${controller.selectedColumnDataset?.name}に${cellDataTypeStrings[controller.selectedColumnDataset?.columnType]}データ追加`}
+        >
+          <NewCellFormModalBody
+            onClickCreateNewCell={controller.handleNewCellFormCreateButtonClick}
+            handleClickNewCellFormClose={controller.handleNewCellFormCloseButtonClick}
+            columnData={controller.selectedColumnDataset}
+          />
+        </NewCellFormModal>
+
+    </>
   )
 
 }

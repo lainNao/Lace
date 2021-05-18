@@ -23,9 +23,13 @@ import { renameColumnUseCase } from '../../usecases/renameColumnUseCase';
 import { createCellUseCase } from '../../usecases/createCellUseCase';
 import { ColumnDataset } from '../../resources/types';
 import { RelatedCells } from '../../models/RelatedCells';
+import { CellDataType } from '../../resources/CellDataType';
+import { useToast } from "@chakra-ui/react"
+
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
 //TODO おそらく、「inputを出したまま右側で編集する」とかなるとバグるかもしれないので、そこを一応留意しておきたい。逆に右側で編集中に左側いじっても同じことになる可能性あり。フラグを足すことになるかも
+//TODO 各種モーダルでの操作などのエラーメッセージや成功メッセージをトーストとかで出したいところ…
 
 //NOTE: 基本的にコントローラーでカラムスペースを扱う時はidだけで扱う。責務的に。
 export const useColumnSpaceExplorerController = () => {
@@ -40,7 +44,6 @@ export const useColumnSpaceExplorerController = () => {
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
-  const [currentModalFormErrors, setCurrentModalFormErrors] = useState<string[]>([]); //TODO これ使ってるところ動作確認現状一切してないので要チェック
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
@@ -50,6 +53,8 @@ export const useColumnSpaceExplorerController = () => {
   const lastAddedBorderElementRef = React.useRef(null);
   const isLeavingToParentColumnSpace = React.useRef(null);
   const lastFilledColumnSpaceNodeRef = React.useRef(null);
+  // 他
+  const toast = useToast()
 
   /* -----------------------------------------------------一般----------------------------------------------------------- */
 
@@ -148,6 +153,10 @@ export const useColumnSpaceExplorerController = () => {
   }, []);
 
   const handleRightClickOnEmptySpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    // if (!(event.target as HTMLElement)?.dataset?.isEmptySpace) {
+    //   return;
+    // }
+
     console.debug("エクスプローラーの無部分押下時のコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
@@ -246,7 +255,12 @@ export const useColumnSpaceExplorerController = () => {
       closeNewColumnForm();
     } catch (e) {
       console.log(e.stack);
-      setCurrentModalFormErrors([e.message]);
+      toast({
+        title: e.message,
+        status: "error",
+        position: "top-right",
+        isClosable: true,
+      })
     } finally {
       setNewColumnFormName("");
     }
@@ -255,13 +269,11 @@ export const useColumnSpaceExplorerController = () => {
   const handleChangeNewColumnNameInput = useCallback((event) => {
     console.debug("カラム新規作成モーダルのカラム名インプットのonchange");
     setNewColumnFormName(event.target.value);
-    setCurrentModalFormErrors([]);
   }, []);
 
   const handleClickNewColmnFormClose = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewColumnForm();
-    setCurrentModalFormErrors([]);
   }, []);
 
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
@@ -275,7 +287,12 @@ export const useColumnSpaceExplorerController = () => {
       closeNewCellForm();
     } catch (e) {
       console.log(e.stack);
-      setCurrentModalFormErrors([e.message]);
+      toast({
+        title: e.message,
+        status: "error",
+        position: "top-right",
+        isClosable: true,
+      })
     }
 
   }, []);
@@ -283,23 +300,26 @@ export const useColumnSpaceExplorerController = () => {
   const handleNewCellFormClose = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewCellForm();
-    setCurrentModalFormErrors([]);
   }, []);
 
   const handleNewCellFormCloseButtonClick = useCallback((event) => {
     console.debug("カラム新規作成モーダルのキャンセル");
     closeNewCellForm();
-    setCurrentModalFormErrors([]);
   }, []);
 
   /* -----------------------------------------------------カラムスペースのDnD----------------------------------------------------------- */
 
   const handleDropOnEmptySpace = useRecoilCallback(({set}) => async(event: React.DragEvent<HTMLElement>) => {
     console.debug("emptyスペースへのドロップ");
+    const columnSpaceId = event.dataTransfer.getData("columnSpaceId");
+
+    if (!columnSpaceId) {
+      return;
+    }
 
     // カラムスペースをトップレベルに移動する
     try {
-      const newColumnSpaces = await moveColumnSpaceToTopLevelUseCase(event.dataTransfer.getData("columnSpaceId"));
+      const newColumnSpaces = await moveColumnSpaceToTopLevelUseCase(columnSpaceId);
       setColumnSpaces(newColumnSpaces);
     } catch (e) {
       console.log(e.stack);
@@ -578,7 +598,6 @@ export const useColumnSpaceExplorerController = () => {
     isNewColumnFormOpen,
     isNewCellFormOpen,
     newColumnFormName,
-    currentModalFormErrors,
     //ref
     newTopLevelColumnSpaceFormRef,
     newColumnFormRef,

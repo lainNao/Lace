@@ -17,6 +17,13 @@ if (isProd) {
     width: 1000,
     height: 600,
     frame: false,
+    webPreferences: {
+      contextIsolation: false,  //レンダラープロセスでnode.jsのAPIを使いたかった
+      nodeIntegration: true,    //レンダラープロセスでnode.jsのAPIを使いたかった
+      webSecurity: false,       //ファイルアップロード時のプレビューのために使用。これがfalseなのが嫌ならそこを修正する
+      enableRemoteModule: true, //どうしてもコンテキストメニューのあれこれのために、レンダラープロセスからremoteを使う必要があった。これがtrueなのが嫌なら頑張る
+    }
+
     // transparent: true,
     // resizable: false,
   });
