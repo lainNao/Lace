@@ -284,13 +284,7 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("新しいセルを作成するフォームの登録ボタン押下");
 
     try {
-      //TODO createCellsUseCaseに統一したい。
-      const newColumnSpaces = await (async() => {
-        if (columnDataset.columnType == CellDataType.Text || columnDataset.columnType == CellDataType.Markdown) {
-          return await createCellUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
-        }
-        return await createCellsUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
-      })();
+      const newColumnSpaces = await createCellsUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
       set(columnSpacesState, newColumnSpaces);
       closeNewCellForm();
     } catch (e) {
