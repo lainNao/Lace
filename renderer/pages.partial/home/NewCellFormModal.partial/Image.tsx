@@ -4,6 +4,7 @@ import useSetupRelatedCells from "../../../hooks/useSetupRelatedCells";
 import { NewCellFormModalBodyProps } from "../ColumnSpaceExplorer";
 import { useDropzone } from 'react-dropzone';
 import { hasCompatibleImageExtension } from "../../../modules/validator";
+import { useToast } from "@chakra-ui/react"
 
 // TODO ここ、同じカラムスペースのカラム達をデータで持ってきて、関連セルを選択させるようなUIにすることが必要　そのUIどういう見た目にしてどういう実装ができるのか問題がある　そのデータはオブジェクトの配列でユースケースに送るんだろうけど　結構重労働なところだ…
 // TODO そのUIたぶんマルチモーダルがいい（別ウィンドウは表示位置とかで結局UX悪そう）　マルチモーダルを頑張って…　でその出す新しいモーダルでは、同一カラムスペースにあるカラムを選択するセレクトボックスが一個あって、それを選択するとセル一覧が並ぶ感じだと思う　無限スクロール対策したほうがいいと思う
@@ -13,12 +14,22 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
   const [relatedCells, setRelatedCells] = useSetupRelatedCells();
   const [modifiedRelatedCells, setModifiedRelatedCells] = useState(false);
   const [paths, setPaths] = useState([]);
+  const toast = useToast()
 
   const onDrop = useCallback(acceptedFiles => {
     // 対応する拡張子のみ受け入れる
     const acceptedFilePaths = Array.from<File>(acceptedFiles)
       .map(file => file.path)
       .filter(filepath => hasCompatibleImageExtension(filepath));
+
+    if (acceptedFiles.length !== acceptedFilePaths.length) {
+      toast({
+        title: "未対応の拡張子のファイルは取り込みませんでした。", //TODO ここ不親切感あるので最終的にどうにかしたい
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      });
+    }
 
     setPaths(prev => [...prev, ...acceptedFilePaths])
   }, []);

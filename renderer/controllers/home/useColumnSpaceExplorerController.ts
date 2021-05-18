@@ -23,7 +23,6 @@ import { renameColumnUseCase } from '../../usecases/renameColumnUseCase';
 import { createCellUseCase } from '../../usecases/createCellUseCase';
 import { ColumnDataset } from '../../resources/types';
 import { RelatedCells } from '../../models/RelatedCells';
-import { CellDataType } from '../../resources/CellDataType';
 import { useToast } from "@chakra-ui/react"
 
 
@@ -258,7 +257,7 @@ export const useColumnSpaceExplorerController = () => {
       toast({
         title: e.message,
         status: "error",
-        position: "top-right",
+        position: "bottom-right",
         isClosable: true,
       })
     } finally {
@@ -290,7 +289,7 @@ export const useColumnSpaceExplorerController = () => {
       toast({
         title: e.message,
         status: "error",
-        position: "top-right",
+        position: "bottom-right",
         isClosable: true,
       })
     }
