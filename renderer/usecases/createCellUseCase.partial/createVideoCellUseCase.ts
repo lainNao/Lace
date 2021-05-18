@@ -1,6 +1,8 @@
+import { ColumnSpaces } from "../../models/ColumnSpaces";
 import { CreateCellUsecasesArgs } from "../createCellUseCase";
 
-export const createVideoCellUseCase = async(args: CreateCellUsecasesArgs) => {
+export const createVideoCellUseCase = async(args: CreateCellUsecasesArgs): Promise<ColumnSpaces> => {
   console.log(args.cellData)
-  return "TODO";
+  throw new Error("未実装です");
+  return null;
 }

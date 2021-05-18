@@ -1,9 +1,9 @@
-import { Cell } from "../../models/ColumnSpaces";
+import { Cell, ColumnSpaces } from "../../models/ColumnSpaces";
 import { TextCellData } from "../../models/ColumnSpaces/CellData.implemented";
 import { ColumnSpacesRepositoryJson } from "../../repositories/ColumnSpacesRepositoryJson";
 import { CreateCellUsecasesArgs } from "../createCellUseCase";
 
-export const createTextCellUseCase = async(args: CreateCellUsecasesArgs) => {
+export const createTextCellUseCase = async(args: CreateCellUsecasesArgs): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
   const newRootColumnSpaces = rootColumnSpaces.addDescendantCell(

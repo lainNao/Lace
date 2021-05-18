@@ -6,8 +6,7 @@ import {
   createTextCellUseCase,
   createVideoCellUseCase,
 } from "./createCellUseCase.partial";
-import { RelatedCells } from "../models/RelatedCells";
-import { RelatedCellsRepositoryJson } from "../repositories/RelatedCellsRepositoryJson";
+import { ColumnSpaces } from "../models/ColumnSpaces";
 
 export interface CreateCellUsecasesArgs {
   columnSpaceId: string,
@@ -27,15 +26,8 @@ const makeSpecificUseCase = (cellDataType: CellDataType) => {
   }
 }
 
-export const createCellUseCase = async(columnSpaceId: string, columnId: string, columnType: CellDataType, cellData: any, relatedCells?: RelatedCells) => {
+export const createCellUseCase = async(columnSpaceId: string, columnId: string, columnType: CellDataType, cellData: any): Promise<ColumnSpaces> => {
   const targetUsecase = makeSpecificUseCase(columnType);
-
-  //TODO トランザクションしたい
-
   const newColumnSpaces = await targetUsecase({columnSpaceId, columnId, columnType, cellData});
-  const newRelatedCells = (relatedCells)
-    ? (new RelatedCellsRepositoryJson).save(relatedCells)
-    : (new RelatedCellsRepositoryJson).read();
-
-  return [newColumnSpaces, newRelatedCells];
+  return newColumnSpaces;
 }

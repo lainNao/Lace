@@ -24,6 +24,9 @@ import { createCellUseCase } from '../../usecases/createCellUseCase';
 import { ColumnDataset } from '../../resources/types';
 import { RelatedCells } from '../../models/RelatedCells';
 import { useToast } from "@chakra-ui/react"
+import relatedCellsState from '../../atoms/relatedCellsState';
+import { createCellsUseCase } from '../../usecases/createCellsUseCase';
+import { CellDataType } from '../../resources/CellDataType';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -277,13 +280,18 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
 
-  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any, relatedCells: RelatedCells) => {
+  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any) => {
     console.debug("新しいセルフォームの作成ボタン押下");
 
     try {
-      const [newColumnSpaces, newRelatedCells] = await createCellUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData, relatedCells);
-      // set(columnSpacesState, newColumnSpaces);
-      // set(relatedCellsState, newRelatedCells);
+      //TODO createCellsUseCaseに統一したい。
+      const newColumnSpaces = await (async() => {
+        if (columnDataset.columnType == CellDataType.Text || columnDataset.columnType == CellDataType.Markdown) {
+          return await createCellUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
+        }
+        return await createCellsUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
+      })();
+      set(columnSpacesState, newColumnSpaces);
       closeNewCellForm();
     } catch (e) {
       console.log(e.stack);

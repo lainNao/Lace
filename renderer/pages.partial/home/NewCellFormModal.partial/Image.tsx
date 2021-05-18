@@ -1,18 +1,12 @@
-import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, useDisclosure } from "@chakra-ui/react"
+import { Button } from "@chakra-ui/react"
 import React, { useCallback, useState } from 'react';
-import useSetupRelatedCells from "../../../hooks/useSetupRelatedCells";
 import { NewCellFormModalBodyProps } from "../ColumnSpaceExplorer";
 import { useDropzone } from 'react-dropzone';
 import { hasCompatibleImageExtension } from "../../../modules/validator";
 import { useToast } from "@chakra-ui/react"
 
-// TODO ここ、同じカラムスペースのカラム達をデータで持ってきて、関連セルを選択させるようなUIにすることが必要　そのUIどういう見た目にしてどういう実装ができるのか問題がある　そのデータはオブジェクトの配列でユースケースに送るんだろうけど　結構重労働なところだ…
-// TODO そのUIたぶんマルチモーダルがいい（別ウィンドウは表示位置とかで結局UX悪そう）　マルチモーダルを頑張って…　でその出す新しいモーダルでは、同一カラムスペースにあるカラムを選択するセレクトボックスが一個あって、それを選択するとセル一覧が並ぶ感じだと思う　無限スクロール対策したほうがいいと思う
 export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (props) => {
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [relatedCells, setRelatedCells] = useSetupRelatedCells();
-  const [modifiedRelatedCells, setModifiedRelatedCells] = useState(false);
   const [paths, setPaths] = useState([]);
   const toast = useToast()
 
@@ -35,16 +29,10 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
   }, []);
   const { getRootProps, isDragActive } = useDropzone({onDrop});
 
-  const handleSubmit = useCallback((e) => { //TOOD 型
+  const handleSubmit = useCallback((e) => { //TODO 型
     e.preventDefault();
     e.stopPropagation();
-
-    props.onClickCreateNewCell(
-      props.columnData,
-      paths,
-      (modifiedRelatedCells) ? relatedCells : null,
-    );
-
+    props.onClickCreateNewCell(props.columnData, paths);
   }, [paths]);
 
   //TODO アップロードしようとしたけどやめたファイルを「☓」ボタンで消せるようにする
