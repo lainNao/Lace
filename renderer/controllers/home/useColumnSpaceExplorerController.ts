@@ -281,7 +281,7 @@ export const useColumnSpaceExplorerController = () => {
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
 
   const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any) => {
-    console.debug("新しいセルフォームの作成ボタン押下");
+    console.debug("新しいセルを作成するフォームの登録ボタン押下");
 
     try {
       //TODO createCellsUseCaseに統一したい。
