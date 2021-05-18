@@ -277,12 +277,13 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
 
-  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any, newRelatedCells: RelatedCells) => {
+  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any, relatedCells: RelatedCells) => {
     console.debug("新しいセルフォームの作成ボタン押下");
 
     try {
-      const newColumnSpaces = await createCellUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData, newRelatedCells);
+      const [newColumnSpaces, newRelatedCells] = await createCellUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData, relatedCells);
       // set(columnSpacesState, newColumnSpaces);
+      // set(relatedCellsState, newRelatedCells);
       closeNewCellForm();
     } catch (e) {
       console.log(e.stack);

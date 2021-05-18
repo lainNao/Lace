@@ -1,5 +1,5 @@
 import { array_move } from "../../modules/array";
-import { Column } from ".";
+import { Cell, Column } from ".";
 
 interface ColumnsConstructorArgs {
   children: Column[],
@@ -26,19 +26,19 @@ export class Columns {
   }
 
   toJSON() {
-    return this.children;
+    return this._children;
   }
 
   mapChildren(callback: (value: Column, index: number, array: Column[]) => unknown): unknown[]  {
-    return this.children.map(callback);
+    return this._children.map(callback);
   }
 
   push(column: Column): Columns {
-    this.children.push(column);
+    this._children.push(column);
     return this;
   }
 
-  findChildColumn(targetId: string): Column {
+  findChildColumn(targetId: string): Column { //TODO ここらへん、Columnsを返すのかColumnを返すのかいろいろ後で判断する。特にadd類など
     for (let i=0; i<this._children.length; i++) {
       if (this._children[i].id === targetId) {
         return this._children[i];
@@ -48,6 +48,15 @@ export class Columns {
 
   findIndexOf(columnId: string): number {
     return this.children.findIndex((column) => column.id === columnId);
+  }
+
+  addCellTo(cell: Cell, columnId: string): Columns {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === columnId) {
+        this._children[i].addCell(cell);
+        return this;
+      }
+    }
   }
 
   moveColumnFromTo(fromIndex: number, toIndex: number): Columns {
@@ -75,12 +84,12 @@ export class Columns {
 
   // カラムを持っているか
   hasColumns(): boolean {
-    return this.children.length > 0;
+    return this._children.length > 0;
   }
 
   // 指定のカラムを持っているか
   hasColumn(columnId: string): boolean {
-    return this.children.some(column => column.id === columnId);
+    return this._children.some(column => column.id === columnId);
   }
 
 }

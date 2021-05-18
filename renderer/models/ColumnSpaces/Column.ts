@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { CellDataType } from "../../resources/CellDataType";
 import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
-import { Cells } from '.';
+import { Cell, Cells } from '.';
 
 interface ColumnConstructorArgs {
   id?: string,
@@ -56,6 +56,11 @@ export class Column {
       type: this._type,
       cells: this._cells,
     }
+  }
+
+  addCell(cell: Cell): Column {
+    this._cells.addCell(cell);
+    return this;
   }
 
 }

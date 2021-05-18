@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
-import { Column, Columns, ColumnSpaces } from '.';
+import { Cell, Column, Columns, ColumnSpaces } from '.';
 
 interface ColumnSpaceConstructorArgs {
   id?: string,
@@ -80,6 +80,11 @@ export class ColumnSpace {
     return this;
   }
 
+  addCellTo(cell: Cell, columnId: string): ColumnSpace {
+    this._columns.addCellTo(cell, columnId);
+    return this;
+  }
+
   addDescendantColumnSpace(columnSpace: ColumnSpace, toId: string): ColumnSpace {
     this._childColumnSpaces.addDescendantColumnSpace(columnSpace, toId);
     return this;
@@ -87,6 +92,11 @@ export class ColumnSpace {
 
   addDescendantColumn(column: Column, toId: string) {
     this._childColumnSpaces.addDescendantColumn(column, toId);
+    return this;
+  }
+
+  addDescendantCell(cell: Cell, columnSpaceId: string, columnId: string) {
+    this._childColumnSpaces.addDescendantCell(cell, columnSpaceId, columnId);
     return this;
   }
 
