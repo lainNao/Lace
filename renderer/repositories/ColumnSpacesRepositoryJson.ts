@@ -36,15 +36,6 @@ export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
     super();
   }
 
-  // TODO これリポジトリのやつじゃないのでは？後でこれ使ってるところを直す
-  async updateDescendantColumnSpace(columnSpace: ColumnSpace): Promise<ColumnSpaces> {
-    if (!this.data) {
-      this.data = await this.read();
-    }
-    this.data = this.data.updateDescendantColumnSpace(columnSpace);
-    return await this.save(this.data);
-  }
-
   //TODO エラーハンドリング
   async saveColumnFiles(columnSpaceId: string, columnId: string, paths: string[]): Promise<string[]> {
     const saveFilePaths = [];
