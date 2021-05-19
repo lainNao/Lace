@@ -14,7 +14,6 @@ export class RepositoryJson<T> {
 
   protected data: T;
   private dbDirPath: string = DB_DIR_PATH;
-  private columnDataDir: string = "file_datas"; //TODO この定数どっかに移す
   private saveDirAbsolutePath: string;
 
   constructor() {
@@ -25,7 +24,7 @@ export class RepositoryJson<T> {
     return path.join(this.dbDirPath, this.dbFileName);
   }
 
-  private async getSaveDirAbsolutePath(): Promise<string> {
+  protected async getSaveDirAbsolutePath(): Promise<string> {
     if (this.saveDirAbsolutePath) {
       return this.saveDirAbsolutePath;
     }
@@ -40,61 +39,6 @@ export class RepositoryJson<T> {
     this.data = data;
     return this.data;
   }
-
-  //TODO エラーハンドリング
-  async saveColumnFiles(columnSpaceId: string, columnId: string, paths: string[]): Promise<string[]> {
-    const saveFilePaths = [];
-    for (const path of paths) {
-      const saveFilePath = await this.saveColumnFile(columnSpaceId, columnId, path);
-      saveFilePaths.push(saveFilePath);
-    }
-
-    return saveFilePaths;
-  }
-
-  async saveColumnFile(columnSpaceId: string, columnId: string, localFilePath: string): Promise<string> {
-    const fileName = path.basename(localFilePath);
-    const saveFilePath = await this.createColumnDataSavePathWithoutDuplication(fileName, columnSpaceId, columnId);
-
-    // TODO エラーハンドリング
-    await fs.promises.copyFile(localFilePath, saveFilePath)
-
-    return saveFilePath;
-  }
-
-  private async createColumnDataSavePathWithoutDuplication(fileName: string, columnSpaceId: string,columnId: string): Promise<string> {
-    const saveDirPath = await this.createColumnDataDirAbsolutePath(columnSpaceId, columnId);
-    const saveFilePath = this.getSaveFilePathWithdouDuplication(saveDirPath, path.parse(fileName).name, path.parse(fileName).ext);
-    return saveFilePath;
-  }
-
-  private async createColumnDataDirAbsolutePath(columnSpaceId: string, columnId: string): Promise<string> {
-    const applicationDirPath = await this.getSaveDirAbsolutePath();
-    const saveDirPath = path.join(applicationDirPath, this.columnDataDir, columnSpaceId, columnId);
-    await this.createDirectoryIfNotExists(saveDirPath);
-    return path.join(saveDirPath);
-  }
-
-  private async createDirectoryIfNotExists(dirAbsolutePath: string): Promise<string> {
-    if (!fs.existsSync(dirAbsolutePath)){
-      return await fs.promises.mkdir(dirAbsolutePath, { recursive: true });
-    }
-  }
-
-  private getSaveFilePathWithdouDuplication(saveDirAbsolutePath: string, fileName: string, extension: string) {
-    for (let i=0; ; i++) {
-      const saveFilePath = (i === 0)
-        ? path.join(saveDirAbsolutePath, fileName + extension)
-        : path.join(saveDirAbsolutePath, fileName + `(${i})` + extension)
-
-      const samePathExists = fs.existsSync(saveFilePath)
-      if (samePathExists) {
-        continue;
-      }
-      return saveFilePath;
-    }
-  }
-
 
   //TODO これは廃止する。read使う側でcatchなどして、ユーザーに確認して必要ならinitializeを改めて行うようにする
   async readOrInitialize(): Promise<T> {
