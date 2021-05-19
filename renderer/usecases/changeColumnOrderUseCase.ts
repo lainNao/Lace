@@ -16,6 +16,7 @@ export const changeColumnOrderUseCase = async(columnSpaceId: string, columnId: s
     return rootColumnSpaces;
   }
 
+  /// 順番違うなら入れ替えする
   const newColumns = targetColumnSpace.columns.moveColumnFromTo(
     fromIndex,
     (toIndex === null) ? 0 : (toIndex > fromIndex) ? toIndex : toIndex + 1   //NOTE:　移動の目に見える目安がアンダーラインで示されるためそれと感覚が合うように調整
