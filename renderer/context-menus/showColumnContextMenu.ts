@@ -13,7 +13,7 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({
-    label:"セルの追加（未実装）（+ボタンとか下部においたりなんだりしてバルク作成できるようにして。または右側を編集モードにするだけとかにして）",
+    label:"セルの追加",
     click: args.handleClickCreateNewCell,
   }));
   contextMenu.append(new MenuItem({
@@ -30,7 +30,7 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
     type: 'separator'
   }));
   contextMenu.append(new MenuItem({
-    label:"削除",
+    label:"削除（TODO ファイル系カラムなら、対象ファイルが入ってるディレクトリも消すこと。これは簡単なので問題ないはず）",
     click: args.handleClickDeleteColumn,
   }));
 
