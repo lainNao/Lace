@@ -30,7 +30,7 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
     type: 'separator'
   }));
   contextMenu.append(new MenuItem({
-    label:"削除（TODO ファイル系カラムなら、対象ファイルが入ってるディレクトリも消すこと。これは簡単なので問題ないはず）",
+    label:"削除",
     click: args.handleClickDeleteColumn,
   }));
 
