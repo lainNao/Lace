@@ -1,5 +1,5 @@
 import { array_move } from "../../modules/array";
-import { Cell, Column } from ".";
+import { Cell, Cells, Column } from ".";
 
 interface ColumnsConstructorArgs {
   children: Column[],
@@ -48,6 +48,15 @@ export class Columns {
 
   findIndexOf(columnId: string): number {
     return this.children.findIndex((column) => column.id === columnId);
+  }
+
+  addCellsTo(cells: Cells, columnId: string): Columns {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === columnId) {
+        this._children[i].addCells(cells);
+        return this;
+      }
+    }
   }
 
   addCellTo(cell: Cell, columnId: string): Columns {

@@ -14,7 +14,11 @@ export class Cells {
     this._children = (args == null) ? [] : args.children;
   }
 
-  addCell(cell: Cell): void {  //TODO: 失敗したら例外出す
+  merge(cells: Cells): void {
+    this._children = this._children.concat(cells.children);
+  }
+
+  addCell(cell: Cell): void {
     this.children.push(cell);
   }
 

@@ -1,4 +1,4 @@
-import { Cell, Column, ColumnSpace } from ".";
+import { Cell, Cells, Column, ColumnSpace } from ".";
 
 interface ColumnSpacesConstructorArgs {
   children: ColumnSpace[],
@@ -139,7 +139,19 @@ export class ColumnSpaces {
     return this;
   }
 
-  // 子孫のカラムスペースに指定カラムを追加
+  // 子孫のカラムスペース、カラムに指定Cellsを追加
+  addDescendantCells(cells: Cells, targetColumnSpaceId: string, targetColumnId: string): ColumnSpaces {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === targetColumnSpaceId) {
+        this._children[i].addCellsTo(cells, targetColumnId);
+        return this;
+      }
+      this._children[i].addDescendantCells(cells, targetColumnSpaceId, targetColumnId);
+    }
+    return this;
+  }
+
+  // 子孫のカラムスペース、カラムに指定Cellを追加
   addDescendantCell(cell: Cell, targetColumnSpaceId: string, targetColumnId: string): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {
       if (this._children[i].id === targetColumnSpaceId) {

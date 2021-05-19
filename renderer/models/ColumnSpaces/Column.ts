@@ -58,6 +58,11 @@ export class Column {
     }
   }
 
+  addCells(cells: Cells): Column {
+    this._cells.merge(cells);
+    return this;
+  }
+
   addCell(cell: Cell): Column {
     this._cells.addCell(cell);
     return this;
