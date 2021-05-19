@@ -9,6 +9,7 @@ export const createSoundCellsUseCase = async(args: CreateCellsUsecasesArgs): Pro
 
   //TODO エラーハンドリング　できればトランザクションしたいところ…
   const savedFilePaths = await columnSpacesRepository.saveColumnFiles(
+    args.columnSpaceId,
     args.columnId,
     args.cellDatas,
   );

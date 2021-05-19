@@ -14,7 +14,7 @@ export class RepositoryJson<T> {
 
   protected data: T;
   private dbDirPath: string = DB_DIR_PATH;
-  private columnDataDir: string = "column_datas"; //TODO この定数どっかに移す
+  private columnDataDir: string = "file_datas"; //TODO この定数どっかに移す
   private saveDirAbsolutePath: string;
 
   constructor() {
@@ -42,19 +42,19 @@ export class RepositoryJson<T> {
   }
 
   //TODO エラーハンドリング
-  async saveColumnFiles(columnId: string, paths: string[]): Promise<string[]> {
+  async saveColumnFiles(columnSpaceId: string, columnId: string, paths: string[]): Promise<string[]> {
     const saveFilePaths = [];
     for (const path of paths) {
-      const saveFilePath = await this.saveColumnFile(columnId, path);
+      const saveFilePath = await this.saveColumnFile(columnSpaceId, columnId, path);
       saveFilePaths.push(saveFilePath);
     }
 
     return saveFilePaths;
   }
 
-  async saveColumnFile(columnId: string, localFilePath: string): Promise<string> {
+  async saveColumnFile(columnSpaceId: string, columnId: string, localFilePath: string): Promise<string> {
     const fileName = path.basename(localFilePath);
-    const saveFilePath = await this.createColumnDataSavePathWithoutDuplication(fileName, columnId);
+    const saveFilePath = await this.createColumnDataSavePathWithoutDuplication(fileName, columnSpaceId, columnId);
 
     // TODO エラーハンドリング
     await fs.promises.copyFile(localFilePath, saveFilePath)
@@ -62,15 +62,15 @@ export class RepositoryJson<T> {
     return saveFilePath;
   }
 
-  private async createColumnDataSavePathWithoutDuplication(fileName: string, columnId: string): Promise<string> {
-    const saveDirPath = await this.createColumnDataDirAbsolutePath(columnId);
+  private async createColumnDataSavePathWithoutDuplication(fileName: string, columnSpaceId: string,columnId: string): Promise<string> {
+    const saveDirPath = await this.createColumnDataDirAbsolutePath(columnSpaceId, columnId);
     const saveFilePath = this.getSaveFilePathWithdouDuplication(saveDirPath, path.parse(fileName).name, path.parse(fileName).ext);
     return saveFilePath;
   }
 
-  private async createColumnDataDirAbsolutePath(columnId: string): Promise<string> {
+  private async createColumnDataDirAbsolutePath(columnSpaceId: string, columnId: string): Promise<string> {
     const applicationDirPath = await this.getSaveDirAbsolutePath();
-    const saveDirPath = path.join(applicationDirPath, this.columnDataDir, columnId);
+    const saveDirPath = path.join(applicationDirPath, this.columnDataDir, columnSpaceId, columnId);
     await this.createDirectoryIfNotExists(saveDirPath);
     return path.join(saveDirPath);
   }
