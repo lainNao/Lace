@@ -7,6 +7,7 @@ import { Column, ColumnSpace } from '../../models/ColumnSpaces';
 import { CellPreview, cellDataTypeSelectOptionText, CellDataType } from '../../resources/CellDataType';
 import { CheckboxContainer, CheckboxControl } from "formik-chakra-ui";
 import { RelatedCells } from '../../models/RelatedCells';
+import { cloneDeep } from "lodash"
 
 export type CellRelationFormData = {
   targetCell: {
@@ -115,12 +116,16 @@ export const CellRerationModal: React.FC<Props> = props => {
       };
     }
 
-    // MEMO: fromCellIdが変わる度に、下の関連先の選択肢のチェック状態を変える必要があるため、その上書きをこのinitialValuesの上書きで賄っている（うーん、）
-    // で問題は、あれ、無くない？
-
     const relatedCells = {};
+    const relatedCellsTemp = cloneDeep(props.relatedCells); // propsはイミュータブルなので一時変数に置き換える
+
+    // 使うキーが無い場合は事前作成（でないとエラー起きるため）
+    if (!relatedCellsTemp.data[props.currentSelectedColumnSpace.id]) {
+      relatedCellsTemp.data[props.currentSelectedColumnSpace.id] = {};
+    }
+
     for (const column of props.currentSelectedColumnSpace.columns.children) {
-      const defaultCells = props.relatedCells.data[props.currentSelectedColumnSpace.id][fromCellValue];
+      const defaultCells = relatedCellsTemp.data[props.currentSelectedColumnSpace.id][fromCellValue];
       relatedCells[column.id] = defaultCells ?? [];
     }
 
