@@ -27,6 +27,7 @@ import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpac
 import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceIdState"
 import { CellRelationFormData } from '../../pages.partial/home/CellRelationModal';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
+import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRelationModalSubmit';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -259,8 +260,27 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, []);
 
-  const handleSubmitCellRelationForm = useRecoilCallback(({set}) => async (cellRelationFormData: CellRelationFormData) => {
+  const handleSubmitCellRelationForm = useRecoilCallback(({set}) => async (cellRelationFormData: CellRelationFormData, columnSpaceId: string) => {
     console.debug("カラム関連付けフォームsubmit", cellRelationFormData);
+
+    try {
+      const newRelatedCells = await dispatchCellRelationModalSubmit(columnSpaceId, cellRelationFormData);
+      set(relatedCellsState, newRelatedCells);
+      toast({
+        title: "関連セルを更新しました。",
+        status: "success",
+        position: "bottom-right",
+        isClosable: true,
+      })
+    } catch (e) {
+      console.log(e.stack);
+      toast({
+        title: e.message,
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      })
+    }
   }, []);
 
   /* -----------------------------------------------------カラム新規作成モーダルの管理----------------------------------------------------------- */

@@ -117,16 +117,20 @@ export const CellRerationModal: React.FC<Props> = props => {
     }
 
     const relatedCells = {};
-    const relatedCellsTemp = cloneDeep(props.relatedCells); // propsはイミュータブルなので一時変数に置き換える
+    const relatedCellsTemp = cloneDeep(props.relatedCells); // NOTE: propsはイミュータブルなので一時変数に置き換えているだけ
 
     // 使うキーが無い場合は事前作成（でないとエラー起きるため）
     if (!relatedCellsTemp.data[props.currentSelectedColumnSpace.id]) {
       relatedCellsTemp.data[props.currentSelectedColumnSpace.id] = {};
     }
+    if (!relatedCellsTemp.data[props.currentSelectedColumnSpace.id][fromColumnValue]) {
+      relatedCellsTemp.data[props.currentSelectedColumnSpace.id][fromColumnValue] = {};
+    }
 
+    // 関連セル情報（relatedCellsオブジェクト）を設定
     for (const column of props.currentSelectedColumnSpace.columns.children) {
-      const defaultCells = relatedCellsTemp.data[props.currentSelectedColumnSpace.id][fromCellValue];
-      relatedCells[column.id] = defaultCells ?? [];
+      const defaultCells = relatedCellsTemp.data[props.currentSelectedColumnSpace.id]?.[fromColumnValue]?.[fromCellValue];
+      relatedCells[column.id] = (defaultCells && defaultCells[column.id]) ? {cellIds: defaultCells[column.id]} : {cellIds: []}; //NOTE: ここ汚くてごめん　cellIds消す方法わからなかったからつける
     }
 
     return {
@@ -173,8 +177,7 @@ export const CellRerationModal: React.FC<Props> = props => {
             enableReinitialize={true}
             initialValues={initialValues}
             onSubmit={async (values) => {
-              console.log("submit: ")
-              props.onSubmit(values);
+              props.onSubmit(values, props.currentSelectedColumnSpace.id);
             }}
             validationSchema={validationSchema}
           >{({ setFieldValue }) => {

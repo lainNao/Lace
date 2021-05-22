@@ -222,18 +222,28 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                 ...
             ]
 
-        ■関連セル集約
+        ■関連セル集約（ルートだけモデル化し、その他はしてない…。がんばって）
+            // RelatedCells
             {
+                // RelatedCellsColumnSpaceIndicator
                 カラムスペースのUUID: {
 
-                     //このセルの関連セル達を保存
-                     セルのUUID: {
+                    // RelatedCellsColumnIndicator
+                    カラムのUUID: {
 
-                         // 関連セル達を、カラムIDをキーに保存
-                         カラムID: [セルID, セルID,...],
-                         ...
-                     },
-                     ...
+                        // RelatedCellsCellIndicator
+                        //このセルの関連セル達を保存　（留意：関連元セルには「カラムID」の情報は持たない。なぜならカラムスペース直下にキーを作ればカラムからたどる不要だから）
+                        セルのUUID: {
+
+                            // RelatedCellsTargetColumnIndicator
+                            // そのセルはこのカラムIDのこのセル達と関連している
+                            カラムID: [セルID, セルID,...],
+                            ...
+                        },
+                        ..
+
+                    }
+                    ...
 
                 },
                 ...
