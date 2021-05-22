@@ -2,27 +2,27 @@ import React, { useCallback, useState} from 'react';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import { FileSystemEnum } from "../../resources/enums/app"
-import { createTopLevelColumnSpaceUseCase } from '../../usecases/createTopLevelColumnSpaceUseCase';
-import { moveColumnSpaceUseCase } from '../../usecases/moveColumnSpaceUseCase';
+import { createTopLevelColumnSpaceUsecase } from '../../usecases/createTopLevelColumnSpaceUsecase';
+import { moveColumnSpaceUsecase } from '../../usecases/moveColumnSpaceUsecase';
 import { showColumnContextMenu } from '../../context-menus/showColumnContextMenu';
 import { showColumnSpaceContextMenu } from '../../context-menus/showColumnSpaceContextMenu';
 import { showEmptySpaceContextMenu } from '../../context-menus/showEmptySpaceContextMenu';
 import { remote } from "electron"
 import useSetupColumnSpaces from '../../hooks/useSetupColumnSpaces';
-import { removeColumnSpaceUseCase } from '../../usecases/removeColumnSpaceUseCase';
+import { removeColumnSpaceUsecase } from '../../usecases/removeColumnSpaceUsecase';
 import useSetupSettings from '../../hooks/useSetupSettings';
-import { createDescendantColumnSpaceUseCase } from '../../usecases/createDescendantColumnSpaceUseCase';
+import { createDescendantColumnSpaceUsecase } from '../../usecases/createDescendantColumnSpaceUsecase';
 import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
-import { createColumnUseCase } from '../../usecases/createColumnUseCase';
+import { createColumnUsecase } from '../../usecases/createColumnUsecase';
 import { useDisclosure } from '@chakra-ui/react';
 import draggingNodeDatasetState from '../../recoils/atoms/ColumnSpaceExplorer/draggingNodeDatasetState';
-import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
-import { moveColumnSpaceToTopLevelUseCase } from '../../usecases/moveColumnSpaceToTopeLevelUseCase';
-import { removeColumnUseCase } from '../../usecases/removeColumnUseCase';
-import { renameColumnUseCase } from '../../usecases/renameColumnUseCase';
+import { changeColumnOrderUsecase } from '../../usecases/changeColumnOrderUsecase';
+import { moveColumnSpaceToTopLevelUsecase } from '../../usecases/moveColumnSpaceToTopeLevelUsecase';
+import { removeColumnUsecase } from '../../usecases/removeColumnUsecase';
+import { renameColumnUsecase } from '../../usecases/renameColumnUsecase';
 import { ColumnDataset } from '../../resources/types';
 import { useToast } from "@chakra-ui/react"
-import { createCellsUseCase } from '../../usecases/createCellsUseCase';
+import { createCellsUsecase } from '../../usecases/createCellsUsecase';
 import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
 import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceIdState"
 import { CellRelationFormData } from '../../pages.partial/home/CellRelationModal';
@@ -123,7 +123,7 @@ export const useColumnSpaceExplorerController = () => {
         }).then(async (res) => {
           if (res.response === 0) { //「はい」を選択した時
             try {
-              const newColumnSpaces = await removeColumnSpaceUseCase(targetDataset.id);
+              const newColumnSpaces = await removeColumnSpaceUsecase(targetDataset.id);
               setColumnSpaces(newColumnSpaces);
             } catch (e) {
               console.log(e.stack);
@@ -162,7 +162,7 @@ export const useColumnSpaceExplorerController = () => {
         }).then(async (res) => {
           if (res.response === 0) { //「はい」を選択した時
             try {
-              const newColumnSpaces = await removeColumnUseCase(targetDataset.id);
+              const newColumnSpaces = await removeColumnUsecase(targetDataset.id);
               setColumnSpaces(newColumnSpaces);
             } catch (e) {
               console.log(e.stack);
@@ -208,7 +208,7 @@ export const useColumnSpaceExplorerController = () => {
 
       // 新しいカラムスペースを追加
       const newColumnSpaceName = new TrimedFilledString(newTopLevelColumnSpaceFormRef.current.elements.namedItem("new-column-space-name").value);
-      const newColumnSpaces = await createTopLevelColumnSpaceUseCase(newColumnSpaceName);
+      const newColumnSpaces = await createTopLevelColumnSpaceUsecase(newColumnSpaceName);
       set(columnSpacesState, newColumnSpaces);
     } catch (e) {
       console.log(e.stack);
@@ -227,7 +227,7 @@ export const useColumnSpaceExplorerController = () => {
 
       // 指定IDのカラムスペースの子に新しいカラムスペースを追加
       const newColumnSpaceName = new TrimedFilledString(newColumnSpacesFormRefs.current[columnSpaceId].elements.namedItem("new-column-space-name").value);
-      const newColumnSpaces = await createDescendantColumnSpaceUseCase(columnSpaceId, newColumnSpaceName);
+      const newColumnSpaces = await createDescendantColumnSpaceUsecase(columnSpaceId, newColumnSpaceName);
       set(columnSpacesState, newColumnSpaces);
       setExpandedColumnSpaces((previousExpandedColumnSpaces) => {
         return Array.from(new Set([...previousExpandedColumnSpaces, columnSpaceId]));
@@ -252,7 +252,7 @@ export const useColumnSpaceExplorerController = () => {
 
     try {
       // 指定IDのカラムスペースの子に新しいカラムスペースを追加
-      const newColumnSpaces = await renameColumnUseCase(columnId, newColumnName);
+      const newColumnSpaces = await renameColumnUsecase(columnId, newColumnName);
       set(columnSpacesState, newColumnSpaces);
     } catch (e) {
       console.log(e.stack);
@@ -268,7 +268,7 @@ export const useColumnSpaceExplorerController = () => {
   const handleClickCreateNewColumn = useCallback(async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラム新規作成モーダルの作成ボタン押下");
     try {
-      const newColumnSpaces = await createColumnUseCase(
+      const newColumnSpaces = await createColumnUsecase(
         new TrimedFilledString(newColumnFormRef.current.elements.namedItem("column-name").value),
         newColumnFormParentId,
         newColumnFormRef.current.elements.namedItem("column-type").value,
@@ -307,7 +307,7 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("新しいセルを作成するフォームの登録ボタン押下");
 
     try {
-      const newColumnSpaces = await createCellsUseCase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
+      const newColumnSpaces = await createCellsUsecase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
       set(columnSpacesState, newColumnSpaces);
       closeNewCellForm();
     } catch (e) {
@@ -344,7 +344,7 @@ export const useColumnSpaceExplorerController = () => {
 
     // カラムスペースをトップレベルに移動する
     try {
-      const newColumnSpaces = await moveColumnSpaceToTopLevelUseCase(columnSpaceId);
+      const newColumnSpaces = await moveColumnSpaceToTopLevelUsecase(columnSpaceId);
       setColumnSpaces(newColumnSpaces);
     } catch (e) {
       console.log(e.stack);
@@ -441,7 +441,7 @@ export const useColumnSpaceExplorerController = () => {
       if (draggingNodeDataset.columnSpaceId == (event.target as HTMLElement).dataset.id) {
         // 親ならカラムをソートをする
         try {
-          const newColumnSpaces = await changeColumnOrderUseCase(draggingNodeDataset.columnSpaceId, draggingNodeDataset.id);
+          const newColumnSpaces = await changeColumnOrderUsecase(draggingNodeDataset.columnSpaceId, draggingNodeDataset.id);
           setColumnSpaces(newColumnSpaces);
         } catch(e) {
           console.log(e.stack);
@@ -456,7 +456,7 @@ export const useColumnSpaceExplorerController = () => {
     try {
       const fromId = event.dataTransfer.getData("columnSpaceId");
       const toId = (event.target as HTMLElement).dataset.id;
-      const newColumnSpaces = await moveColumnSpaceUseCase(fromId, toId);
+      const newColumnSpaces = await moveColumnSpaceUsecase(fromId, toId);
       setColumnSpaces(newColumnSpaces);
       setExpandedColumnSpaces((previousExpandedColumnSpaces) => {
         return Array.from(new Set([...previousExpandedColumnSpaces, toId]));
@@ -551,7 +551,7 @@ export const useColumnSpaceExplorerController = () => {
 
     /// カラムのソート
     try {
-      const newColumnSpaces = await changeColumnOrderUseCase(targetColumnDataset.columnSpaceId, draggingNodeDataset.id, targetColumnDataset.id);
+      const newColumnSpaces = await changeColumnOrderUsecase(targetColumnDataset.columnSpaceId, draggingNodeDataset.id, targetColumnDataset.id);
       setColumnSpaces(newColumnSpaces);
     } catch(e) {
       console.log(e.stack);
@@ -575,44 +575,6 @@ export const useColumnSpaceExplorerController = () => {
     }
   }, []);
 
-
-  /* -----------------------------------------------------他----------------------------------------------------------- */
-
-  //   // いずれdocument.bodyへのドロップじゃないのに変えるべき
-  //   // そもそもファイル類追加のときのみDnDを受け入れるようにする
-  //   document.body.ondrop = async (e) => {
-  //     /*
-  //       今はメインのカラムに追加しか対応してないけど、特定のセルの今のカーソル位置に追加とか、子カラムの特定セルに追加とかもできるようにする
-  //       ファイルの種類のバリデーションをすること
-  //       ローディングスピナーでも出すこと
-  //       ファイル名のバリデーションをすること（スラッシュとかいろいろあるとバグるので）
-  //       ファイルサイズのバリデーションをすること（あまりにもでかすぎる場合確認取るなど）
-  //       同名ファイルは「(2)」とかつけるようにすること
-  //       エラー起きたらいい感じに表示すること
-  //       ファイルが入ったら、リストアイテムの表示を更新すること
-  //       リストアイテムの表示は軽くすること
-  //       アップロード完了したらファイルのパスをDBに保存すること（そしてメモリに展開すること）（single truth of source的なものも実現させたいところ…）
-  //       そしてリビルドさせること
-  //       ひとまずはmainDisplayedColumnにアップロードさせるが、後で他カラムに使うファイルのアップロードにも対応させること
-  //       ひとまずメモリ上でjson型のDBを作り、定期保存かつ、windowが閉じられた時に保存するような仕様にする
-  //       asyncだと後々難しい場合、syncで全部やるのも考える
-  //     */
-  //     const droppedFileList = e.dataTransfer.files;
-  //     if (!droppedFileList.length) {
-  //       return;
-  //     }
-  //     let newColumnSpaceDB: columnSpacesType;
-
-  //     for (let i=0; i<droppedFileList.length; i++) {
-  //       //トランザクションとか考慮？
-  //       newColumnSpaceDB = await this.repository.uploadFile(droppedFileList[i], currentMainDisplayedColumnUUID);
-  //     }
-
-  //     console.log('ファイル取り込み完了');
-
-  //     setColumnSpaces(newColumnSpaceDB);
-  //   }
-  // }, [columnSpaceDB])
 
   return {
     //データ

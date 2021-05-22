@@ -4,7 +4,7 @@ import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 
 //NOTE: 第三引数が省略されたら、第二引数のカラムを0番目に移動する
 //TODO これ第三引数はインデックスのほうが普通なのでは
-export const changeColumnOrderUseCase = async(columnSpaceId: string, columnId: string, toColumnId?: string): Promise<ColumnSpaces> => {
+export const changeColumnOrderUsecase = async(columnSpaceId: string, columnId: string, toColumnId?: string): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
   const targetColumnSpace = rootColumnSpaces.findDescendantColumnSpace(columnSpaceId);

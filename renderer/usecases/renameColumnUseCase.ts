@@ -3,7 +3,7 @@ import { ColumnSpaces, Column } from "../models/ColumnSpaces";
 import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 
 //TODO 適当に作っといたけど動作確認一切してないので、カラムのリネームのUI作ったら確かめて
-export const renameColumnUseCase = async(targetColumnId: string, newName: string): Promise<ColumnSpaces> => {
+export const renameColumnUsecase = async(targetColumnId: string, newName: string): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
 

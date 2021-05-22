@@ -1,13 +1,13 @@
-import { createImageCellUseCase } from "./createImageCellUseCase";
-import { createMarkdownCellUseCase } from "./createMarkdownCellUseCase";
-import { createSoundCellUseCase } from "./createSoundCellUseCase";
-import { createTextCellUseCase } from "./createTextCellUseCase";
-import { createVideoCellUseCase } from "./createVideoCellUseCase";
+import { createImageCellUsecase } from "./createImageCellUsecase";
+import { createMarkdownCellUsecase } from "./createMarkdownCellUsecase";
+import { createSoundCellUsecase } from "./createSoundCellUsecase";
+import { createTextCellUsecase } from "./createTextCellUsecase";
+import { createVideoCellUsecase } from "./createVideoCellUsecase";
 
 export {
-  createImageCellUseCase,
-  createMarkdownCellUseCase,
-  createSoundCellUseCase,
-  createTextCellUseCase,
-  createVideoCellUseCase,
+  createImageCellUsecase,
+  createMarkdownCellUsecase,
+  createSoundCellUsecase,
+  createTextCellUsecase,
+  createVideoCellUsecase,
 }

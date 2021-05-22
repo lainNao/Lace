@@ -1,11 +1,11 @@
 import { CellDataType } from "../resources/CellDataType";
 import {
-  createImageCellsUseCase,
-  createMarkdownCellsUseCase,
-  createSoundCellsUseCase,
-  createTextCellsUseCase,
-  createVideoCellsUseCase,
-} from "./createCellsUseCase.partial";
+  createImageCellsUsecase,
+  createMarkdownCellsUsecase,
+  createSoundCellsUsecase,
+  createTextCellsUsecase,
+  createVideoCellsUsecase,
+} from "./createCellsUsecase.partial";
 import { ColumnSpaces } from "../models/ColumnSpaces";
 
 export interface CreateCellsUsecasesArgs {
@@ -15,19 +15,19 @@ export interface CreateCellsUsecasesArgs {
   cellDatas: any,
 }
 
-const makeSpecificUseCase = (cellDataType: CellDataType) => {
+const makeSpecificUsecase = (cellDataType: CellDataType) => {
   switch (cellDataType) {
-    case CellDataType.Text: return createTextCellsUseCase;
-    case CellDataType.Markdown: return createMarkdownCellsUseCase;
-    case CellDataType.Image: return createImageCellsUseCase;
-    case CellDataType.Sound: return createSoundCellsUseCase;
-    case CellDataType.Video: return createVideoCellsUseCase;
+    case CellDataType.Text: return createTextCellsUsecase;
+    case CellDataType.Markdown: return createMarkdownCellsUsecase;
+    case CellDataType.Image: return createImageCellsUsecase;
+    case CellDataType.Sound: return createSoundCellsUsecase;
+    case CellDataType.Video: return createVideoCellsUsecase;
     default: throw new Error("不明なCellDataTypeです");
   }
 }
 
-export const createCellsUseCase = async(columnSpaceId: string, columnId: string, columnType: CellDataType, cellDatas: any): Promise<ColumnSpaces> => {
-  const targetUsecase = makeSpecificUseCase(columnType);
+export const createCellsUsecase = async(columnSpaceId: string, columnId: string, columnType: CellDataType, cellDatas: any): Promise<ColumnSpaces> => {
+  const targetUsecase = makeSpecificUsecase(columnType);
   const newColumnSpaces = await targetUsecase({columnSpaceId, columnId, columnType, cellDatas});
   return newColumnSpaces;
 }

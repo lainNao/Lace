@@ -2,7 +2,7 @@ import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesReposito
 import { Columns, ColumnSpaces, ColumnSpace } from "../models/ColumnSpaces";
 import { TrimedFilledString } from "../value-objects/TrimedFilledString";
 
-export const createDescendantColumnSpaceUseCase = async(parentColumnSpaceId: string, newColumnSpaceName: TrimedFilledString): Promise<ColumnSpaces> => {
+export const createDescendantColumnSpaceUsecase = async(parentColumnSpaceId: string, newColumnSpaceName: TrimedFilledString): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
   const newRootColumnSpaces = rootColumnSpaces.addDescendantColumnSpace(new ColumnSpace({
