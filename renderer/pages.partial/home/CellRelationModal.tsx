@@ -149,6 +149,7 @@ export const CellRerationModal: React.FC<Props> = props => {
   }, []);
 
   if (!initialValues) {
+    //TODO ここもう少しなんとかできると思う。そもそも必要かも含め後で
     return (
       <div>読込中</div>
     )
