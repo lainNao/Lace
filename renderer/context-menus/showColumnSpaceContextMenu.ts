@@ -24,7 +24,7 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
     enabled: args.targetColumnSpaceDataset.hasChildColumnSpaces === "false",
   }));
   contextMenu.append(new MenuItem({
-    label:"セル同士の関連付け（未実装）",
+    label:"セル同士の関連付け",
     click: args.handleClickRelateCells,
     enabled: args.targetColumnSpaceDataset.hasChildColumnSpaces === "false",
   }));
