@@ -1,4 +1,9 @@
+import React from "react";
+import { ImagePreview, MarkdownPreview, SoundPreview, TextPreview, VideoPreview } from "../components/cell-data-previews";
 import { TextIcon, MarkdownIcon, MusicNoteIcon, VideoIcon, ImageIcon } from "../components/column-type-icons";
+import { Cell } from "../models/ColumnSpaces";
+import { CellData } from "../models/ColumnSpaces/CellData";
+import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../models/ColumnSpaces/CellData.implemented";
 
 
 export enum CellDataType {
@@ -36,6 +41,33 @@ export const cellDataTypeIcons = (cellDataType: CellDataType, className: string)
     case CellDataType.Image: return <ImageIcon className={className} />;
     case CellDataType.Sound: return <MusicNoteIcon className={className} />;
     case CellDataType.Video: return <VideoIcon className={className} />;
+    default: throw new Error("不明なCellDataTypeです");
+  }
+}
+
+export const cellDataTypeSelectOptionText = (cellDataType: CellDataType, cellData: CellData) => {
+  switch (cellDataType) {
+    case CellDataType.Text: return (cellData as TextCellData).text;
+    case CellDataType.Markdown: return (cellData as MarkdownCellData).title;
+    case CellDataType.Image: return (cellData as ImageCellData).name;
+    case CellDataType.Sound: return (cellData as SoundCellData).name;
+    case CellDataType.Video: return (cellData as VideoCellData).name;
+    default: throw new Error("不明なCellDataTypeです");
+  }
+}
+
+type CellPreviewProps = {
+  cell: Cell,
+  className: string,
+}
+
+export const CellPreview = (props: CellPreviewProps) => {
+  switch (props.cell.type) {
+    case CellDataType.Text: return <TextPreview cell={props.cell} className={props.className} />;
+    case CellDataType.Markdown: return <MarkdownPreview cell={props.cell} className={props.className} />;
+    case CellDataType.Image: return <ImagePreview cell={props.cell} className={props.className} />;
+    case CellDataType.Sound: return <SoundPreview cell={props.cell} className={props.className} />;
+    case CellDataType.Video: return <VideoPreview cell={props.cell} className={props.className} />;
     default: throw new Error("不明なCellDataTypeです");
   }
 }

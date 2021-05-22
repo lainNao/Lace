@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { ErrorMessage, Field, FieldArray, Form, Formik, useFormik } from 'formik';
 import yup from '../../../modules/yup';
 import { NewCellFormModalBodyProps } from "../ColumnSpaceExplorer";
-import { Input } from "@chakra-ui/react"
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 
 type NewTextCellData = {

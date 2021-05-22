@@ -29,24 +29,34 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen">
+      {/* メニューバー */}
       <div className="menu-bar bg-gray-900 webkit-app-region-drag">
         メニューをvscodeみたいに自前で作る。electronにやらせると微妙になるので。コンテキストメニューも自前で。
       </div>
+
+      {/* ヘッダ部分 */}
       <div className="header">
         head（自由検索、各種設定、ヘルプ、リンクなど）
       </div>
+
       <div className="content flex flex-row w-screen max-h-full ">
 
+        {/* 一番左の部分 */}
         <div className="flex flex-col items-center p-3 space-y-2.5">
           <IconButton aria-label="search" icon={<SearchIcon />} />
           <IconButton aria-label="edit" icon={<EditIcon />} />
         </div>
 
+        {/* エクスプローラ */}
         <ColumnSpaceExplorer
           classeName="min-w-300px w-300px bg-gray-800 whitespace-pre overflow-y-auto p-3"
         />
 
+        {/* メイン表示 */}
         <div className="min-w-300px overflow-y-auto p-3">
+          選択しているcolumnSpaceと表示設定を反映した画面<br/>
+          グローバルステートではselectedColumnSpaceIdState、specificColumnSpaceStateは使う<br/>
+          あとはColumnSpacesと表示状態とかも使う
           {/* {Object.keys(currentMainColumnDatas).map((dataUUID,index) => {
             const data = currentMainColumnDatas[dataUUID];
             return (
@@ -58,12 +68,14 @@ const Home: React.FC = () => {
           })} */}
         </div>
 
+        {/* セル関連情報 */}
         <div className=" min-w-300px overflow-y-auto p-3">
           セルの詳細の表示
         </div>
 
       </div>
 
+      {/* フッター */}
       <div className="footer">
         foot（状態表示など）
       </div>

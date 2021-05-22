@@ -13,6 +13,7 @@ import { makeStyles } from '@material-ui/core';
 import { ColumnSpaces } from '../../models/ColumnSpaces';
 import { NewCellFormModal } from './NewCellFormModal';
 import { newCellFormModalBodyComponents } from "./NewCellFormModal.partial"
+import { CellRerationModal } from './CellRelationModal';
 
 type Props = {
   classeName?: string;
@@ -68,6 +69,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                 data-name={columnSpace.name}
                 data-has-child-column-spaces={!!(columnSpace.hasChildColumnSpace())}
                 data-has-columns={!!(columnSpace.hasColumns())}
+                onClick={controller.handleClickColumnSpace}
                 onDragStart={controller.handleDragStartOnColumnSpace}
                 onDragEnter={controller.handleDragEnterOnColumnSpace}
                 onDragLeave={controller.handleDragLeaveOnColumnSpace}
@@ -144,6 +146,9 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
 
   const NewCellFormModalBody = newCellFormModalBodyComponents[controller.selectedColumnDataset?.columnType];
 
+  // TODO エクスプローラにて子カラムがあるカラムスペースを左クリックしたら、それをcurrentColumnSpaceとしてatomsに反映したい。これはlocalStorageにも保存するかな（同じことをできるのを右クリメニューにも作るか…）
+  // TODO 大量データで動作確認してないので後でそこ調整する前提で
+
   return (
     <>
       <div
@@ -180,29 +185,29 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
 
       {/* カラム新規作成モーダル */}
       <Modal isOpen={controller.isNewColumnFormOpen} onClose={controller.closeNewColumnForm}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>カラムの新規作成</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <form ref={controller.newColumnFormRef} onSubmit={(e) => e.preventDefault()} className="mb-3">
-                <div>カラム名</div>
-                <Input name="column-name" onChange={controller.handleChangeNewColumnNameInput} />
-                <div className="mt-4">格納するデータタイプ</div>
-                <Select name="column-type" >
-                  {Object.values(CellDataType).map(key => {
-                    const cellDataType = CellDataType[key];
-                    return <option key={key} value={cellDataType}>{cellDataTypeStrings[cellDataType]}</option>
-                  })}
-                </Select>
-              </form>
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={controller.handleClickCreateNewColumn} isDisabled={controller.newColumnFormName.length === 0} colorScheme="blue" mr={3} >作成</Button>
-              <Button variant="ghost" onClick={controller.handleClickNewColmnFormClose}>キャンセル</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>カラムの新規作成</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <form ref={controller.newColumnFormRef} onSubmit={(e) => e.preventDefault()} className="mb-3">
+              <div>カラム名</div>
+              <Input name="column-name" onChange={controller.handleChangeNewColumnNameInput} />
+              <div className="mt-4">格納するデータタイプ</div>
+              <Select name="column-type" >
+                {Object.values(CellDataType).map(key => {
+                  const cellDataType = CellDataType[key];
+                  return <option key={key} value={cellDataType}>{cellDataTypeStrings[cellDataType]}</option>
+                })}
+              </Select>
+            </form>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={controller.handleClickCreateNewColumn} isDisabled={controller.newColumnFormName.length === 0} colorScheme="blue" mr={3} >作成</Button>
+            <Button variant="ghost" onClick={controller.handleClickNewColmnFormClose}>キャンセル</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* セル新規作成モーダル */}
       <NewCellFormModal
@@ -216,6 +221,17 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
             columnData={controller.selectedColumnDataset}
           />
         </NewCellFormModal>
+
+      {/* セル関連付けモーダル */}
+      {controller.currentSelectedColumnSpace &&
+        <CellRerationModal
+          isOpen={controller.isCellRelationFormOpen}
+          onClose={controller.closeCellRelationForm}
+          onSubmit={controller.handleSubmitCellRelationForm}
+          currentSelectedColumnSpace={controller.currentSelectedColumnSpace}
+          relatedCells={controller.relatedCells}
+        />
+      }
 
     </>
   )

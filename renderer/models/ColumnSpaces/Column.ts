@@ -58,6 +58,14 @@ export class Column {
     }
   }
 
+  mapCells(callback: (value: Cell, index: number, array: Cell[]) => unknown): unknown[]  {
+    return this._cells.mapChildren(callback);
+  }
+
+  findCell(targetCellId: string): Cell {
+    return this._cells.findCell(targetCellId);
+  }
+
   addCells(cells: Cells): Column {
     this._cells.merge(cells);
     return this;

@@ -1,5 +1,5 @@
 import { useRecoilCallback, useRecoilState, useRecoilStateLoadable } from "recoil";
-import columnSpacesState from "../atoms/columnSpacesState";
+import columnSpacesState from "../recoils/atoms/columnSpacesState";
 import { useEffect } from "react";
 import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesRepositoryJson";
 

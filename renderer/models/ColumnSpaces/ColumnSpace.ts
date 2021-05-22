@@ -67,6 +67,10 @@ export class ColumnSpace {
     return this._childColumnSpaces.findDescendantColumn(targetId);
   }
 
+  findBellowCell(targetCellId: string, targetColumnId: string): Cell {
+    return this._columns.findBellowCell(targetCellId, targetColumnId);
+  }
+
   addChildColumnSpace(columnSpace: ColumnSpace): ColumnSpace {  //TODO ここらへんの戻値本当にthisでいいか？全体的に後で勉強して変えるかもなところ
     this._childColumnSpaces.push(columnSpace);
     return this;

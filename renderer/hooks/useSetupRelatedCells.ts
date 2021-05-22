@@ -1,5 +1,5 @@
 import { useRecoilState } from "recoil";
-import relatedCellsState from "../atoms/relatedCellsState";
+import relatedCellsState from "../recoils/atoms/relatedCellsState";
 import { useEffect } from "react";
 import { RelatedCellsRepositoryJson } from "../repositories/RelatedCellsRepositoryJson";
 

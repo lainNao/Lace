@@ -1,6 +1,6 @@
 import React, {ReactElement, useMemo, useCallback, useEffect, useState} from 'react';
-import { useRecoilCallback, useRecoilState } from 'recoil';
-import columnSpacesState from '../../atoms/columnSpacesState';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import { FileSystemEnum } from "../../resources/enums/app"
 import { createTopLevelColumnSpaceUseCase } from '../../usecases/createTopLevelColumnSpaceUseCase';
 import { moveColumnSpaceUseCase } from '../../usecases/moveColumnSpaceUseCase';
@@ -15,18 +15,18 @@ import { createDescendantColumnSpaceUseCase } from '../../usecases/createDescend
 import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
 import { createColumnUseCase } from '../../usecases/createColumnUseCase';
 import { useDisclosure } from '@chakra-ui/react';
-import draggingNodeDatasetState from '../../atoms/home/ColumnSpaceExplorer/draggingNodeDatasetState';
+import draggingNodeDatasetState from '../../recoils/atoms/ColumnSpaceExplorer/draggingNodeDatasetState';
 import { changeColumnOrderUseCase } from '../../usecases/changeColumnOrderUseCase';
 import { moveColumnSpaceToTopLevelUseCase } from '../../usecases/moveColumnSpaceToTopeLevelUseCase';
 import { removeColumnUseCase } from '../../usecases/removeColumnUseCase';
 import { renameColumnUseCase } from '../../usecases/renameColumnUseCase';
-import { createCellUseCase } from '../../usecases/createCellUseCase';
 import { ColumnDataset } from '../../resources/types';
-import { RelatedCells } from '../../models/RelatedCells';
 import { useToast } from "@chakra-ui/react"
-import relatedCellsState from '../../atoms/relatedCellsState';
 import { createCellsUseCase } from '../../usecases/createCellsUseCase';
-import { CellDataType } from '../../resources/CellDataType';
+import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
+import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceIdState"
+import useSetupRelatedCells from '../../hooks/useSetupRelatedCells';
+import { CellRelationFormData } from '../../pages.partial/home/CellRelationModal';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -37,15 +37,20 @@ import { CellDataType } from '../../resources/CellDataType';
 export const useColumnSpaceExplorerController = () => {
   // メタ状態類
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
+  const [relatedCells, setRelatedCells] = useSetupRelatedCells();
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const [selectedColumnDataset, setSelectedColumnDataset] = useState(null);
-  const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
-  const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
+  const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
+  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));
+  // モーダル管理
+  const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
+  const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
+  const { isOpen: isCellRelationFormOpen, onOpen: openCellRelationFormOpen, onClose: closeCellRelationForm } = useDisclosure();
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
@@ -60,10 +65,10 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------一般----------------------------------------------------------- */
 
-  const handleTreeNodeToggle = useCallback((event, expandedNodeIds) => {
+  const handleTreeNodeToggle = useCallback((event, expandedNodeIds: string[]) => {
     console.debug("ツリービュー展開のトグル");
     setExpandedColumnSpaces(expandedNodeIds);
-  }, [expandedColumnSpaces]);
+  }, []);
 
   const handleClickColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラム左クリック");
@@ -74,17 +79,40 @@ export const useColumnSpaceExplorerController = () => {
     setSelectedNodeId(targetDataset.id);
   }, []);
 
+  const handleClickColumnSpace = useRecoilCallback(({snapshot, set}) => async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    console.debug("カラムスペースの左クリック");
+
+    /// エクスプローラにて子カラムがあるカラムスペースを左クリックしたら、それをcurrentColumnSpaceとしてatomsに反映
+    // TODO これはlocalStorageにも保存するかな（同じことをできるのを右クリメニューにも作るか…）
+    const targetDataset = (event.target as HTMLElement).dataset;
+    set(selectedColumnSpaceIdState, targetDataset.id);
+  }, []);
+
   /* -----------------------------------------------------コンテキストメニュー管理----------------------------------------------------------- */
 
-  const handleRightClickOnColumnSpace = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleRightClickOnColumnSpace = useRecoilCallback(({set}) => async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムスペースのコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
 
     const targetDataset = (event.target as HTMLElement).dataset;
     setSelectedNodeId(targetDataset.id);
+    set(selectedColumnSpaceIdState, targetDataset.id);
 
     showColumnSpaceContextMenu(event, {
+      handleClickAddChildColumnSpace: async () => {
+        newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
+        newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
+      },
+      handleClickAddChildColumn: async () => {
+        setNewColumnFormParentId(targetDataset.id);
+        openNewColumnForm();
+        newColumnFormRef.current.elements.namedItem("column-name").focus();
+      },
+      handleClickRelateCells: async () => {
+        console.log("セル同士の関連付け")
+        openCellRelationFormOpen();
+      },
       handleClickDeleteColumnSpace: async () => {
         remote.dialog.showMessageBox({
           type: 'info',
@@ -102,15 +130,6 @@ export const useColumnSpaceExplorerController = () => {
             }
           }
         });
-      },
-      handleClickAddChildColumnSpace: async () => {
-        newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
-        newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
-      },
-      handleClickAddChildColumn: async () => {
-        setNewColumnFormParentId(targetDataset.id);
-        openNewColumnForm();
-        newColumnFormRef.current.elements.namedItem("column-name").focus();
       },
       targetColumnSpaceDataset: targetDataset,
     });
@@ -238,6 +257,10 @@ export const useColumnSpaceExplorerController = () => {
     } catch (e) {
       console.log(e.stack);
     }
+  }, []);
+
+  const handleSubmitCellRelationForm = useRecoilCallback(({set}) => async (cellRelationFormData: CellRelationFormData) => {
+    console.debug("カラム関連付けフォームsubmit", cellRelationFormData);
   }, []);
 
   /* -----------------------------------------------------カラム新規作成モーダルの管理----------------------------------------------------------- */
@@ -594,12 +617,16 @@ export const useColumnSpaceExplorerController = () => {
   return {
     //データ
     columnSpaces,
+    relatedCells,
+    currentSelectedColumnSpace,
     expandedColumnSpaces,
     selectedNodeId,
     selectedColumnDataset,
+    newColumnFormName,
+    //モーダル状態
     isNewColumnFormOpen,
     isNewCellFormOpen,
-    newColumnFormName,
+    isCellRelationFormOpen,
     //ref
     newTopLevelColumnSpaceFormRef,
     newColumnFormRef,
@@ -616,6 +643,7 @@ export const useColumnSpaceExplorerController = () => {
     handleClickAddColumnSpaceButton,
     handleClickNewColmnFormClose,
     handleClickCreateNewColumn,
+    handleClickColumnSpace,
     handleClickColumn,
     handleRightClickOnEmptySpace,
     handleRightClickOnColumnSpace,
@@ -632,11 +660,13 @@ export const useColumnSpaceExplorerController = () => {
     handleDropOnEmptySpace,
     handleDropOnColumnSpace,
     handleDropOnColumn,
+    handleSubmitCellRelationForm,
+    //モーダル管理
     handleNewCellFormClose,
     handleNewCellFormCreateButtonClick,
     handleNewCellFormCloseButtonClick,
-    //他
     openNewCellFormOpen,
     closeNewColumnForm,
+    closeCellRelationForm,
   }
 }

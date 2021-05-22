@@ -33,6 +33,10 @@ export class Columns {
     return this._children.map(callback);
   }
 
+  filterChildren(callback: (value: Column, index: number, array: Column[]) => unknown): unknown[]  {
+    return this._children.filter(callback);
+  }
+
   push(column: Column): Columns {
     this._children.push(column);
     return this;
@@ -42,6 +46,14 @@ export class Columns {
     for (let i=0; i<this._children.length; i++) {
       if (this._children[i].id === targetId) {
         return this._children[i];
+      }
+    }
+  }
+
+  findBellowCell(targetCellId: string, targetColumnId: string): Cell {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === targetColumnId) {
+        return this._children[i].findCell(targetCellId);
       }
     }
   }

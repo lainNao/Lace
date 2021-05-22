@@ -14,14 +14,6 @@ export class Cells {
     this._children = (args == null) ? [] : args.children;
   }
 
-  merge(cells: Cells): void {
-    this._children = this._children.concat(cells.children);
-  }
-
-  addCell(cell: Cell): void {
-    this.children.push(cell);
-  }
-
   static fromJSON(json) {
     return new Cells({
       children: json.map((cell) => Cell.fromJSON({
@@ -39,4 +31,23 @@ export class Cells {
   mapChildren(callback: (value: Cell, index: number, array: Cell[]) => unknown): unknown[]  {
     return this._children.map(callback);
   }
+
+
+  findCell(targetCellId: string): Cell {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === targetCellId) {
+        return this._children[i];
+      }
+    }
+  }
+
+
+  merge(cells: Cells): void {
+    this._children = this._children.concat(cells.children);
+  }
+
+  addCell(cell: Cell): void {
+    this.children.push(cell);
+  }
+
 }
