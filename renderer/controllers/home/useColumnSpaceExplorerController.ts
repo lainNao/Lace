@@ -1,4 +1,4 @@
-import React, {ReactElement, useMemo, useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useState} from 'react';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import { FileSystemEnum } from "../../resources/enums/app"
@@ -25,8 +25,8 @@ import { useToast } from "@chakra-ui/react"
 import { createCellsUseCase } from '../../usecases/createCellsUseCase';
 import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
 import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceIdState"
-import useSetupRelatedCells from '../../hooks/useSetupRelatedCells';
 import { CellRelationFormData } from '../../pages.partial/home/CellRelationModal';
+import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -37,7 +37,7 @@ import { CellRelationFormData } from '../../pages.partial/home/CellRelationModal
 export const useColumnSpaceExplorerController = () => {
   // メタ状態類
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
-  const [relatedCells, setRelatedCells] = useSetupRelatedCells();
+  const [relatedCells, setRelatedCells] = useRecoilState(relatedCellsState);
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
