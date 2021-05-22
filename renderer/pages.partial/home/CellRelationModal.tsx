@@ -14,7 +14,9 @@ export type CellRelationFormData = {
     cellId: string,
   },
   relatedCells: {
-    [columnId: string]: string[],
+    [columnId: string]: {
+      cellIds: string[],  //NOTE: ここどうしても「cellIds」というキーを作らないと今の実力ではできなかった。最初から配列をcolumnIdの値に入れてよかったけど
+    }
   },
 };
 
