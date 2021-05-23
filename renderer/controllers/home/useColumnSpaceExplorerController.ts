@@ -124,8 +124,9 @@ export const useColumnSpaceExplorerController = () => {
         }).then(async (res) => {
           if (res.response === 0) { //「はい」を選択した時
             try {
-              const newColumnSpaces = await removeColumnSpaceUsecase(targetDataset.id);
+              const [newColumnSpaces, newRelatedCells] = await removeColumnSpaceUsecase(targetDataset.id);
               setColumnSpaces(newColumnSpaces);
+              setRelatedCells(newRelatedCells);
             } catch (e) {
               console.log(e.stack);
             }
@@ -163,8 +164,9 @@ export const useColumnSpaceExplorerController = () => {
         }).then(async (res) => {
           if (res.response === 0) { //「はい」を選択した時
             try {
-              const newColumnSpaces = await removeColumnUsecase(targetDataset.id);
+              const [newColumnSpaces, newRelatedCells] = await removeColumnUsecase(targetDataset.columnSpaceId, targetDataset.id);
               setColumnSpaces(newColumnSpaces);
+              setRelatedCells(newRelatedCells);
             } catch (e) {
               console.log(e.stack);
             }

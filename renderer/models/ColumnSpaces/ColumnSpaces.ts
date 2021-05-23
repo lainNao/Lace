@@ -79,13 +79,18 @@ export class ColumnSpaces {
     return this;
   }
 
-  // 子孫のカラムから指定IDのものを削除
+  // 子孫のカラムから指定IDのものを削除（これ、カラムスペースID必要にしてよかったのでは）
   removeDescendantColumn(targetColumnId: string): ColumnSpaces {
     //TODO　これ、一個もtrue返すの無かった場合throw Errorしたらよいのでは　→やってみたけどネストしてる時にもエラー出すから駄目だった。ネストしてるからいちいちエラー出せないんだよな…消せなかった判定どうしようか後で考えたい
     for (let i=0; i<this._children.length; i++) {
       this._children[i].removeDescendantColumn(targetColumnId);
     }
     return this;
+  }
+
+  removeDescendantCell(targetColumnSpaceId: string, targetColumnId: string, targetCellId: string): ColumnSpaces {
+
+    throw new Error("後で実装して")
   }
 
   // 子に新規カラムスペースを追加
@@ -106,7 +111,8 @@ export class ColumnSpaces {
     return this;
   }
 
-  // 子孫のカラムスペースを上書き（同じIDのものを探して上書き）
+  // 子孫のカラムを上書き（同じIDのものを探して上書き）
+  //TODO これ、カラムスペースも引数でもらってよかったのでは
   updateDescendantColumn(column: Column): ColumnSpaces {
     //TODO　これ、一個もtrue返すの無かった場合throw Errorしたらよいのでは　→やってみたけどネストしてる時にもエラー出すから駄目だった。ネストしてるからいちいちエラー出せないんだよな…消せなかった判定どうしようか後で考えたい
     for (let i=0; i<this._children.length; i++) {
@@ -114,6 +120,13 @@ export class ColumnSpaces {
     }
     return this;
   }
+
+  // 子孫のセルを上書き（同じIDのものを探して上書き）
+  updateDescendantCelll(columnSpaceId: string, columnId: string, cell: Cell) : ColumnSpaces {
+
+    throw new Error("後で実装して");
+  }
+
 
   // 子孫のカラムスペースに指定カラムスペースを追加
   addDescendantColumnSpace(columnSpace: ColumnSpace, targetColumnSpaceId: string): ColumnSpaces {

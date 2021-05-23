@@ -167,7 +167,7 @@ export const CellRerationModal: React.FC<Props> = props => {
   //TODO たまにセル右クリしてるとwarning出るじゃん？その時にセル作成モーダルを開くとカラムが未選択みたいになっててundefinedな感じになってるよ。
 
   return (
-    <Modal isOpen={props.isOpen} onClose={onCloseModal} size="3xl">
+    <Modal isOpen={props.isOpen} onClose={onCloseModal} size="3xl" closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{props.currentSelectedColumnSpace.name}のセル同士の関連付け</ModalHeader>

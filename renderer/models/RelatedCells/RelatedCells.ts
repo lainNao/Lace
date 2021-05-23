@@ -29,7 +29,64 @@ export class RelatedCells {
     return this._data;
   }
 
+  // そのカラムスペース配下のリレーションを削除
+  removeRelationOfColumnSpace(columnSpaceId: string): RelatedCells {
+    delete this._data[columnSpaceId];
+    return this;
+  }
+
+  // そのカラム配下のセルが持つリレーション全部と、そのカラムに向けていたリレーション全部削除
+  removeRelationOfColumn(columnSpaceId: string, columnId: string): RelatedCells {
+    const relatedCellInfos = this.removeRelationFromColumn(columnSpaceId, columnId);
+    this.removeRelationsFromTo(columnSpaceId, relatedCellInfos, columnId);
+    return this;
+  }
+
+  // そのカラム配下のセルが持つリレーション全部と、そのカラムに向けていたリレーション全部削除
+  removeRelationOfCell(columnSpaceId: string, columnId: string, cellId: string): RelatedCells {
+    throw new Error("後で実装して")
+  }
+
+  // とあるセル達から、とあるカラムに向けているリレーションを削除
+  private removeRelationTo(columnSpaceId: string, fromRelatedCellInfo: RelatedCellInfo, toColumnId: string): void {
+    delete this._data[columnSpaceId][fromRelatedCellInfo.columnId][fromRelatedCellInfo.cellId][toColumnId];
+  }
+
+  // とあるセル達から、とあるカラムに向けているリレーション達を削除（removeRelationToの複数対応版ラッパー）
+  private removeRelationsFromTo(columnSpaceId: string, fromRelatedCellInfos: RelatedCellInfo[], toColumnId: string): void {
+    for (const relatedCellInfo of fromRelatedCellInfos) {
+      this.removeRelationTo(columnSpaceId, relatedCellInfo, toColumnId);
+    }
+  }
+
+  // そのカラムが持っているリレーションを削除し、削除されたRelatedCellInfoを配列で返す
+  private removeRelationFromColumn(columnSpaceId: string, columnId: string): RelatedCellInfo[] {
+
+    // そのカラムが持っているリレーションをカラム、セル単位で回してRelatedCellInfoにして取得
+    const relatedCellInfos = [];
+    Object.keys(this._data[columnSpaceId][columnId]).forEach(cellId => {
+      Object.keys(this._data[columnSpaceId][columnId][cellId]).forEach(targetColumnId => {
+        this._data[columnSpaceId][columnId][cellId][targetColumnId].forEach(targetCellId => {
+          relatedCellInfos.push({
+            columnId: targetColumnId,
+            cellId: targetCellId,
+          })
+        })
+      })
+    })
+
+    // そのカラムが持っているリレーションを削除
+    delete this._data[columnSpaceId][columnId];
+
+    return relatedCellInfos;
+  }
+
+
   /*
+    リレーション作成フォームから送られてきたデータでリレーションを上書きする。
+    これは複雑になっており正規化も何もされてないが頭が追いつかなかったので暫定で愚直に書いている。
+    きれいにしたいならきれいにして。
+
     ■以下構想を愚直に実装するメソッド
       セルA5があったとしてセルB3、B4、B5に結びつけるとする。
       そのために、「A5の関連セルを設定する画面」のチェックボックスが以下のようなデータを吐き出すとする。
@@ -41,7 +98,6 @@ export class RelatedCells {
           B4 -> [A5]
           B5 -> [A5, X1] ←X1はもともとあったデータだとする。残したい
           B6 -> [A5,V1]　←A5は今「チェックを外したデータ」だとする。削除したい。V1は残したい
-            ちょっと休憩！！！！！！！！！！！！！！！！！！！！！（3分）
       どうやる？
         ・今「A5の関連先」として設定されたB3,B4,B5からの関連先のもともとあったレコードは、残す。A5の関連先は上書き
           deletedCells =A5->update(B3,B4,B5)	//B6消えました👏
@@ -74,7 +130,7 @@ export class RelatedCells {
       this.createRelatedCellsTreeIfNotExists(
         columnSpaceId,
         {columnId: meColumnId, cellId: meCellId},
-        {columnId: toColumnId}
+        {columnId: toColumnId, cellId: null}
       );
 
       deletedFromMes.push({
@@ -136,7 +192,7 @@ export class RelatedCells {
   }
 
   // NOTE: 追加しかしないケースが浮かばないので使わない
-  addRelatedCellTo(columnSpaceId: string, me: RelatedCellInfo, target: RelatedCellInfo): RelatedCells{
+  addRelatedCellTo(columnSpaceId: string, me: RelatedCellInfo, target: RelatedCellInfo): RelatedCells {
     this.createRelatedCellsTreeIfNotExists(columnSpaceId, me, target);
 
     this.data[columnSpaceId][me.columnId][me.cellId][target.columnId]  = Array.from(new Set([...this.data[columnSpaceId][me.columnId][me.cellId][target.columnId], target.cellId]));
@@ -147,7 +203,7 @@ export class RelatedCells {
 
   // NOTE: 追加しかしないケースが浮かばないので使わない
   // addRelatedCellToの複数版
-  addRelatedCellsTo(columnSpaceId: string, mes: RelatedCellInfo[], target: RelatedCellInfo): RelatedCells{
+  addRelatedCellsTo(columnSpaceId: string, mes: RelatedCellInfo[], target: RelatedCellInfo): RelatedCells {
     for (let me of mes) {
       this.addRelatedCellTo(columnSpaceId, me, target);
     }
@@ -156,7 +212,7 @@ export class RelatedCells {
 
   // NOTE: 追加しかしないケースが浮かばないので使わない
   // addRelatedCellsToの第二引数と第三引数逆になってるだけ
-  addRelatedCellsFrom(columnSpaceId: string, me: RelatedCellInfo, targets: RelatedCellInfo[]): RelatedCells{
+  addRelatedCellsFrom(columnSpaceId: string, me: RelatedCellInfo, targets: RelatedCellInfo[]): RelatedCells {
     for (let target of targets) {
       this.addRelatedCellTo(columnSpaceId, me, target);
     }
@@ -183,12 +239,12 @@ export class RelatedCells {
 
 }
 
-export type RelatedCellInfo = {columnId: string, cellId?: string};
+export type RelatedCellInfo = {columnId: string, cellId: string};
 
 export type RelatedCellsColumnSpaceIndicator = {
   [columnSpaceId: string]: RelatedCellsColumnIndicator,
-
 }
+
 export type RelatedCellsColumnIndicator = {
   [columnId: string]: RelatedCellsCellIndicator,
 }

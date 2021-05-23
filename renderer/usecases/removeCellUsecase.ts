@@ -3,17 +3,17 @@ import { ColumnSpaces } from "../models/ColumnSpaces";
 import { RelatedCells } from "../models/RelatedCells";
 import { RelatedCellsRepositoryJson } from "../repositories/RelatedCellsRepositoryJson";
 
-export const removeColumnUsecase = async(columnSpaceId: string, columnId: string): Promise<[ColumnSpaces, RelatedCells]> => {
+export const removeCellUsecase = async(columnSpaceId: string, columnId: string, cellId: string): Promise<[ColumnSpaces, RelatedCells]> => {
   // カラム削除
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
-  const newRootColumnSpaces = rootColumnSpaces.removeDescendantColumn(columnId)
+  const newRootColumnSpaces = rootColumnSpaces.removeDescendantCell(columnSpaceId, columnId, cellId)
   await columnSpacesRepository.save(newRootColumnSpaces);
 
   // 関連リレーション削除
   const relatedCellRepository = new RelatedCellsRepositoryJson();
   const relatedCells = await relatedCellRepository.read();
-  const newRelatedCells = relatedCells.removeRelationOfColumn(columnSpaceId, columnId);
+  const newRelatedCells = relatedCells.removeRelationOfCell(columnSpaceId, columnId, cellId);
   await relatedCellRepository.save(newRelatedCells);
 
   return [newRootColumnSpaces, newRelatedCells];
