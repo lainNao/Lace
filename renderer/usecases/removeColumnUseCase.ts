@@ -16,5 +16,7 @@ export const removeColumnUsecase = async(columnSpaceId: string, columnId: string
   const newRelatedCells = relatedCells.removeRelationOfColumn(columnSpaceId, columnId);
   await relatedCellRepository.save(newRelatedCells);
 
+  // TODO 後々一緒に関連する表示設定も消す必要あると思う。ただしこれは大変になるかもな。中間に設定してたカラムが削除されたら、その配下のを上に上げることになるのかな
+
   return [newRootColumnSpaces, newRelatedCells];
 }

@@ -13,7 +13,7 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({
-    label:"セルの追加",
+    label:"セルの管理",
     click: args.handleClickCreateNewCell,
   }));
   contextMenu.append(new MenuItem({

@@ -38,24 +38,62 @@ export class RelatedCells {
   // そのカラム配下のセルが持つリレーション全部と、そのカラムに向けていたリレーション全部削除
   removeRelationOfColumn(columnSpaceId: string, columnId: string): RelatedCells {
     const relatedCellInfos = this.removeRelationFromColumn(columnSpaceId, columnId);
-    this.removeRelationsFromTo(columnSpaceId, relatedCellInfos, columnId);
+    this.removeRelationsToColumn(columnSpaceId, relatedCellInfos, columnId);
     return this;
   }
 
-  // そのカラム配下のセルが持つリレーション全部と、そのカラムに向けていたリレーション全部削除
+  // そのセルが持つリレーション全部と、そのセルに向けていたリレーション全部削除
   removeRelationOfCell(columnSpaceId: string, columnId: string, cellId: string): RelatedCells {
-    throw new Error("後で実装して")
+    const toRelatedCellInfos = this.removeRelationFromCell(columnSpaceId, columnId, cellId);
+    if (!toRelatedCellInfos) {
+      return this;
+    }
+
+    this.removeRelationsToCell(columnSpaceId, toRelatedCellInfos, {columnId, cellId});
+    return this;
+  }
+
+  // そのセルが持っているリレーションを削除し、削除されたRelatedCellInfoを配列で返す
+  private removeRelationFromCell(columnSpaceId: string, columnId: string, cellId: string): RelatedCellInfo[] {
+
+    // リレーションを持ってないなら何もしない
+    if (!this._data[columnSpaceId]?.[columnId]?.[cellId]) {
+      return null;
+    }
+
+    const deletedFromMes: RelatedCellInfo[] = [];
+    Object.keys(this._data[columnSpaceId][columnId][cellId]).forEach(toColumnId => {
+      this._data[columnSpaceId][columnId][cellId][toColumnId].forEach(toCellId => {
+        deletedFromMes.push({ columnId: toColumnId, cellId: toCellId })
+      })
+    });
+    delete this._data[columnSpaceId][columnId][cellId];
+
+    return deletedFromMes;
+  }
+
+  //removeRelationToCellのラッパー（第二引数が複数可能）
+  private removeRelationsToCell(columnSpaceId: string, fromRelatedCellInfos: RelatedCellInfo[], toRelatedCellInfo: RelatedCellInfo): void {
+    for (const relatedCellInfo of fromRelatedCellInfos) {
+      this.removeRelationToCell(columnSpaceId, relatedCellInfo, toRelatedCellInfo);
+    }
+  }
+
+  // 第一から第二引数へのリレーションを削除する
+  private removeRelationToCell(columnSpaceId: string, fromRelatedCellInfo: RelatedCellInfo, toRelatedCellInfo: RelatedCellInfo): void {
+    this._data[columnSpaceId][fromRelatedCellInfo.columnId][fromRelatedCellInfo.cellId][toRelatedCellInfo.columnId]
+      = this._data[columnSpaceId][fromRelatedCellInfo.columnId][fromRelatedCellInfo.cellId][toRelatedCellInfo.columnId].filter((cellId) => cellId !== toRelatedCellInfo.cellId)
   }
 
   // とあるセル達から、とあるカラムに向けているリレーションを削除
-  private removeRelationTo(columnSpaceId: string, fromRelatedCellInfo: RelatedCellInfo, toColumnId: string): void {
+  private removeRelationToColumn(columnSpaceId: string, fromRelatedCellInfo: RelatedCellInfo, toColumnId: string): void {
     delete this._data[columnSpaceId][fromRelatedCellInfo.columnId][fromRelatedCellInfo.cellId][toColumnId];
   }
 
   // とあるセル達から、とあるカラムに向けているリレーション達を削除（removeRelationToの複数対応版ラッパー）
-  private removeRelationsFromTo(columnSpaceId: string, fromRelatedCellInfos: RelatedCellInfo[], toColumnId: string): void {
+  private removeRelationsToColumn(columnSpaceId: string, fromRelatedCellInfos: RelatedCellInfo[], toColumnId: string): void {
     for (const relatedCellInfo of fromRelatedCellInfos) {
-      this.removeRelationTo(columnSpaceId, relatedCellInfo, toColumnId);
+      this.removeRelationToColumn(columnSpaceId, relatedCellInfo, toColumnId);
     }
   }
 
@@ -127,6 +165,7 @@ export class RelatedCells {
         );
       })
 
+      //TODO ここらへん、なんか自分のカラムから自分のカラムに向けてのリレーションを空で作っちゃってるところあるので見直す。かんたんな操作で再現できるはず。
       this.createRelatedCellsTreeIfNotExists(
         columnSpaceId,
         {columnId: meColumnId, cellId: meCellId},

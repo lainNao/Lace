@@ -213,7 +213,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       <NewCellFormModal
           isOpen={controller.isNewCellFormOpen}
           onClose={controller.handleNewCellFormClose}
-          title={`${controller.selectedColumnDataset?.name}に${cellDataTypeStrings[controller.selectedColumnDataset?.columnType]}データ追加`}
+          title={`${controller.selectedColumnDataset?.name}の${cellDataTypeStrings[controller.selectedColumnDataset?.columnType]}データ管理`}
         >
           <NewCellFormModalBody
             onClickCreateNewCell={controller.handleNewCellFormCreateButtonClick}

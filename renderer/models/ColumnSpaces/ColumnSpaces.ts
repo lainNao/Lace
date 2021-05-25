@@ -88,9 +88,11 @@ export class ColumnSpaces {
     return this;
   }
 
-  removeDescendantCell(targetColumnSpaceId: string, targetColumnId: string, targetCellId: string): ColumnSpaces {
-
-    throw new Error("後で実装して")
+  removeDescendantCell(columnSpaceId: string, columnId: string, cellId: string): ColumnSpaces {
+    for (let i=0; i<this._children.length; i++) {
+      this._children[i].removeDescendantCell(columnSpaceId, columnId, cellId);
+    }
+    return this;
   }
 
   // 子に新規カラムスペースを追加
@@ -122,11 +124,15 @@ export class ColumnSpaces {
   }
 
   // 子孫のセルを上書き（同じIDのものを探して上書き）
-  updateDescendantCelll(columnSpaceId: string, columnId: string, cell: Cell) : ColumnSpaces {
-
-    throw new Error("後で実装して");
+  updateDescendantCell(columnSpaceId: string, columnId: string, cell: Cell) : ColumnSpaces {
+    for (let i=0; i<this._children.length; i++) {
+      this._children[i].updateDescendantCell(columnSpaceId, columnId, cell);
+      if (this._children[i].id === columnSpaceId) {
+        return this;
+      }
+    }
+    return this;
   }
-
 
   // 子孫のカラムスペースに指定カラムスペースを追加
   addDescendantColumnSpace(columnSpace: ColumnSpace, targetColumnSpaceId: string): ColumnSpaces {

@@ -15,6 +15,7 @@ export type NewMarkdownCellsFormFormData = {
   data: NewMarkdownCellData[],
 };
 
+//TODO 同階層のTextと同じような感じに変更する
 export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> = (props) => {
 
   //TODO マークダウンの場合はプレビューも用意しておきたい

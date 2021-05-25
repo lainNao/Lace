@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import { hasCompatibleImageExtension } from "../../../modules/validator";
 import { useToast } from "@chakra-ui/react"
 
+//TODO 同階層のTextと同じような感じに変更する
 export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (props) => {
 
   const [paths, setPaths] = useState([]);
@@ -22,6 +23,7 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
         status: "error",
         position: "bottom-right",
         isClosable: true,
+        duration: 10000,
       });
     }
 

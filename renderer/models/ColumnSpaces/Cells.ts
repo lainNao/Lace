@@ -50,4 +50,22 @@ export class Cells {
     this.children.push(cell);
   }
 
+  updateCell(cell: Cell): Cells {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === cell.id) {
+        this._children[i] = cell;
+        return this;
+      }
+    }
+  }
+
+  removeCell(cellId: string): Cells {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === cellId) {
+        this._children.splice(i, 1);
+        return this;
+      }
+    }
+  }
+
 }

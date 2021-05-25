@@ -1,3 +1,4 @@
+import assert from "assert";
 import { CellData } from "../CellData";
 
 interface ConstructorArgs {
@@ -14,6 +15,7 @@ export class TextCellData implements CellData {
   get text() { return this._text; }
 
   constructor(args: ConstructorArgs) {
+    assert(args.text != null, "空です");
     this._text = args.text;
   }
 

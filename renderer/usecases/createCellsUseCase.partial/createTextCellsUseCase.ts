@@ -9,10 +9,12 @@ export const createTextCellsUsecase = async(args: CreateCellsUsecasesArgs): Prom
 
   const newRootColumnSpaces = rootColumnSpaces.addDescendantCells(
     new Cells({
-      children: args.cellDatas.map(cellData => new Cell({
-        data: new TextCellData(cellData),
-        type: args.columnType,
-      })),
+      children: [
+        new Cell({
+          data: new TextCellData(args.cellDatas),
+          type: args.columnType,
+        })
+      ]
     }),
     args.columnSpaceId,
     args.columnId,

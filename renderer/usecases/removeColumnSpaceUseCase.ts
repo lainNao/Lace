@@ -18,5 +18,7 @@ export const removeColumnSpaceUsecase = async(columnSpaceId: string): Promise<[C
   const newRelatedCells = relatedCells.removeRelationOfColumnSpace(columnSpaceId);
   await relatedCellRepository.save(newRelatedCells);
 
+  // TODO 後々一緒に表示設定も消す必要あると思う
+
   return [newRootColumnSpaces, newRelatedCells];
 }

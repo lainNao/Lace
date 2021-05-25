@@ -76,4 +76,14 @@ export class Column {
     return this;
   }
 
+  updateCell(cell: Cell): Column {
+    this._cells.updateCell(cell);
+    return this;
+  }
+
+  removeCell(cellId: string): Column {
+    this._cells.removeCell(cellId);
+    return this;
+  }
+
 }

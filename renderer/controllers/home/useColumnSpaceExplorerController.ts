@@ -16,7 +16,7 @@ import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
 import { createColumnUsecase } from '../../usecases/createColumnUsecase';
 import { useDisclosure } from '@chakra-ui/react';
 import draggingNodeDatasetState from '../../recoils/atoms/ColumnSpaceExplorer/draggingNodeDatasetState';
-import { changeColumnOrderUsecase } from '../../usecases/changeColumnOrderUsecase';
+import { updateColumnOrderUsecase } from '../../usecases/updateColumnOrderUsecase';
 import { moveColumnSpaceToTopLevelUsecase } from '../../usecases/moveColumnSpaceToTopeLevelUsecase';
 import { removeColumnUsecase } from '../../usecases/removeColumnUsecase';
 import { renameColumnUsecase } from '../../usecases/renameColumnUsecase';
@@ -47,7 +47,7 @@ export const useColumnSpaceExplorerController = () => {
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
   const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
-  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));
+  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));  //TODO これ、モーダル内に隠蔽したほうがいいのでは。毎回発火しなくていいし
   // モーダル管理
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
   const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
@@ -269,10 +269,11 @@ export const useColumnSpaceExplorerController = () => {
       const newRelatedCells = await dispatchCellRelationModalSubmit(columnSpaceId, cellRelationFormData);
       set(relatedCellsState, newRelatedCells);
       toast({
-        title: "関連セルを更新しました。",
+        title: "関連セルを更新しました",
         status: "success",
         position: "bottom-right",
         isClosable: true,
+        duration: 1500,
       })
     } catch (e) {
       console.log(e.stack);
@@ -281,6 +282,7 @@ export const useColumnSpaceExplorerController = () => {
         status: "error",
         position: "bottom-right",
         isClosable: true,
+        duration: 10000,
       })
     }
   }, []);
@@ -307,6 +309,7 @@ export const useColumnSpaceExplorerController = () => {
         status: "error",
         position: "bottom-right",
         isClosable: true,
+        duration: 10000,
       })
     } finally {
       setNewColumnFormName("");
@@ -325,13 +328,19 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------セル新規作成モーダルの管理----------------------------------------------------------- */
 
-  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any) => {
+  const handleNewCellFormCreateButtonClick = useRecoilCallback(({set}) => async (columnDataset: ColumnDataset, formData: any, successMessage?: string) => {
     console.debug("新しいセルを作成するフォームの登録ボタン押下");
 
     try {
       const newColumnSpaces = await createCellsUsecase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
       set(columnSpacesState, newColumnSpaces);
-      closeNewCellForm();
+      toast({
+        title: successMessage ?? "セルを追加しました",
+        status: "success",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 1500,
+      })
     } catch (e) {
       console.log(e.stack);
       toast({
@@ -339,6 +348,7 @@ export const useColumnSpaceExplorerController = () => {
         status: "error",
         position: "bottom-right",
         isClosable: true,
+        duration: 10000,
       })
     }
 
@@ -463,7 +473,7 @@ export const useColumnSpaceExplorerController = () => {
       if (draggingNodeDataset.columnSpaceId == (event.target as HTMLElement).dataset.id) {
         // 親ならカラムをソートをする
         try {
-          const newColumnSpaces = await changeColumnOrderUsecase(draggingNodeDataset.columnSpaceId, draggingNodeDataset.id);
+          const newColumnSpaces = await updateColumnOrderUsecase(draggingNodeDataset.columnSpaceId, draggingNodeDataset.id);
           setColumnSpaces(newColumnSpaces);
         } catch(e) {
           console.log(e.stack);
@@ -573,7 +583,7 @@ export const useColumnSpaceExplorerController = () => {
 
     /// カラムのソート
     try {
-      const newColumnSpaces = await changeColumnOrderUsecase(targetColumnDataset.columnSpaceId, draggingNodeDataset.id, targetColumnDataset.id);
+      const newColumnSpaces = await updateColumnOrderUsecase(targetColumnDataset.columnSpaceId, draggingNodeDataset.id, targetColumnDataset.id);
       setColumnSpaces(newColumnSpaces);
     } catch(e) {
       console.log(e.stack);

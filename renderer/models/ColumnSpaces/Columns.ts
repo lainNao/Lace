@@ -94,10 +94,28 @@ export class Columns {
     }
   }
 
+  updateDescendantCell(columnId: string, cell: Cell): Columns {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === columnId) {
+        this._children[i].updateCell(cell);
+        return this;
+      }
+    }
+  }
+
   removeColumn(targetId: string): Columns {
     for (let i=0; i<this._children.length; i++) {
       if (this._children[i].id === targetId) {
         this._children.splice(i, 1);
+        return this;
+      }
+    }
+  }
+
+  removeDecendantCell(columnId: string, cellId: string): Columns {
+    for (let i=0; i<this._children.length; i++) {
+      if (this._children[i].id === columnId) {
+        this._children[i].removeCell(cellId);
         return this;
       }
     }

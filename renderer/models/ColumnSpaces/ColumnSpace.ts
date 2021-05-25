@@ -99,17 +99,17 @@ export class ColumnSpace {
     return this;
   }
 
-  addDescendantColumn(column: Column, toId: string) {
+  addDescendantColumn(column: Column, toId: string): ColumnSpace {
     this._childColumnSpaces.addDescendantColumn(column, toId);
     return this;
   }
 
-  addDescendantCells(cells: Cells, columnSpaceId: string, columnId: string) {
+  addDescendantCells(cells: Cells, columnSpaceId: string, columnId: string): ColumnSpace {
     this._childColumnSpaces.addDescendantCells(cells, columnSpaceId, columnId);
     return this;
   }
 
-  addDescendantCell(cell: Cell, columnSpaceId: string, columnId: string) {
+  addDescendantCell(cell: Cell, columnSpaceId: string, columnId: string): ColumnSpace {
     this._childColumnSpaces.addDescendantCell(cell, columnSpaceId, columnId);
     return this;
   }
@@ -130,6 +130,15 @@ export class ColumnSpace {
     return false;
   }
 
+  updateDescendantCell(columnSpaceId: string, columnId: string, cell: Cell) : ColumnSpace {
+    if (this._id === columnSpaceId) {
+      this._columns.updateDescendantCell(columnId, cell);
+      return this;
+    }
+    this._childColumnSpaces.updateDescendantCell(columnSpaceId, columnId, cell);
+    return this;
+  }
+
   removeDescendantColumnSpace(targetId: string): ColumnSpaces {
     return this._childColumnSpaces.removeDescendantColumnSpace(targetId);
   }
@@ -145,6 +154,15 @@ export class ColumnSpace {
     }
 
     return false;
+  }
+
+  removeDescendantCell(columnSpaceId: string, columnId: string, cellId: string): ColumnSpace {
+    if (this._columns.hasColumn(columnId)) {
+      this._columns = this._columns.removeDecendantCell(columnId, cellId);
+      return this;
+    }
+
+    this._childColumnSpaces.removeDescendantCell(columnSpaceId, columnId, cellId);
   }
 
   canAddColumnSpace(): boolean {
