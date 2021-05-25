@@ -45,6 +45,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
   const classes = useStyles()
 
   if (!controller.columnSpaces) {
+    //TODO ここまともにする
     return (
       <div>読込中</div>
     )
