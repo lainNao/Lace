@@ -342,95 +342,37 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                 //
             }
 
-    ＜後で使うかもしれない、リポジトリにあった旧ファイルアップロードのメソッド達＞
-
-        // async uploadFile(fileObject, targetColumnUUID): Promise<columnSpacesType> {
-        //   const filePath = await this.getSavePathWithoutDuplication(fileObject.name, targetColumnUUID);
-        //   const realFilePath = this.publicPath + filePath;
-        //   const currentcolumnSpaces = await this.readDB();
-
-        //   let newcolumnSpaces = Object.assign({}, currentcolumnSpaces);
-        //   // newcolumnSpaces[this.currentColumnSpaceUUID].columns[targetColumnUUID].datas[uuidv4()] = {
-        //   //   path: filePath,
-        //   //   type: fileObject.type,
-        //   //   name: parse(realFilePath).name + parse(realFilePath).ext,
-        //   //   childsColumnsDatas: {},    //この時点では空にし、後々セットする時にこの中身は持たせる。なぜならば、ここでファイル取り込みした後にchild_columnsの中の要素が増える可能性があるため。
-        //   // };
-
-        //   // エラーハンドリングもする。サービス側で一括でやったほうがいいかも
-        //   copyFileSync(fileObject.path, realFilePath)
-        //   this.saveFile(newcolumnSpaces);
-
-        //   console.log("DB書き出し完了");
-        //   return newcolumnSpaces;
-        // }
-
-        // private createColumnSpaceDirectory(columnSpaceName: string): string | void {
-        //   // エラーハンドリングもする。サービス側で一括でやったほうがいいかも
-        //   if (!existsSync(columnSpaceName)){
-        //     mkdirSync(columnSpaceName);
-        //   } else {
-        //     throw new Error("既に存在しています");
-        //   }
-        // }
-
-
-
-        // private async getCellSaveDirectoryOf(targetColumnUUID: string): Promise<string> {
-        //   const userDataPath = await getSaveDirPath();
-        //   return path.join(userDataPath, "userdata/column_spaces", targetColumnUUID) + "/";
-        // }
-
-        // private getSaveFileName(saveDirectory, fileName, extension) {
-        //   for (let i=0; ; i++) {
-        //     const path = (i === 0)
-        //       ? this.publicPath + saveDirectory + fileName + extension
-        //       : this.publicPath + saveDirectory + fileName + `(${i})` + extension
-
-        //     const samePathExists = fs.existsSync(path)
-        //     if (samePathExists) {
-        //       continue;
-        //     }
-        //     return path
-        //   }
-        // }
-
-        // private async getSavePathWithoutDuplication(filenameWithExtension, targetColumnUUID): Promise<string> {
-        //   const saveDirectory = await this.getCellSaveDirectoryOf(targetColumnUUID);
-        //   const saveFileName = this.getSaveFileName(this.publicPath, path.parse(filenameWithExtension).name, path.parse(filenameWithExtension).ext);
-        //   return saveDirectory + saveFileName;
-        // }
 
 ■サンプルデータ
     ＜＞
     ＜＞
     ＜display_settings.json＞
         {
-        "カラムスペースのUUID": [
-            {
-            "id": "UUID",
-            "name": "フレーズ別要素、とかの名前",
-            "sortColumns": [111,222],
-            "mainColumn": "3333",
-
-            "relatedCellsDisplaySettings": [
+            "カラムスペースのUUID": [
                 {
-                "type": "CustomList",
-                "typeDetails": {
-                    "title": "曲例、とか",
-                    "columns": [
+                "id": "UUID",
+                "name": "フレーズ別要素、とかの名前",
+                "sortColumns": [111,222],
+                "mainColumn": "3333",
+
+                "relatedCellsDisplaySettings": [
                     {
-                        "columnId": "カラムID",
-                        "prefix": "つけたい前置文字。nullable",
-                        "suffix": "つけたい後置文字。nullable",
-                        "needBreakLine": false
+                    "type": "CustomList",
+                    "typeDetails": {
+                        "title": "曲例、とか",
+                        "columns": [
+                        {
+                            "columnId": "カラムID",
+                            "prefix": "つけたい前置文字。nullable",
+                            "suffix": "つけたい後置文字。nullable",
+                            "needBreakLine": false
+                        }
+                        ]
                     }
-                    ]
-                }
+                    }
+                ]
                 }
             ]
-            }
-        ]
         }
 
 

@@ -84,13 +84,13 @@ export const TextCellUpdateModal = (props: Props) => {
               }
             >{(formState) => (
               <Form className="">
-                <div className="mb-2">編集前</div>
+                <div className="mb-2">before</div>
                 <div className="mb-5 ml-4 break-all whitespace-pre-wrap">
                   {props.cellData ? props.cellData.data.text : ""}
                 </div>
 
                 <div className="mb-2">
-                  <label htmlFor="text">編集後</label>
+                  <label htmlFor="text">after</label>
                 </div>
                 <Field name="text" >
                   {({ field, form }) => <Textarea {...field} spellCheck={false} rows={10} /> }
