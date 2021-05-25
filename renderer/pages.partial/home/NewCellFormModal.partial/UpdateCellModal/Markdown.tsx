@@ -91,7 +91,7 @@ export const MarkdownCellUpdateModal = (props: Props) => {
                   </div>
 
                   <div className="float-right mt-3 mb-2">
-                    <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.isValid}>完了</Button>
+                    <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.isValid || formState.isSubmitting}>完了</Button>
                     <Button variant="ghost" onClick={props.onClose}>キャンセル</Button>
                   </div>
                 </Form>

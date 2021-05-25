@@ -98,7 +98,7 @@ export const TextCellUpdateModal = (props: Props) => {
                 {/* <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/> */}
 
                 <div className="float-right mt-3 mb-2">
-                  <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.isValid}>適用</Button>
+                  <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.isValid || formState.isSubmitting}>適用</Button>
                   <Button variant="ghost" onClick={props.onClose}>キャンセル</Button>
                 </div>
               </Form>

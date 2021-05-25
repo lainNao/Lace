@@ -126,12 +126,11 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
               {/* <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/> */}
 
               <div className="float-right mt-3 mb-2">
-                <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid}><AddIcon className="mr-2"/>追加</Button>
+                <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}><AddIcon className="mr-2"/>追加</Button>
               </div>
             </Form>
 
-            )
-          }}
+          )}}
         </Formik>
 
         {/* 一覧 */}
