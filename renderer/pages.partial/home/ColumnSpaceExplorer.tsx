@@ -44,10 +44,6 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
   const controller = useColumnSpaceExplorerController();
   const classes = useStyles()
 
-  // const currentMainDisplayedColumnUUID = "C23456789-C234-C234-C234-C23456789123"  //仮のモック
-  // const currentColumnSpaceUUID = "123456789-1234-1234-1234-123456789123"; //仮のモック（これ今は半無限の深さになったので、道筋のUUIDの配列にするのがいいかも）
-  // const currentMainColumnDatas = columnSpaces[props.currentColumnSpaceId].columns[props.currentMainColumnId].datas;
-
   if (!controller.columnSpaces) {
     return (
       <div>読込中</div>
