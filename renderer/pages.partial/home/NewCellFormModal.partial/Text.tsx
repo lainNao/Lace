@@ -18,14 +18,6 @@ import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
 import { TextCellBaseInfo, TextCellUpdateModal } from "./UpdateCellModal/Text"
 import { CellDataType } from "../../../resources/CellDataType";
 
-type NewTextCellData = {
-  text: string,
-}
-
-export type NewTextCellsFormFormData = {
-  data: NewTextCellData[],
-};
-
 export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (props) => {
 
   const selectedColumn = useRecoilValue(specificColumnState(props.columnData.id));
@@ -53,7 +45,7 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
           data: {
             text: target.innerText,
           }
-        })
+        });
         openUpdateModal();
       },
       handleClickDeleteCell: async () => {
@@ -110,9 +102,8 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
               ? value.text.substring(0, 15)+"..."
               : value.text;
 
-            props.onClickCreateNewCell(props.columnData, value, successMessage+"を追加しました");
+            props.onClickCreateNewCell(props.columnData, [value], successMessage+"を追加しました");
             newTextInputRef.current.focus();
-            // newTextInputRef.current.value = null;    //これ、失敗した時に消えたら残念なので行わない
           }}
           validationSchema={
             yup.object().shape({
@@ -122,7 +113,7 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
                 .filled("必須です")
             })
           }
-        >{({ values }) => {
+        >{(formState) => {
           return (
             <Form className="w-1/2">
 
@@ -132,10 +123,10 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
               <Field name="text" >
                 {({ field, form, ...props }) => <Textarea {...field} {...props} spellCheck={false} rows={10} ref={newTextInputRef} /> }
               </Field>
-              <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/>
+              {/* <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/> */}
 
               <div className="float-right mt-3 mb-2">
-                <Button type="submit" colorScheme="blue" mr={3} ><AddIcon className="mr-2"/>追加</Button>
+                <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid}><AddIcon className="mr-2"/>追加</Button>
               </div>
             </Form>
 
@@ -147,24 +138,25 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
         <div className="w-1/2 pb-3 pr-2 pl-10">
 
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
-          <InfiniteScroll
-            dataLength={selectedColumn.cells.children.length}
-            loader={<h4>Loading...</h4>}
-            next={null}
-            hasMore={false}
-            height={windowHeight-260}
-          >
-            {selectedColumn.cells.mapChildren((cell, index) => (
-              <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} >
-                <hr/>
-                <div key={cell.id} className="pb-2 pl-1" style={{minHeight: "10px"}}>
-                  {(cell.data as TextCellData).text}
-                </div>
-              </div>
-            ))}
-
-          </InfiniteScroll>
-
+          {selectedColumn.cells.children.length === 0
+            ? <div>0件</div>
+            : <InfiniteScroll
+                dataLength={selectedColumn.cells.children.length}
+                loader={<h4>Loading...</h4>}
+                next={null}
+                hasMore={false}
+                height={windowHeight-260}
+              >
+                {selectedColumn.cells.mapChildren((cell, index) => (
+                  <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} >
+                    <hr/>
+                    <div key={cell.id} className="break-all pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
+                      {(cell.data as TextCellData).text}
+                    </div>
+                  </div>
+                ))}
+              </InfiniteScroll>
+          }
         </div>
       </div>
 

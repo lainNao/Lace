@@ -14,7 +14,6 @@ export const createSoundCellsUsecase = async(args: CreateCellsUsecasesArgs): Pro
     args.columnId,
     args.cellDatas,
   );
-
   const newRootColumnSpaces = rootColumnSpaces.addDescendantCells(
     new Cells({
       children: savedFilePaths.map(cellData => new Cell({
@@ -25,6 +24,5 @@ export const createSoundCellsUsecase = async(args: CreateCellsUsecasesArgs): Pro
     args.columnSpaceId,
     args.columnId,
   );
-
   return await columnSpacesRepository.save(newRootColumnSpaces);
 }

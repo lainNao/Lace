@@ -6,19 +6,15 @@ import { CreateCellsUsecasesArgs } from "../createCellsUsecase";
 export const createTextCellsUsecase = async(args: CreateCellsUsecasesArgs): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
-
   const newRootColumnSpaces = rootColumnSpaces.addDescendantCells(
     new Cells({
-      children: [
-        new Cell({
-          data: new TextCellData(args.cellDatas),
-          type: args.columnType,
-        })
-      ]
+      children: args.cellDatas.map(cellData => new Cell({
+        data: new TextCellData(cellData),
+        type: args.columnType,
+      })),
     }),
     args.columnSpaceId,
     args.columnId,
   );
-
   return await columnSpacesRepository.save(newRootColumnSpaces);
 }

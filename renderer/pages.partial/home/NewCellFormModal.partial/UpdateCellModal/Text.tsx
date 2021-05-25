@@ -44,7 +44,6 @@ export const TextCellUpdateModal = (props: Props) => {
                 text: props.cellData ? props.cellData.data?.text : "",
               }}
               onSubmit={async (value) => {
-                //TODO アップデート処理をする
                 const successMessage = (value.text.length > 15)
                   ? value.text.substring(0, 15)+"..."
                   : value.text;
@@ -83,10 +82,10 @@ export const TextCellUpdateModal = (props: Props) => {
                     .filled("必須です")
                 })
               }
-            >{() => (
+            >{(formState) => (
               <Form className="">
                 <div className="mb-2">編集前</div>
-                <div className="mb-5 ml-4">
+                <div className="mb-5 ml-4 break-all whitespace-pre-wrap">
                   {props.cellData ? props.cellData.data.text : ""}
                 </div>
 
@@ -94,12 +93,12 @@ export const TextCellUpdateModal = (props: Props) => {
                   <label htmlFor="text">編集後</label>
                 </div>
                 <Field name="text" >
-                  {({ field, form, ...props }) => <Textarea {...field} {...props} spellCheck={false} rows={10} /> }
+                  {({ field, form }) => <Textarea {...field} spellCheck={false} rows={10} /> }
                 </Field>
-                <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/>
+                {/* <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/> */}
 
                 <div className="float-right mt-3 mb-2">
-                  <Button type="submit" colorScheme="blue" mr={3} >適用</Button>
+                  <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.isValid}>適用</Button>
                   <Button variant="ghost" onClick={props.onClose}>キャンセル</Button>
                 </div>
               </Form>
