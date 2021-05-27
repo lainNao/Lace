@@ -9,7 +9,6 @@ interface ColumnContextMenuArgs {
 export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, MouseEvent>, args: ColumnContextMenuArgs) => {
 
   const MenuItem = remote.MenuItem;
-  const dialog = remote.dialog;
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({

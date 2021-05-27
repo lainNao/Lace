@@ -11,7 +11,6 @@ interface ColumnContextMenuArgs {
 export const showCellContextMenu = (event: React.MouseEvent<HTMLElement, MouseEvent>, args: ColumnContextMenuArgs) => {
 
   const MenuItem = remote.MenuItem;
-  const dialog = remote.dialog;
   const contextMenu = new remote.Menu();
 
   if (args.handleClickRenameCell) {
