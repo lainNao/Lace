@@ -1,4 +1,4 @@
-import { Button, Textarea, useToast, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react"
+import { Button, Textarea, useToast, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Input } from "@chakra-ui/react"
 import React from 'react';
 import { ErrorMessage, Field, FieldArray, Form, Formik, useFormik } from 'formik';
 import yup from '../../../../modules/yup';
@@ -97,7 +97,7 @@ export const FileRenameModal = (props: Props) => {
                   <label htmlFor="alias">after</label>
                 </div>
                 <Field name="alias" >
-                  {({ field, form }) => <Textarea {...field} spellCheck={false} rows={10} /> }
+                  {({ field, form }) => <Input {...field} spellCheck={false} /> }
                 </Field>
 
                 <div className="float-right mt-3 mb-2">
