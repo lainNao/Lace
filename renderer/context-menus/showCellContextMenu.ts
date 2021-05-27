@@ -1,7 +1,8 @@
 import { BrowserWindow, MenuItem, remote } from "electron";
 
 interface ColumnContextMenuArgs {
-  handleClickUpdateCell: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
+  handleClickUpdateCell?: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
+  handleClickRenameCell?: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickDeleteCell: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickUpdateRelation: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleMenuWillClose: () => void,
@@ -13,10 +14,19 @@ export const showCellContextMenu = (event: React.MouseEvent<HTMLElement, MouseEv
   const dialog = remote.dialog;
   const contextMenu = new remote.Menu();
 
-  contextMenu.append(new MenuItem({
-    label:"編集",
-    click: args.handleClickUpdateCell,
-  }));
+  if (args.handleClickRenameCell) {
+    // リネームがある時はファイルということなので、ファイル編集は現状できないのでリネームを出す
+    contextMenu.append(new MenuItem({
+      label:"リネーム",
+      click: args.handleClickRenameCell,
+    }));
+  } else {
+    // リネームがない時は編集を出す
+    contextMenu.append(new MenuItem({
+      label:"編集",
+      click: args.handleClickUpdateCell,
+    }));
+  }
   contextMenu.append(new MenuItem({
     label: "関連セルの紐付け",
     click: args.handleClickUpdateRelation,
