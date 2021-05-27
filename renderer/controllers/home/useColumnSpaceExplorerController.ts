@@ -116,19 +116,20 @@ export const useColumnSpaceExplorerController = () => {
       },
       handleClickDeleteColumnSpace: async () => {
         remote.dialog.showMessageBox({
-          type: 'info',
-          buttons: ['はい', "いいえ"],
-          title: 'カラムスペースの削除',
+          type: 'question',
+          buttons: ["いいえ", 'はい'],
           message: 'カラムスペースの削除',
           detail: `${targetDataset.name}を削除しますか？`,
+          noLink: true,
         }).then(async (res) => {
-          if (res.response === 0) { //「はい」を選択した時
+          if (res.response === 1) { //「はい」を選択した時
             try {
               const [newColumnSpaces, newRelatedCells] = await removeColumnSpaceUsecase(targetDataset.id);
               setColumnSpaces(newColumnSpaces);
               setRelatedCells(newRelatedCells);
             } catch (e) {
               console.log(e.stack);
+              toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
             }
           }
         });
@@ -156,19 +157,20 @@ export const useColumnSpaceExplorerController = () => {
       },
       handleClickDeleteColumn: async () => {
         remote.dialog.showMessageBox({
-          type: 'info',
-          buttons: ['はい', "いいえ"],
-          title: 'カラムの削除',
+          type: 'question',
+          buttons: ["いいえ", 'はい'],
           message: 'カラムの削除',
           detail: `${targetDataset.name}を削除しますか？`,
+          noLink: true,
         }).then(async (res) => {
-          if (res.response === 0) { //「はい」を選択した時
+          if (res.response === 1) { //「はい」を選択した時
             try {
               const [newColumnSpaces, newRelatedCells] = await removeColumnUsecase(targetDataset.columnSpaceId, targetDataset.id);
               setColumnSpaces(newColumnSpaces);
               setRelatedCells(newRelatedCells);
             } catch (e) {
               console.log(e.stack);
+              toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
             }
           }
         });

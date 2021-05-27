@@ -55,13 +55,13 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
       handleClickDeleteCell: async () => {
         rightClickedCellRef.current.classList.add("bg-gray-800");
         remote.dialog.showMessageBox({
-          type: 'info',
-          buttons: ['はい', "いいえ"],
-          title: '削除',
+          type: 'question',
+          buttons: ["いいえ", 'はい'],
           message: '削除',
           detail: `以下を削除しますか？\n\n${target.innerText}`,
+          noLink: true,
         }).then(async (res) => {
-          if (res.response === 0) { //「はい」を選択した時
+          if (res.response === 1) { //「はい」を選択した時
             const croppedValue = (target.innerText.length > 15) ? target.innerText.substring(0, 15)+"..." : target.innerText;
             try {
               // セルの削除

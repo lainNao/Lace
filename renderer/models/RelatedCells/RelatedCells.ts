@@ -100,10 +100,15 @@ export class RelatedCells {
   // そのカラムが持っているリレーションを削除し、削除されたRelatedCellInfoを配列で返す
   private removeRelationFromColumn(columnSpaceId: string, columnId: string): RelatedCellInfo[] {
 
+    // 対象が無い場合return
+    if (!this._data[columnSpaceId]?.[columnId]) return [];
+
     // そのカラムが持っているリレーションをカラム、セル単位で回してRelatedCellInfoにして取得
     const relatedCellInfos = [];
     Object.keys(this._data[columnSpaceId][columnId]).forEach(cellId => {
+      if (!this._data[columnSpaceId][columnId][cellId]) return [];
       Object.keys(this._data[columnSpaceId][columnId][cellId]).forEach(targetColumnId => {
+        if (!this._data[columnSpaceId][columnId][cellId][targetColumnId]) return [];
         this._data[columnSpaceId][columnId][cellId][targetColumnId].forEach(targetCellId => {
           relatedCellInfos.push({
             columnId: targetColumnId,
