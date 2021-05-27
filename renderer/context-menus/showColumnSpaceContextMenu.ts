@@ -31,7 +31,7 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
   contextMenu.append(new MenuItem({
     label: "セル同士の関連付け",
     click: args.handleClickRelateCells,
-    enabled: args.targetColumnSpaceDataset.hasChildColumnSpaces === "false",
+    enabled: (args.targetColumnSpaceDataset.hasColumns === "true"),
   }));
   contextMenu.append(new MenuItem({
     type: 'separator'
