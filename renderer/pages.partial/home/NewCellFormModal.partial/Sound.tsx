@@ -24,9 +24,10 @@ export const NewCellFormModalBodySound: React.FC<NewCellFormModalBodyProps> = (p
   const toast = useToast()
   const selectedColumn = useRecoilValue(specificColumnState(props.columnData.id));
   const windowHeight = useWindowHeight()
-  const rightClickedCellRef = useRef(null);
   const [updateTargetCellData, setUpdateTargetCellData] = useState<FileCellBaseInfo>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
+  const rightClickedCellRef = useRef(null);
+  const playingAudioElement = useRef<HTMLAudioElement>(null);
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
     const target = event.target as HTMLElement;
@@ -87,6 +88,7 @@ export const NewCellFormModalBodySound: React.FC<NewCellFormModalBodyProps> = (p
     });
 
   }, [])
+
   const onDrop = useCallback(acceptedFiles => {
     // 対応する拡張子
     const acceptedFilePaths = Array.from<File>(acceptedFiles)
@@ -115,7 +117,16 @@ export const NewCellFormModalBodySound: React.FC<NewCellFormModalBodyProps> = (p
     setPaths([]);
   }, [paths]);
 
+  const onPlayAudio = useCallback(e => {
+    if (playingAudioElement.current) {
+      playingAudioElement.current.pause();
+    }
+
+    playingAudioElement.current = e.target;
+  }, []);
+
   //TODO アップロードしようとしたけどやめたファイルを「☓」ボタンで消せるようにする
+  //TODO やっぱり音声データはアーティスト名とかで並び替えとかしたいよね…他のセル管理モーダルの一覧部分も、任意のリレーションしてるカラムのリレーションで並び替えできるようにしたいな（リレーションしてないのは「他」みたいに最後に表示するとして）
 
   return (
     <>
@@ -175,7 +186,7 @@ export const NewCellFormModalBodySound: React.FC<NewCellFormModalBodyProps> = (p
                       <div key={cell.id} className="break-all pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as SoundCellData).path} data-cell-id={cell.id} data-name={displayName}>
                         {/* TODO ここ、折りたたみも可能にしたほうがいいかも */}
                         <div>{displayName}</div>
-                        <audio src={(cell.data as SoundCellData).path} controls className="h-7"/>
+                        <audio src={(cell.data as SoundCellData).path} controls className="h-7 outline-none" onPlay={onPlayAudio} />
                       </div>
                     </div>
                   )
