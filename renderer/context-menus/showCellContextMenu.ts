@@ -16,13 +16,13 @@ export const showCellContextMenu = (event: React.MouseEvent<HTMLElement, MouseEv
   if (args.handleClickRenameCell) {
     // リネームがある時はファイルということなので、ファイル編集は現状できないのでリネームを出す
     contextMenu.append(new MenuItem({
-      label:"リネーム",
+      label: "リネーム",
       click: args.handleClickRenameCell,
     }));
   } else {
     // リネームがない時は編集を出す
     contextMenu.append(new MenuItem({
-      label:"編集",
+      label: "編集",
       click: args.handleClickUpdateCell,
     }));
   }
@@ -34,7 +34,7 @@ export const showCellContextMenu = (event: React.MouseEvent<HTMLElement, MouseEv
     type: 'separator'
   }));
   contextMenu.append(new MenuItem({
-    label:"削除",
+    label: "削除",
     click: args.handleClickDeleteCell,
   }));
 

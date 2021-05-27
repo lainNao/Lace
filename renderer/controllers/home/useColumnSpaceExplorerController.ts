@@ -32,7 +32,6 @@ import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRela
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
 //TODO おそらく、「inputを出したまま右側で編集する」とかなるとバグるかもしれないので、そこを一応留意しておきたい。逆に右側で編集中に左側いじっても同じことになる可能性あり。フラグを足すことになるかも
-//TODO 各種モーダルでの操作などのエラーメッセージや成功メッセージをトーストとかで出したいところ…
 
 //NOTE: 基本的にコントローラーでカラムスペースを扱う時はidだけで扱う。責務的に。
 export const useColumnSpaceExplorerController = () => {
