@@ -12,18 +12,18 @@ export const showColumnContextMenu = (event: React.MouseEvent<HTMLElement, Mouse
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({
-    label:"セルの管理",
+    label: "セル管理",
     click: args.handleClickCreateNewCell,
   }));
   contextMenu.append(new MenuItem({
-    label:"カラム名の変更",
+    label:"カラム名変更",
     click: args.handleClickRenameColumn,
   }));
   contextMenu.append(new MenuItem({
     type: 'separator'
   }));
   contextMenu.append(new MenuItem({
-    label:"削除",
+    label: "削除",
     click: args.handleClickDeleteColumn,
   }));
 

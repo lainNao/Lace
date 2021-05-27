@@ -14,14 +14,19 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
   const contextMenu = new remote.Menu();
 
   contextMenu.append(new MenuItem({
-    label: "カラムスペースの追加",
-    click: args.handleClickAddChildColumnSpace,
-    enabled: args.targetColumnSpaceDataset.hasColumns === "false",
-  }));
-  contextMenu.append(new MenuItem({
-    label: "カラムの追加",
-    click: args.handleClickAddChildColumn,
-    enabled: args.targetColumnSpaceDataset.hasChildColumnSpaces === "false",
+    label: "追加",
+    submenu: [
+      {
+        label: "カラムスペース",
+        click: args.handleClickAddChildColumnSpace,
+        enabled: args.targetColumnSpaceDataset.hasColumns === "false",
+      }
+      ,{
+        label: "カラム",
+        click: args.handleClickAddChildColumn,
+        enabled: args.targetColumnSpaceDataset.hasChildColumnSpaces === "false",
+      }
+    ]
   }));
   contextMenu.append(new MenuItem({
     label: "セル同士の関連付け",
