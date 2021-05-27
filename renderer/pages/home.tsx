@@ -54,7 +54,7 @@ const Home: React.FC = () => {
 
         {/* メイン表示 */}
         <div className="min-w-300px overflow-y-auto p-3">
-          セレクトボックスかタブみたいなのを丈夫に表示し、それで選択した表示設定に従った表示を出す。（表示設定自体はカラムスペースの右クリメニューからできるようにする）<br/><br/>
+          セレクトボックスかタブみたいなのをここらへんに表示し、それで選択した表示設定に従った表示を出す。（表示設定自体はカラムスペースの右クリメニューからできるようにする）<br/><br/>
           グローバルステートではselectedColumnSpaceIdState、specificColumnSpaceStateは使う<br/><br/>
           あとはColumnSpacesと表示状態集約とかも使う
           {/* {Object.keys(currentMainColumnDatas).map((dataUUID,index) => {
