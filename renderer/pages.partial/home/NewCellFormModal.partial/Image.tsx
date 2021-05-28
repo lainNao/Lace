@@ -16,6 +16,8 @@ import columnSpacesState from "../../../recoils/atoms/columnSpacesState";
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
 import { FileCellBaseInfo, FileRenameModal } from "./UpdateCellModal/FileRename"
 import { CellDataType } from "../../../resources/CellDataType";
+import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
+import { ParticularCellBaseInfo } from "./ParticularCellRelationModal/ParticularCellRelationModal";
 
 export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (props) => {
 
@@ -26,6 +28,8 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
   const [paths, setPaths] = useState([]);
   const toast = useToast();
+  const [relationTargetCellData, setRelationTargetCellData] = useState<ParticularCellBaseInfo>(null);
+  const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
     const target = event.target as HTMLElement;
@@ -77,8 +81,17 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
         });
       },
       handleClickUpdateRelation: async() => {
-        console.log("リレーションの更新");
-        //TODO ここ実装する。既にあるリレーションのモーダルの下部分はそのまま使える気がする。上部分を固定値にする感じで。
+        setRelationTargetCellData({
+          columnSpaceId: props.columnData.columnSpaceId,
+          columnId: props.columnData.id,
+          cellId: targetDataset.cellId,
+          type: CellDataType.Image,
+          data: {
+            path: targetDataset.path,
+            alias: targetDataset.name,
+          }
+        });
+        openParticularCellRelationModal();
       },
       handleMenuWillClose: async () => {
         rightClickedCellRef.current.classList.remove("bg-gray-800");
@@ -150,7 +163,7 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
 
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
           {selectedColumn.cells.children.length === 0
-            ? <div>0件</div>
+            ? <div style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
                 dataLength={selectedColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}
@@ -184,6 +197,14 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
         onClose={onCloseUpdateModal}
         cellData={updateTargetCellData}
       />
+
+      {/* セルリレーション管理モーダル */}
+      <ParticularCellRelationModal
+        isOpen={isOpenParticularCellRelationModal}
+        onClose={onCloseParticularCellRelationModal}
+        cellData={relationTargetCellData}
+      />
+
     </>
   )
 }

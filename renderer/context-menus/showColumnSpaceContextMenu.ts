@@ -5,7 +5,8 @@ interface ColumnSpaceContextMenuArgs {
   handleClickAddChildColumnSpace: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickAddChildColumn: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickRelateCells: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
-  targetColumnSpaceDataset: any,
+  handleClickDisplaySettings: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
+  targetColumnSpaceDataset: any,  //TODO さすがにこういうのは型作るか。ほぼfix状態だし。2つ似たのあると思うからいずれもそうしたい。
 }
 
 export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, MouseEvent>, args: ColumnSpaceContextMenuArgs) => {
@@ -31,6 +32,11 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
   contextMenu.append(new MenuItem({
     label: "セル同士の関連付け",
     click: args.handleClickRelateCells,
+    enabled: (args.targetColumnSpaceDataset.hasColumns === "true"),
+  }));
+  contextMenu.append(new MenuItem({
+    label: "表示形式の管理",
+    click: args.handleClickDisplaySettings,
     enabled: (args.targetColumnSpaceDataset.hasColumns === "true"),
   }));
   contextMenu.append(new MenuItem({

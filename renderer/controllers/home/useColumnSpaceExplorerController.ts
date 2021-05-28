@@ -104,6 +104,10 @@ export const useColumnSpaceExplorerController = () => {
         newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
         newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
       },
+      handleClickDisplaySettings: async () => {
+        //TODO 実装
+        console.log("表示形式を一覧/追加/削除/編集できるモーダルを実装する。セル管理モーダルと難易度は似てると思う。めげないで。諦めないで（真矢）");
+      },
       handleClickAddChildColumn: async () => {
         setNewColumnFormParentId(targetDataset.id);
         openNewColumnForm();

@@ -18,6 +18,8 @@ import columnSpacesState from "../../../recoils/atoms/columnSpacesState";
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
 import { MarkdownCellBaseInfo, MarkdownCellUpdateModal } from "./UpdateCellModal/Markdown"
 import { CellDataType } from "../../../resources/CellDataType";
+import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
+import { ParticularCellBaseInfo } from "./ParticularCellRelationModal/ParticularCellRelationModal";
 
 export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> = (props) => {
 
@@ -28,7 +30,9 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
   const rightClickedCellRef = useRef(null);
   const toast = useToast();
   const [updateTargetCellData, setUpdateTargetCellData] = useState<MarkdownCellBaseInfo>(null);
+  const [relationTargetCellData, setRelationTargetCellData] = useState<ParticularCellBaseInfo>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
+  const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
     const target = event.target as HTMLElement;
@@ -82,6 +86,17 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
       handleClickUpdateRelation: async() => {
         console.log("リレーションの更新");
         //TODO ここ実装する。既にあるリレーションのモーダルの下部分はそのまま使える気がする。上部分を固定値にする感じで。
+        setRelationTargetCellData({
+          columnSpaceId: props.columnData.columnSpaceId,
+          columnId: props.columnData.id,
+          cellId: targetDataset.CellId,
+          type: CellDataType.Markdown,
+          data: {
+            title: target.innerText,
+            text: targetDataset.cellText,
+          }
+        });
+        openParticularCellRelationModal();
       },
       handleMenuWillClose: async () => {
         rightClickedCellRef.current.classList.remove("bg-gray-800");
@@ -94,6 +109,7 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
   return (
     <>
       <div className="flex flex-row">
+        {/* 新規追加フォーム */}
         <Formik
           initialValues={{
             title: '',
@@ -147,7 +163,7 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
         <div className="w-1/2 pb-3 pr-2 pl-10">
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
           {selectedColumn.cells.children.length === 0
-            ? <div>0件</div>
+            ? <div style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
                 dataLength={selectedColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}
@@ -175,6 +191,13 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
         isOpen={isOpenUpdateModal}
         onClose={onCloseUpdateModal}
         cellData={updateTargetCellData}
+      />
+
+      {/* セルリレーション管理モーダル */}
+      <ParticularCellRelationModal
+        isOpen={isOpenParticularCellRelationModal}
+        onClose={onCloseParticularCellRelationModal}
+        cellData={relationTargetCellData}
       />
 
     </>
