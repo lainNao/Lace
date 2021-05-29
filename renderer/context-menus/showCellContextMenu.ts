@@ -27,7 +27,7 @@ export const showCellContextMenu = (event: React.MouseEvent<HTMLElement, MouseEv
     }));
   }
   contextMenu.append(new MenuItem({
-    label: "関連セルの紐付け",
+    label: "リレーション管理",
     click: args.handleClickUpdateRelation,
   }));
   contextMenu.append(new MenuItem({

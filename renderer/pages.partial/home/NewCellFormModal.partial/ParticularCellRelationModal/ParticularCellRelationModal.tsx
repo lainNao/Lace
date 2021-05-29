@@ -23,7 +23,7 @@ export const ParticularCellRelationModal = (props: Props) => {
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="6xl" closeOnEsc={false} closeOnOverlayClick={false} >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>セルのリレーション設定</ModalHeader>
+        <ModalHeader>セルのリレーション</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <div className="flex flex-row">

@@ -170,7 +170,7 @@ export const CellRerationModal: React.FC<Props> = props => {
     <Modal isOpen={props.isOpen} onClose={onCloseModal} size="3xl" closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{props.currentSelectedColumnSpace.name}のセル同士の関連付け</ModalHeader>
+        <ModalHeader>{props.currentSelectedColumnSpace.name}のリレーション</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Formik
