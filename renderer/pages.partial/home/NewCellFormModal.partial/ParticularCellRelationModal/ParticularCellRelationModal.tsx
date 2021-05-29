@@ -20,7 +20,7 @@ type Props = {
 export const ParticularCellRelationModal = (props: Props) => {
 
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose} size="3xl" closeOnEsc={false} closeOnOverlayClick={false} >
+    <Modal isOpen={props.isOpen} onClose={props.onClose} size="6xl" closeOnEsc={false} closeOnOverlayClick={false} >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>セルのリレーション設定</ModalHeader>
