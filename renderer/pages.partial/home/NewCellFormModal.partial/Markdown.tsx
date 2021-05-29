@@ -6,7 +6,6 @@ import { Button, Circle, IconButton, Textarea, useToast, Modal, ModalOverlay, Mo
 import { NewCellFormModalBodyProps } from "../ColumnSpaceExplorer";
 import { AddIcon, HamburgerIcon, ExternalLinkIcon, RepeatIcon, EditIcon } from "@chakra-ui/icons";
 import InfiniteScroll from "react-infinite-scroll-component";
-import specificColumnState from "../../../recoils/selectors/specificColumnState";
 import { useRecoilCallback, useRecoilValue } from "recoil";
 import { MarkdownCellData, TextCellData } from "../../../models/ColumnSpaces/CellData.implemented";
 import { useWindowHeight } from '@react-hook/window-size'
@@ -19,18 +18,21 @@ import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
 import { MarkdownCellBaseInfo, MarkdownCellUpdateModal } from "./UpdateCellModal/Markdown"
 import { CellDataType } from "../../../resources/CellDataType";
 import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
-import { ParticularCellBaseInfo } from "./ParticularCellRelationModal/ParticularCellRelationModal";
+import { Cell } from '../../../models/ColumnSpaces';
+import specificColumnSpaceState from '../../../recoils/selectors/specificColumnSpaceState';
 
 export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> = (props) => {
 
   //TODO 左サイドの下部半分をプレビューに使いたい
 
-  const selectedColumn = useRecoilValue(specificColumnState(props.columnData.id));
+  const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
+  const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);
+
   const windowHeight = useWindowHeight()
   const rightClickedCellRef = useRef(null);
   const toast = useToast();
   const [updateTargetCellData, setUpdateTargetCellData] = useState<MarkdownCellBaseInfo>(null);
-  const [relationTargetCellData, setRelationTargetCellData] = useState<ParticularCellBaseInfo>(null);
+  const [relationTargetCell, setRelationTargetCell] = useState<Cell>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
   const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
 
@@ -43,10 +45,9 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
 
     showCellContextMenu(event, {
       handleClickUpdateCell: async () => {
-        //TODO
         setUpdateTargetCellData({
-          columnSpaceId: props.columnData.columnSpaceId,
-          columnId: props.columnData.id,
+          columnSpaceId: currentColumnSpace.id,
+          columnId: currentColumn.id,
           cellId: targetDataset.CellId,
           type: CellDataType.Markdown,
           data: {
@@ -69,7 +70,7 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
             const croppedValue = (target.innerText.length > 15) ? target.innerText.substring(0, 15)+"..." : target.innerText;
             try {
               // セルの削除
-              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(props.columnData.columnSpaceId, props.columnData.id, targetDataset.cellId);
+              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetDataset.cellId);
               set(columnSpacesState, newColumnSpaces);
               set(relatedCellsState, newRelatedCells);
               toast({ title: `"${croppedValue}"を削除しました`, status: "success", position: "bottom-right", isClosable: true, duration: 1500,})
@@ -84,18 +85,8 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
         });
       },
       handleClickUpdateRelation: async() => {
-        console.log("リレーションの更新");
-        //TODO ここ実装する。既にあるリレーションのモーダルの下部分はそのまま使える気がする。上部分を固定値にする感じで。
-        setRelationTargetCellData({
-          columnSpaceId: props.columnData.columnSpaceId,
-          columnId: props.columnData.id,
-          cellId: targetDataset.CellId,
-          type: CellDataType.Markdown,
-          data: {
-            title: target.innerText,
-            text: targetDataset.cellText,
-          }
-        });
+        const cell = currentColumn.findCell(targetDataset.cellId);
+        setRelationTargetCell(cell);
         openParticularCellRelationModal();
       },
       handleMenuWillClose: async () => {
@@ -103,8 +94,7 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
       }
     });
 
-  }, [])
-
+  }, [props.columnSpaceId, props.columnId])
 
   return (
     <>
@@ -120,7 +110,11 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
               ? value.title.substring(0, 15)+"..."
               : value.title;
 
-            props.onClickCreateNewCell(props.columnData, [value], successMessage+"を追加しました");
+            props.onClickCreateNewCell({
+              columnSpaceId: currentColumnSpace.id,
+              id: currentColumn.id,
+              columnType: currentColumn.type,
+            }, [value], successMessage+"を追加しました");
           }}
           validationSchema={
             yup.object().shape({
@@ -162,16 +156,16 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
         {/* 一覧 */}
         <div className="w-1/2 pb-3 pr-2 pl-10">
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
-          {selectedColumn.cells.children.length === 0
+          {currentColumn.cells.children.length === 0
             ? <div style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
-                dataLength={selectedColumn.cells.children.length}
+                dataLength={currentColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}
                 next={null}
                 hasMore={false}
                 height={windowHeight-260}
               >
-                {selectedColumn.cells.mapChildren((cell, index) => (
+                {currentColumn.cells.mapChildren((cell, index) => (
                   <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-cell-text={(cell.data as MarkdownCellData).text}>
                     <hr/>
                     <div key={cell.id} className="pb-2 pl-1" style={{minHeight: "10px"}}>
@@ -185,20 +179,26 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
 
       </div>
 
-
       {/* 編集モーダル */}
-      <MarkdownCellUpdateModal
-        isOpen={isOpenUpdateModal}
-        onClose={onCloseUpdateModal}
-        cellData={updateTargetCellData}
-      />
+      {updateTargetCellData &&
+        <MarkdownCellUpdateModal
+          isOpen={isOpenUpdateModal}
+          onClose={onCloseUpdateModal}
+          cellData={updateTargetCellData}
+        />
+      }
 
       {/* セルリレーション管理モーダル */}
-      <ParticularCellRelationModal
-        isOpen={isOpenParticularCellRelationModal}
-        onClose={onCloseParticularCellRelationModal}
-        cellData={relationTargetCellData}
-      />
+      {relationTargetCell &&
+        <ParticularCellRelationModal
+          isOpen={isOpenParticularCellRelationModal}
+          onClose={onCloseParticularCellRelationModal}
+          onSubmitRelationForm={props.onSubmitRelationForm}
+          columnSpace={currentColumnSpace}
+          column={currentColumn}
+          cell={relationTargetCell}
+        />
+      }
 
     </>
   )

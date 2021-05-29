@@ -5,7 +5,6 @@ import yup from '../../../modules/yup';
 import { NewCellFormModalBodyProps } from "../ColumnSpaceExplorer";
 import { AddIcon, HamburgerIcon, ExternalLinkIcon, RepeatIcon, EditIcon } from "@chakra-ui/icons";
 import InfiniteScroll from "react-infinite-scroll-component";
-import specificColumnState from "../../../recoils/selectors/specificColumnState";
 import { useRecoilCallback, useRecoilValue } from "recoil";
 import { TextCellData } from "../../../models/ColumnSpaces/CellData.implemented";
 import { useWindowHeight } from '@react-hook/window-size'
@@ -18,23 +17,26 @@ import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
 import { TextCellBaseInfo, TextCellUpdateModal } from "./UpdateCellModal/Text"
 import { CellDataType } from "../../../resources/CellDataType";
 import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
-import { ParticularCellBaseInfo } from "./ParticularCellRelationModal/ParticularCellRelationModal";
+import { Cell } from "../../../models/ColumnSpaces";
+import specificColumnSpaceState from "../../../recoils/selectors/specificColumnSpaceState";
 
 export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (props) => {
 
-  const selectedColumn = useRecoilValue(specificColumnState(props.columnData.id));
+  const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
+  const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);
+
   const newTextInputRef = useRef(null);
   const windowHeight = useWindowHeight()
   const rightClickedCellRef = useRef(null);
   const toast = useToast();
   const [updateTargetCellData, setUpdateTargetCellData] = useState<TextCellBaseInfo>(null);
-  const [relationTargetCellData, setRelationTargetCellData] = useState<ParticularCellBaseInfo>(null);
+  const [relationTargetCell, setRelationTargetCell] = useState<Cell>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
   const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
     const target = event.target as HTMLElement;
-    const targetCellId = target.parentElement.dataset.cellId;
+    const targetDataset = target.parentElement.dataset;
 
     rightClickedCellRef.current = target.parentElement;
     rightClickedCellRef.current.classList.add("bg-gray-800");
@@ -42,9 +44,9 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
     showCellContextMenu(event, {
       handleClickUpdateCell: async () => {
         setUpdateTargetCellData({
-          columnSpaceId: props.columnData.columnSpaceId,
-          columnId: props.columnData.id,
-          cellId: targetCellId,
+          columnSpaceId: currentColumnSpace.id,
+          columnId: currentColumn.id,
+          cellId: targetDataset.cellId,
           type: CellDataType.Text,
           data: {
             text: target.innerText,
@@ -53,16 +55,8 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
         openUpdateModal();
       },
       handleClickUpdateRelation: async() => {
-        console.log("リレーションの更新");
-        setRelationTargetCellData({
-          columnSpaceId: props.columnData.columnSpaceId,
-          columnId: props.columnData.id,
-          cellId: targetCellId,
-          type: CellDataType.Text,
-          data: {
-            text: target.innerText,
-          }
-        });
+        const cell = currentColumn.findCell(targetDataset.cellId);
+        setRelationTargetCell(cell);
         openParticularCellRelationModal();
       },
       handleClickDeleteCell: async () => {
@@ -78,7 +72,7 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
             const croppedValue = (target.innerText.length > 15) ? target.innerText.substring(0, 15)+"..." : target.innerText;
             try {
               // セルの削除
-              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(props.columnData.columnSpaceId, props.columnData.id, targetCellId);
+              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetDataset.cellId);
               set(columnSpacesState, newColumnSpaces);
               set(relatedCellsState, newRelatedCells);
               toast({ title: `"${croppedValue}"を削除しました`, status: "success", position: "bottom-right", isClosable: true, duration: 1500,})
@@ -97,7 +91,7 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
       }
     });
 
-  }, [])
+  }, [props.columnSpaceId, props.columnId])
 
   //TODO サブミットが成功したらテキストエリアを空にしたい　失敗したらそのままにしたい
 
@@ -115,7 +109,11 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
               ? value.text.substring(0, 15)+"..."
               : value.text;
 
-            props.onClickCreateNewCell(props.columnData, [value], successMessage+"を追加しました");
+            props.onClickCreateNewCell({
+              columnSpaceId: currentColumnSpace.id,
+              id: currentColumn.id,
+              columnType: currentColumn.type,
+            }, [value], successMessage+"を追加しました");
             newTextInputRef.current.focus();
           }}
           validationSchema={
@@ -150,16 +148,16 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
         <div className="w-1/2 pb-3 pr-2 pl-10">
 
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
-          {selectedColumn.cells.children.length === 0
+          {currentColumn.cells.children.length === 0
             ? <div style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
-                dataLength={selectedColumn.cells.children.length}
+                dataLength={currentColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}
                 next={null}
                 hasMore={false}
                 height={windowHeight-260}
               >
-                {selectedColumn.cells.mapChildren((cell, index) => (
+                {currentColumn.cells.mapChildren((cell, index) => (
                   <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} >
                     <hr/>
                     <div key={cell.id} className="break-all pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
@@ -173,18 +171,25 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
       </div>
 
       {/* 編集モーダル */}
-      <TextCellUpdateModal
-        isOpen={isOpenUpdateModal}
-        onClose={onCloseUpdateModal}
-        cellData={updateTargetCellData}
-      />
+      {updateTargetCellData &&
+        <TextCellUpdateModal
+          isOpen={isOpenUpdateModal}
+          onClose={onCloseUpdateModal}
+          cellData={updateTargetCellData}
+        />
+      }
 
       {/* セルリレーション管理モーダル */}
-      <ParticularCellRelationModal
-        isOpen={isOpenParticularCellRelationModal}
-        onClose={onCloseParticularCellRelationModal}
-        cellData={relationTargetCellData}
-      />
+      {relationTargetCell &&
+        <ParticularCellRelationModal
+          isOpen={isOpenParticularCellRelationModal}
+          onClose={onCloseParticularCellRelationModal}
+          columnSpace={currentColumnSpace}
+          column={currentColumn}
+          onSubmitRelationForm={props.onSubmitRelationForm}
+          cell={relationTargetCell}
+        />
+      }
 
     </>
 

@@ -32,7 +32,7 @@ export class SoundCellData implements CellData {
     this._basename = path.basename(args.path);
     this._extname = path.extname(args.path);
     this._name = path.basename(this._path, this._extname);
-    this._alias = args.alias;
+    this._alias = args.alias ?? this._name;
   }
 
   static fronJSON(json: FromJsonArgs): CellData {

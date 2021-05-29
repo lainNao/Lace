@@ -4,7 +4,6 @@ import { useDropzone } from 'react-dropzone';
 import { hasCompatibleImageExtension } from "../../../modules/validator";
 import { Button, useToast, useDisclosure } from "@chakra-ui/react"
 import InfiniteScroll from "react-infinite-scroll-component";
-import specificColumnState from "../../../recoils/selectors/specificColumnState";
 import { useRecoilCallback, useRecoilValue } from "recoil";
 import { ImageCellData } from "../../../models/ColumnSpaces/CellData.implemented";
 import { useWindowHeight } from '@react-hook/window-size'
@@ -17,18 +16,21 @@ import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
 import { FileCellBaseInfo, FileRenameModal } from "./UpdateCellModal/FileRename"
 import { CellDataType } from "../../../resources/CellDataType";
 import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
-import { ParticularCellBaseInfo } from "./ParticularCellRelationModal/ParticularCellRelationModal";
+import { Cell, Column } from '../../../models/ColumnSpaces';
+import specificColumnSpaceState from '../../../recoils/selectors/specificColumnSpaceState';
 
 export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (props) => {
 
-  const selectedColumn = useRecoilValue(specificColumnState(props.columnData.id));
+  const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
+  const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);
+
   const windowHeight = useWindowHeight()
   const rightClickedCellRef = useRef(null);
   const [updateTargetCellData, setUpdateTargetCellData] = useState<FileCellBaseInfo>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
   const [paths, setPaths] = useState([]);
   const toast = useToast();
-  const [relationTargetCellData, setRelationTargetCellData] = useState<ParticularCellBaseInfo>(null);
+  const [relationTargetCell, setRelationTargetCell] = useState<Cell>(null);
   const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
@@ -41,8 +43,8 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
     showCellContextMenu(event, {
       handleClickRenameCell: async () => {
         setUpdateTargetCellData({
-          columnSpaceId: props.columnData.columnSpaceId,
-          columnId: props.columnData.id,
+          columnSpaceId: currentColumnSpace.id,
+          columnId: currentColumn.id,
           cellId: targetDataset.cellId,
           type: CellDataType.Image,
           data: {
@@ -66,7 +68,7 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
             try {
               // セルの削除
               // TODO 一個も削除に成功してないときでも例外起きず、成功したことになっているので、そこらへんやっぱどうにかしたほうが良いと思う。例えばtargetCellIdをundefined送っても失敗がわからない
-              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(props.columnData.columnSpaceId, props.columnData.id, targetDataset.cellId);
+              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetDataset.cellId);
               set(columnSpacesState, newColumnSpaces);
               set(relatedCellsState, newRelatedCells);
               toast({ title: `"${croppedValue}"を削除しました`, status: "success", position: "bottom-right", isClosable: true, duration: 1500,})
@@ -81,16 +83,8 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
         });
       },
       handleClickUpdateRelation: async() => {
-        setRelationTargetCellData({
-          columnSpaceId: props.columnData.columnSpaceId,
-          columnId: props.columnData.id,
-          cellId: targetDataset.cellId,
-          type: CellDataType.Image,
-          data: {
-            path: targetDataset.path,
-            alias: targetDataset.name,
-          }
-        });
+        const cell = currentColumn.findCell(targetDataset.cellId);
+        setRelationTargetCell(cell);
         openParticularCellRelationModal();
       },
       handleMenuWillClose: async () => {
@@ -98,7 +92,7 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
       }
     });
 
-  }, [])
+  }, [props.columnSpaceId, props.columnId])
 
   const onDrop = useCallback(acceptedFiles => {
     // 対応する拡張子のみ受け入れる
@@ -123,11 +117,16 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
   const handleSubmit = useCallback((e) => { //TODO 型
     e.preventDefault();
     e.stopPropagation();
-    props.onClickCreateNewCell(props.columnData, paths);
+
+    props.onClickCreateNewCell({
+      columnSpaceId: currentColumnSpace.id,
+      id: currentColumn.id,
+      columnType: currentColumn.type,
+    }, paths);
 
     //TODO 以下、成功したときのみ行いたい
     setPaths([]);
-  }, [paths]);
+  }, [paths, props.columnSpaceId, props.columnId]);
 
   //TODO アップロードしようとしたけどやめたファイルを「☓」ボタンで消せるようにする
 
@@ -162,17 +161,17 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
         <div className="w-1/2 pb-3 pr-2 pl-10">
 
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
-          {selectedColumn.cells.children.length === 0
+          {currentColumn.cells.children.length === 0
             ? <div style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
-                dataLength={selectedColumn.cells.children.length}
+                dataLength={currentColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}
                 next={null}
                 hasMore={false}
                 height={windowHeight-260}
               >
-                {selectedColumn.cells.mapChildren((cell, index) => {
-                  const displayName = (cell.data as ImageCellData).alias ?? (cell.data as ImageCellData).name;
+                {currentColumn.cells.mapChildren((cell, index) => {
+                  const displayName = (cell.data as ImageCellData).alias;
                   return (
                     <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-path={(cell.data as ImageCellData).path} data-name={displayName}>
                       <hr/>
@@ -192,18 +191,25 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
       </div>
 
       {/* リネームモーダル */}
-      <FileRenameModal
-        isOpen={isOpenUpdateModal}
-        onClose={onCloseUpdateModal}
-        cellData={updateTargetCellData}
-      />
+      {updateTargetCellData &&
+        <FileRenameModal
+          isOpen={isOpenUpdateModal}
+          onClose={onCloseUpdateModal}
+          cellData={updateTargetCellData}
+        />
+      }
 
       {/* セルリレーション管理モーダル */}
-      <ParticularCellRelationModal
-        isOpen={isOpenParticularCellRelationModal}
-        onClose={onCloseParticularCellRelationModal}
-        cellData={relationTargetCellData}
-      />
+      {relationTargetCell &&
+        <ParticularCellRelationModal
+          isOpen={isOpenParticularCellRelationModal}
+          onClose={onCloseParticularCellRelationModal}
+          onSubmitRelationForm={props.onSubmitRelationForm}
+          columnSpace={currentColumnSpace}
+          column={currentColumn}
+          cell={relationTargetCell}
+        />
+      }
 
     </>
   )

@@ -28,6 +28,8 @@ import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceI
 import { CellRelationFormData } from '../../pages.partial/home/CellRelationModal';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRelationModalSubmit';
+import { Column, ColumnSpace } from '../../models/ColumnSpaces';
+import { CellDataType } from '../../resources/CellDataType';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -41,7 +43,7 @@ export const useColumnSpaceExplorerController = () => {
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
-  const [selectedColumnDataset, setSelectedColumnDataset] = useState(null);
+  const [cellmanagerModalData, setCellManagerModalData] = useState<{columnSpaceId: string, columnId: string, columnType: CellDataType, columnName: string}>(null);
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
@@ -141,15 +143,23 @@ export const useColumnSpaceExplorerController = () => {
     });
   }, []);
 
-  const handleRightClickOnColumn = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleRightClickOnColumn = useRecoilCallback(({snapshot}) => async(event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムのコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
     const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     setSelectedNodeId(targetDataset.id);
-    setSelectedColumnDataset(targetDataset);
     showColumnContextMenu(event, {
-      handleClickCreateNewCell: () => {
+      handleClickCreateNewCell: async () => {
+        const currentRootColumnSpaces = await snapshot.getPromise(columnSpacesState);
+        const columnSpace = currentRootColumnSpaces.findDescendantColumnSpace(targetDataset.columnSpaceId);
+        const column = currentRootColumnSpaces.findDescendantColumn(targetDataset.id);
+        setCellManagerModalData({
+          columnSpaceId: columnSpace.id,
+          columnId: column.id,
+          columnType: column.type,
+          columnName: column.name,
+        })
         openNewCellFormOpen();
       },
       handleClickRenameColumn: () => {
@@ -620,7 +630,7 @@ export const useColumnSpaceExplorerController = () => {
     currentSelectedColumnSpace,
     expandedColumnSpaces,
     selectedNodeId,
-    selectedColumnDataset,
+    cellmanagerModalData,
     newColumnFormName,
     //モーダル状態
     isNewColumnFormOpen,

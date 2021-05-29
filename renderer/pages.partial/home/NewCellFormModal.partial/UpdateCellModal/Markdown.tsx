@@ -26,6 +26,7 @@ type Props = {
   cellData: MarkdownCellBaseInfo,
 }
 
+//TODO 謎のTextCellBaseInfoみたいな型作らずに、普通にcolumnSpaceId、cellId、cellを分けて入れたほうが良いと思う　リファクタしたからできるはず
 //TODO 下半分をプレビューに使いたい
 export const MarkdownCellUpdateModal = (props: Props) => {
 

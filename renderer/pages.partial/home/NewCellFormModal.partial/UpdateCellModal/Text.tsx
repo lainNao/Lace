@@ -25,6 +25,7 @@ type Props = {
   cellData: TextCellBaseInfo,
 }
 
+//TODO 謎のTextCellBaseInfoみたいな型作らずに、普通にcolumnSpaceId、cellId、cellを分けて入れたほうが良いと思う　リファクタしたからできるはず
 export const TextCellUpdateModal = (props: Props) => {
 
   const setColumnSpace = useSetRecoilState(columnSpacesState);

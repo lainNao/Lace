@@ -32,7 +32,7 @@ export class ImageCellData implements CellData {
     this._basename = path.basename(args.path);
     this._extname = path.extname(args.path).substring(1);
     this._name = path.basename(this._path, this._extname);  //TODO なんかこれ先頭にピリオドついてるっぽいので直す
-    this._alias = args.alias;
+    this._alias = args.alias ?? this._name;
   }
 
   static fronJSON(json: FromJsonArgs): CellData {
