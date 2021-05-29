@@ -94,7 +94,7 @@ export const NewCellFormModalBodySound: React.FC<NewCellFormModalBodyProps> = (p
       }
     });
 
-  }, [props.columnSpaceId, props.columnId])
+  }, [currentColumnSpace, currentColumn])
 
   const onDrop = useCallback(acceptedFiles => {
     // 対応する拡張子
@@ -126,7 +126,7 @@ export const NewCellFormModalBodySound: React.FC<NewCellFormModalBodyProps> = (p
     }, paths);
     //TODO 以下、成功したときのみ行いたい
     setPaths([]);
-  }, [paths, props.columnSpaceId, props.columnId]);
+  }, [paths, currentColumnSpace, currentColumn]);
 
   const onPlayAudio = useCallback(e => {
     const isOtherAudioPlaying = playingAudioElement.current && e.target.dataset.cellId !== playingAudioElement.current.dataset.cellId;
@@ -182,7 +182,7 @@ export const NewCellFormModalBodySound: React.FC<NewCellFormModalBodyProps> = (p
 
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
           {currentColumn.cells.children.length === 0
-            ? <div style={{height: windowHeight-260 +"px"}}>0件</div>
+            ? <div className="outline-none" style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
                 dataLength={currentColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}

@@ -91,7 +91,7 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
       }
     });
 
-  }, [props.columnSpaceId, props.columnId])
+  }, [currentColumnSpace, currentColumn])
 
   //TODO サブミットが成功したらテキストエリアを空にしたい　失敗したらそのままにしたい
 
@@ -149,7 +149,7 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
 
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
           {currentColumn.cells.children.length === 0
-            ? <div style={{height: windowHeight-260 +"px"}}>0件</div>
+            ? <div className="outline-none" style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
                 dataLength={currentColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}

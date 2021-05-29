@@ -94,7 +94,7 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
       }
     });
 
-  }, [props.columnSpaceId, props.columnId])
+  }, [currentColumnSpace, currentColumn])
 
   return (
     <>
@@ -157,7 +157,7 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
         <div className="w-1/2 pb-3 pr-2 pl-10">
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
           {currentColumn.cells.children.length === 0
-            ? <div style={{height: windowHeight-260 +"px"}}>0件</div>
+            ? <div  className="outline-none" style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
                 dataLength={currentColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}
