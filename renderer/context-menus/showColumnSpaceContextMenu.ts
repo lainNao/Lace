@@ -35,7 +35,7 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
     enabled: (args.targetColumnSpaceDataset.hasColumns === "true"),
   }));
   contextMenu.append(new MenuItem({
-    label: "表示形式の管理",
+    label: "表示形式の管理（TODO）",
     click: args.handleClickDisplaySettings,
     enabled: (args.targetColumnSpaceDataset.hasColumns === "true"),
   }));
