@@ -103,7 +103,7 @@ export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (p
 
     if (acceptedFiles.length !== acceptedFilePaths.length) {
       toast({
-        title: "未対応の拡張子のファイルは取り込みませんでした。", //TODO ここ不親切感あるので最終的にどうにかしたい
+        title: "未対応の拡張子のファイルは取り込みませんでした", //TODO ここ不親切感あるので最終的にどうにかしたい
         status: "error",
         position: "bottom-right",
         isClosable: true,
