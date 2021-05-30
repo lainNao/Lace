@@ -19,7 +19,7 @@ export class DisplaySetting {
   private _relatedCellsDisplaySetting: RelatedCellsDisplaySetting;
 
   get id() { return this._id; }
-  get name() { return this._name; }
+  get name() { return this._name.toString(); }
   get sortColumns() { return this._sortColumns; }
   get mainColumn() { return this._mainColumn; }
   get relatedCellsDisplaySetting() { return this._relatedCellsDisplaySetting; }

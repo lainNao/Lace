@@ -35,6 +35,12 @@ export class DisplaySettings {
   }
 
   addDisplaySetting(columnSpaceId: string, displaySetting: DisplaySetting): DisplaySettings {
+
+    // 指定カラムスペースに既存表示設定が無いなら、指定カラムスペースのキー自体も作られてないので、まずキーを作る
+    if (!this._children[columnSpaceId]) {
+      this._children[columnSpaceId] = [];
+    }
+
     this._children[columnSpaceId].push(displaySetting);
     return this;
   }

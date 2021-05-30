@@ -1,35 +1,40 @@
 import React from 'react';
-import {
-  Input,
-  Select,
-  IconButton,
-  Button,
-  RadioGroup,
-  Radio,
-  Stack,
-} from "@chakra-ui/react"
+import { Input, Select, IconButton, Button, RadioGroup, Radio, Stack, useToast } from "@chakra-ui/react"
 import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../../../models/DisplaySettings';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
-import { useRecoilValue } from 'recoil';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
-import { ErrorMessage, Field, FieldArray, Form, Formik } from 'formik';
+import {  Field, FieldArray, Form, Formik } from 'formik';
 import yup from '../../../modules/yup';
-import { RadioButtonGroup } from 'material-ui/RadioButton';
 import { RelatedCellsDisplayType } from '../../../resources/RelatedCellsDisplayType';
 import specificColumnSpaceState from '../../../recoils/selectors/specificColumnSpaceState';
 import { useState } from 'react';
+import displaySettingsState from '../../../recoils/atoms/displaySettingsState';
+import { createDisplaySettingUsecase } from '../../../usecases/createDisplaySettingUsecase';
 
 type Props = {
   displaySettings: DisplaySettings,
 }
 
 const notNullableStringRule = yup.string().min(1).required("必須です").filled("必須です");
+const defaultInitialValues = {
+  name: "",
+  mainColumn: "",
+  sortColumns: [""],
+  relatedCellsDisplaySetting: {
+    type: undefined,
+    typeDetails: undefined,
+  }
+};
+
 
 //TODO 「ソートカラムはメインカラムと違う必要がある」的な仕様が漏れ出してるけどどうすればいいんだろう　仕様クラスとかモデルに入れるとかisValidだとかドメインサービスだとかいろいろあるので考える
 
 export const DisplaySettingAddForm = (props: Props) => {
   const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
   const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));
+  const [initialValues, setInitialValues] = useState(defaultInitialValues);
+  const toast = useToast();
 
   const handleOnChangeMainColumn = (event, setFieldValue, currentTypeDetailsColumnLength?: number) => {  //TODO 型
     setFieldValue("mainColumn", event.target.value);
@@ -50,26 +55,40 @@ export const DisplaySettingAddForm = (props: Props) => {
     }
   }
 
+  const handleSubmitDisplaySettingAddForm = useRecoilCallback(({set}) => async (values) => {
+
+    /// 現在のカラムスペース用の表示設定を一つ追加
+    try {
+      const displaySetting = DisplaySetting.createNewFromJSON(values);
+      const newDisplaySettings = await createDisplaySettingUsecase(currentSelectedColumnSpaceId, displaySetting);
+      set(displaySettingsState, newDisplaySettings);
+      toast({
+        title: "追加しました",
+        status: "success",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 1500,
+      });
+      setInitialValues(defaultInitialValues);
+    } catch (e) {
+      console.log(e.stack);
+      toast({
+        title: e.message,
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 10000,
+      });
+    }
+
+  }, [currentSelectedColumnSpaceId]);
+
   return (
 
     <Formik
       enableReinitialize={true}
-      initialValues={{
-        name: "",
-        mainColumn: "",
-        sortColumns: [""],
-        relatedCellsDisplaySetting: {
-          type: undefined,
-          typeDetails: undefined,
-        }
-      }}
-      onSubmit={async (values) => {
-        const displaySetting = DisplaySetting.createNewFromJSON(values);
-        console.log(displaySetting)
-
-        //TODO 追加処理をする
-        // props.onSubmit(values, props.currentSelectedColumnSpace.id);
-      }}
+      initialValues={initialValues}
+      onSubmit={(values) => handleSubmitDisplaySettingAddForm(values)}
       validationSchema={
         yup.object({
           name: notNullableStringRule,
