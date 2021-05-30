@@ -34,5 +34,25 @@ export class DisplaySettings {
     return this._children;
   }
 
+  addDisplaySetting(columnSpaceId: string, displaySetting: DisplaySetting): DisplaySettings {
+    this._children[columnSpaceId].push(displaySetting);
+    return this;
+  }
+
+  updateDisplaySetting(columnSpaceId: string, displaySetting: DisplaySetting): DisplaySettings {
+    this._children[columnSpaceId] = this._children[columnSpaceId].map(ds => {
+      if (ds.id !== displaySetting.id) {
+        return displaySetting;
+      }
+
+      return ds;
+    });
+    return this;
+  }
+
+  removeDisplaySetting(columnSpaceId: string, displaySettingId): DisplaySettings {
+    this._children[columnSpaceId] = this._children[columnSpaceId].filter(displaySetting => displaySetting.id !== displaySettingId);
+    return this;
+  }
 
 }

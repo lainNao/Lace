@@ -14,6 +14,7 @@ import { Column, ColumnSpace, ColumnSpaces } from '../../models/ColumnSpaces';
 import { NewCellFormModal } from './NewCellFormModal';
 import { newCellFormModalBodyComponents } from "./NewCellFormModal.partial"
 import { CellRerationModal } from './CellRelationModal';
+import { DisplaySettingModal } from './DisplaySettingModal';
 
 type Props = {
   classeName?: string;
@@ -184,6 +185,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       </div>
 
       {/* カラム新規作成モーダル */}
+      {/* TODO これコンポーネントにする */}
       <Modal isOpen={controller.isNewColumnFormOpen} onClose={controller.closeNewColumnForm}>
         <ModalOverlay />
         <ModalContent>
@@ -234,6 +236,15 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
           onSubmit={controller.handleSubmitCellRelationForm}
           currentSelectedColumnSpace={controller.currentSelectedColumnSpace}
           relatedCells={controller.relatedCells}
+        />
+      }
+
+      {/* 表示設定モーダル */}
+      {controller.displaySettings &&
+        <DisplaySettingModal
+          isOpen={controller.isDisplaySettingModalOpen}
+          onClose={controller.closeDisplaySettingModal}
+          displaySettings={controller.displaySettings}
         />
       }
 

@@ -28,8 +28,9 @@ import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceI
 import { CellRelationFormData } from '../../pages.partial/home/CellRelationModal';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRelationModalSubmit';
-import { Column, ColumnSpace } from '../../models/ColumnSpaces';
 import { CellDataType } from '../../resources/CellDataType';
+import { DisplaySetting } from '../../models/DisplaySettings';
+import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -38,8 +39,9 @@ import { CellDataType } from '../../resources/CellDataType';
 //NOTE: 基本的にコントローラーでカラムスペースを扱う時はidだけで扱う。責務的に。
 export const useColumnSpaceExplorerController = () => {
   // メタ状態類
-  const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
+  const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();           //TODO これhome.tsxでやってるからもう不要で、useRecoilStateに変えたほうがいいのでは
   const [relatedCells, setRelatedCells] = useRecoilState(relatedCellsState);
+  const [displaySettings, setDisplaySettings] = useRecoilState(displaySettingsState);
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
@@ -53,6 +55,7 @@ export const useColumnSpaceExplorerController = () => {
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
   const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
   const { isOpen: isCellRelationFormOpen, onOpen: openCellRelationFormOpen, onClose: closeCellRelationForm } = useDisclosure();
+  const { isOpen: isDisplaySettingModalOpen, onOpen: openDisplaySettingModal, onClose: closeDisplaySettingModal } = useDisclosure();
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
@@ -107,8 +110,8 @@ export const useColumnSpaceExplorerController = () => {
         newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
       },
       handleClickDisplaySettings: async () => {
-        //TODO 実装
-        console.log("表示形式を一覧/追加/削除/編集できるモーダルを実装する。セル管理モーダルと難易度は似てると思う。めげないで。諦めないで（真矢）");
+        set(selectedColumnSpaceIdState, targetDataset.id);
+        openDisplaySettingModal();
       },
       handleClickAddChildColumn: async () => {
         setNewColumnFormParentId(targetDataset.id);
@@ -116,7 +119,6 @@ export const useColumnSpaceExplorerController = () => {
         newColumnFormRef.current.elements.namedItem("column-name").focus();
       },
       handleClickRelateCells: async () => {
-        console.log("セル同士の関連付け")
         openCellRelationFormOpen();
       },
       handleClickDeleteColumnSpace: async () => {
@@ -627,6 +629,7 @@ export const useColumnSpaceExplorerController = () => {
     //データ
     columnSpaces,
     relatedCells,
+    displaySettings,
     currentSelectedColumnSpace,
     expandedColumnSpaces,
     selectedNodeId,
@@ -636,6 +639,7 @@ export const useColumnSpaceExplorerController = () => {
     isNewColumnFormOpen,
     isNewCellFormOpen,
     isCellRelationFormOpen,
+    isDisplaySettingModalOpen,
     //ref
     newTopLevelColumnSpaceFormRef,
     newColumnFormRef,
@@ -677,5 +681,6 @@ export const useColumnSpaceExplorerController = () => {
     openNewCellFormOpen,
     closeNewColumnForm,
     closeCellRelationForm,
+    closeDisplaySettingModal,
   }
 }
