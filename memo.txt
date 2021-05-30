@@ -337,47 +337,43 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                         mainColumn: カラムID,
 
                         // 関連セルの表示形式
-                        relatedCellsDisplaySettings: [
-                            {
-                                // 表示形式
-                                type: RelatedCellsDisplayType,      //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
-                                                                    //CustomList（任意の表示。詳しくは、自分の創作技法集の表示に合わせる感じなのでそっち参照。簡単）
+                        relatedCellsDisplaySetting: {
+                            // 表示形式
+                            type: RelatedCellsDisplayType,      //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
+                                                                //CustomList（任意の表示。詳しくは、自分の創作技法集の表示に合わせる感じなのでそっち参照。簡単）
 
-                                // DisplayDetail.CustomList | DisplayDetail.HListSeparator
-                                // type別の詳細設定。現状CustomListの場合とHListSeparatorの場合だけで、それ以外の場合はnull
-                                typeDetails: {
+                            // DisplayDetail.CustomList | DisplayDetail.HListSeparator
+                            // type別の詳細設定。現状CustomListの場合とHListSeparatorの場合だけで、それ以外の場合はnull
+                            typeDetails: {
 
-                                    /* HListSeparatorの場合 */
-                                    separator: "、とかのセパレータ文字"
-
+                                /* HListSeparatorの場合 */
+                                separator: "、とかのセパレータ文字"
 
 
-                                    /* CustomListの場合 */
 
-                                    // タイトル（CustomListじゃない場合、カラム名がタイトルとして使われる）
-                                    title: "曲例、とか",
+                                /* CustomListの場合 */
 
-                                    // カラム達の設定
-                                    columns: [
-                                        {
-                                            columnId: カラムID,
+                                // タイトル（CustomListじゃない場合、カラム名がタイトルとして使われる）
+                                title: "曲例、とか",
 
-                                            prefix: "つけたい前置文字。nullable",
+                                // カラム達の設定
+                                columns: [
+                                    {
+                                        columnId: カラムID,
 
-                                            suffix: "つけたい後置文字。nullable",
+                                        prefix: "つけたい前置文字。nullable",
 
-                                            // このカラムの前に改行かつインデントを入れるか（何言ってるかわからない場合自分の創作技法集の表示参照）
-                                            needBreakLine: 真偽値,
+                                        suffix: "つけたい後置文字。nullable",
 
-                                        },
-                                        ...
-                                    ]
+                                        // このカラムの前に改行かつインデントを入れるか（何言ってるかわからない場合自分の創作技法集の表示参照）
+                                        needBreakLine: 真偽値,
 
-                                }
+                                    },
+                                    ...
+                                ]
 
-                            },
-                            ...
-                        ]
+                            }
+                        },
 
                     },
                     ...
@@ -407,7 +403,7 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                 "sortColumns": [111,222],
                 "mainColumn": "3333",
 
-                "relatedCellsDisplaySettings": [
+                "relatedCellsDisplaySetting": [
                     {
                     "type": "CustomList",
                     "typeDetails": {

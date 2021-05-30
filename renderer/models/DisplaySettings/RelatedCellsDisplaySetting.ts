@@ -16,13 +16,13 @@ export class RelatedCellsDisplaySetting {
   get private() { return this._typeDetails; }
 
   constructor(args: ConstructorArgs) {
-    assert(args.type, "typeが未設定です");
+    assert(args.type !== null || args.type !== undefined, "typeが空です");
 
     this._type = args.type;
     this._typeDetails = args.typeDetails;
   }
 
-  fromJSON(json): RelatedCellsDisplaySetting {
+  static fromJSON(json): RelatedCellsDisplaySetting {
     return new RelatedCellsDisplaySetting({
       type: RelatedCellsDisplayType[json.type],
       typeDetails: DisplayTypeDetailsFactory.create(RelatedCellsDisplayType[json.type], json.typeDetails),

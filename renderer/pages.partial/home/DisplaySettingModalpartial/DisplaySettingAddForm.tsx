@@ -12,7 +12,7 @@ import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../..
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useRecoilValue } from 'recoil';
 import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
-import { Field, FieldArray, Form, Formik } from 'formik';
+import { ErrorMessage, Field, FieldArray, Form, Formik } from 'formik';
 import yup from '../../../modules/yup';
 import { RadioButtonGroup } from 'material-ui/RadioButton';
 import { RelatedCellsDisplayType } from '../../../resources/RelatedCellsDisplayType';
@@ -36,7 +36,7 @@ export const DisplaySettingAddForm = (props: Props) => {
     setFieldValue("sortColumns", [""]);
     if (currentTypeDetailsColumnLength) {
       for (let i=0; i<currentTypeDetailsColumnLength; i++) {
-        setFieldValue(`relatedCellsDisplaySettings.typeDetails.columns.${i}.columnId`, "");
+        setFieldValue(`relatedCellsDisplaySetting.typeDetails.columns.${i}.columnId`, "");
       }
     }
   }
@@ -45,7 +45,7 @@ export const DisplaySettingAddForm = (props: Props) => {
     setFieldValue(`sortColumns.${index}`, event.target.value);
     if (currentTypeDetailsColumnLength) {
       for (let i=0; i<currentTypeDetailsColumnLength; i++) {
-        setFieldValue(`relatedCellsDisplaySettings.typeDetails.columns.${i}.columnId`, "");
+        setFieldValue(`relatedCellsDisplaySetting.typeDetails.columns.${i}.columnId`, "");
       }
     }
   }
@@ -58,27 +58,26 @@ export const DisplaySettingAddForm = (props: Props) => {
         name: "",
         mainColumn: "",
         sortColumns: [""],
-        relatedCellsDisplaySettings: {
-          type: null,
-          typeDetails: null,
+        relatedCellsDisplaySetting: {
+          type: undefined,
+          typeDetails: undefined,
         }
       }}
       onSubmit={async (values) => {
-        console.log("-------------------submit----------------------")
-        console.debug(values)
-        console.log("-----------------------------------------")
-        // TODO ソートカラムのかぶりはじきでエラートースト出すのはここで自前で行うしかないかな
+        const displaySetting = DisplaySetting.createNewFromJSON(values);
+        console.log(displaySetting)
+
+        //TODO 追加処理をする
         // props.onSubmit(values, props.currentSelectedColumnSpace.id);
       }}
       validationSchema={
         yup.object({
           name: notNullableStringRule,
           mainColumn: notNullableStringRule,
-          sortColumns: yup.array(notNullableStringRule).required(),
-          relatedCellsDisplaySettings: yup.object({
+          sortColumns: yup.array(notNullableStringRule).required("必須です").unique("同時に同じものを指定できません"),
+          relatedCellsDisplaySetting: yup.object({
             type: notNullableStringRule,
             typeDetails: yup.object().when("type", type => {
-              console.log(type)
               if (type === "HListSeparator") {
                 return yup.object({
                   separator: yup.string().required("必須です"),
@@ -92,8 +91,21 @@ export const DisplaySettingAddForm = (props: Props) => {
                     prefix: yup.string().nullable(),
                     suffix: yup.string().nullable(),
                     needBreakLine: yup.bool().required("必須です"),
-                  })).min(1).max(DisplaySetting.MAX_SORT_COLUMN_LENGTH).required()
-                });
+                  })).min(1).max(DisplaySetting.MAX_SORT_COLUMN_LENGTH).required().test("is-column-unique", "第nカラムは同時に同じものを指定できません", (value, context) => {
+                    if (!value) {
+                      return false;
+                    }
+
+                    let columnIds = [];
+                    return value.every(column => {
+                      if (columnIds.includes(column.columnId)) {
+                        return false;
+                      }
+                      columnIds.push(column.columnId);
+                      return true;
+                    })
+                  })
+                })
               }
               return yup.object().nullable();
             })
@@ -102,7 +114,6 @@ export const DisplaySettingAddForm = (props: Props) => {
       }
     >
       {(formState) => {
-        console.log(formState.values, formState.touched, formState.errors)
         return (
           <Form>
             {/* 中央 */}
@@ -114,7 +125,7 @@ export const DisplaySettingAddForm = (props: Props) => {
                 <div className="w-1/3">表示名</div>
                 <div className="w-2/3">
                   <Field name="name">
-                    {({field, form, ...props}) => <Input {...field} {...props} spelCheck={false} isInvalid={formState.touched.name && formState.errors.name}/>}
+                    {({field, form, ...props}) => <Input {...field} {...props} spellCheck={false} isInvalid={formState.touched.name && formState.errors.name}/>}
                   </Field>
                 </div>
               </div>
@@ -125,9 +136,14 @@ export const DisplaySettingAddForm = (props: Props) => {
                 <div className="w-2/3">
                   <Field name="mainColumn">
                     {({field, form, ...props}) => (
-                      <Select {...field} {...props} placeholder="選択してください" isInvalid={formState.touched.mainColumn && formState.errors.mainColumn} onChange={e => handleOnChangeMainColumn(e, formState.setFieldValue, formState.values.relatedCellsDisplaySettings.typeDetails?.columns?.length)}>
+                      <Select
+                        {...field} {...props}
+                        placeholder="選択してください"
+                        isInvalid={formState.touched.mainColumn && formState.errors.mainColumn}
+                        onChange={e => handleOnChangeMainColumn(e, formState.setFieldValue, formState.values.relatedCellsDisplaySetting.typeDetails?.columns?.length)}
+                      >
                         {currentSelectedColumnSpace.columns.mapChildren(column => {
-                          return <option value={column.id}>{column.name}</option>
+                          return <option key={column.id} value={column.id}>{column.name}</option>
                         })}
                       </Select>
                     )}
@@ -144,19 +160,32 @@ export const DisplaySettingAddForm = (props: Props) => {
                       <div>
                         {formState.values.sortColumns.length > 0 && formState.values.sortColumns.map((sortColumn, index) => {
                           return (
-                            <div className={`${index !== 0 && "mt-2"}`}>
+                            <div key={index} className={`${index !== 0 && "mt-2"}`}>
                               <Field name={`sortColumns.${index}`} key={index}>
                                 {({field, form, ...props}) => (
-                                  <Select {...field} {...props} placeholder="選択してください" isInvalid={formState.touched.sortColumns?.[index] && formState.errors.sortColumns?.[index]} onChange={e => handleOnChangeSortColumn(e, index, formState.setFieldValue, formState.values.relatedCellsDisplaySettings.typeDetails?.columns?.length)}>
+                                  <Select
+                                    {...field} {...props}
+                                    placeholder="選択してください"
+                                    isInvalid={formState.touched.sortColumns?.[index] && formState.errors.sortColumns?.[index]}
+                                    onChange={e => handleOnChangeSortColumn(e, index, formState.setFieldValue, formState.values.relatedCellsDisplaySetting.typeDetails?.columns?.length)}
+                                  >
                                     {currentSelectedColumnSpace.columns.children
                                       .filter(column => column.id !== formState.values.mainColumn)
-                                      .map(column => <option value={column.id}>{column.name}</option>)}
+                                      .map(column => <option key={column.id} value={column.id}>{column.name}</option>)}
                                   </Select>
                                 )}
                               </Field>
                             </div>
                           )
                         })}
+
+                        {/* エラーメッセージ */}
+                        <div className="flex justify-center">
+                          {(formState.errors.sortColumns &&
+                            typeof formState.errors.sortColumns === "string") &&
+                            <div className="text-red-600">{formState.errors.sortColumns}</div>
+                          }
+                        </div>
 
                         {/* 削除ボタン・追加ボタン */}
                         <div className="mt-2">
@@ -183,10 +212,14 @@ export const DisplaySettingAddForm = (props: Props) => {
               <div className="flex flex-row mt-3">
                 <div className="w-1/3">関連セル表示形式</div>
                 <div className="w-2/3">
-                  <Field name={`relatedCellsDisplaySettings.type`}>
+                  <Field name={`relatedCellsDisplaySetting.type`}>
                     {({field, form, ...props}) => (
-                      <Select {...field} {...props} placeholder="選択してください" isInvalid={formState.touched.relatedCellsDisplaySettings?.type && formState.errors.relatedCellsDisplaySettings?.type}>
-                        {Object.entries(RelatedCellsDisplayType).map(([key, value]) => <option value={value}>{value}</option>)}
+                      <Select
+                        {...field} {...props}
+                        placeholder="選択してください"
+                        isInvalid={formState.touched.relatedCellsDisplaySetting?.type && formState.errors.relatedCellsDisplaySetting?.type}
+                      >
+                        {Object.entries(RelatedCellsDisplayType).map(([key, value]) => <option key={key} value={value}>{value}</option>)}
                       </Select>
                     )}
                   </Field>
@@ -194,16 +227,16 @@ export const DisplaySettingAddForm = (props: Props) => {
               </div>
 
               {/* HListSeparatorの場合 */}
-              {formState.values.relatedCellsDisplaySettings.type === "HListSeparator" &&
+              {formState.values.relatedCellsDisplaySetting.type === "HListSeparator" &&
 
                 // セパレータ
                 <div className="flex flex-row mt-3">
                   <div className="w-1/3">セパレータ</div>
                   <div className="w-2/3">
-                    <Field name={`relatedCellsDisplaySettings.typeDetails.separator`}>
+                    <Field name={`relatedCellsDisplaySetting.typeDetails.separator`}>
                       {({field, form, ...props}) => {
                         return (
-                          <Input {...field} {...props} spelCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySettings?.typeDetails as any)?.separator && (formState.errors.relatedCellsDisplaySettings?.typeDetails as any)?.separator}/>
+                          <Input {...field} {...props} spellCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.separator && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.separator}/>
                         )
                       }}
                     </Field>
@@ -212,25 +245,25 @@ export const DisplaySettingAddForm = (props: Props) => {
               }
 
               {/* CustomListの場合 */}
-              {formState.values.relatedCellsDisplaySettings.type === "CustomList" &&
+              {formState.values.relatedCellsDisplaySetting.type === "CustomList" &&
                 <div>
                   {/* タイトル */}
                   <div className="flex flex-row mt-3">
                     <div className="w-1/3">タイトル</div>
                     <div className="w-2/3">
-                      <Field name="relatedCellsDisplaySettings.typeDetails.title">
-                        {({field, form, ...props}) => <Input {...field} {...props} spelCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySettings?.typeDetails as any)?.title && (formState.errors.relatedCellsDisplaySettings?.typeDetails as any)?.title}/>}
+                      <Field name="relatedCellsDisplaySetting.typeDetails.title">
+                        {({field, form, ...props}) => <Input {...field} {...props} spellCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.title && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.title}/>}
                       </Field>
                     </div>
                   </div>
 
                   <div className="w-1/3 mt-3">表示に含める情報</div>
                   <div className=" ml-5 py-1 mt-2">
-                    <FieldArray name="relatedCellsDisplaySettings.typeDetails.columns">
+                    <FieldArray name="relatedCellsDisplaySetting.typeDetails.columns">
                       {({remove, push}) => {
 
                         // １つ目の入力フォームを出すため、空の初期データを用意してあげる
-                        if (!formState.values.relatedCellsDisplaySettings?.typeDetails?.columns?.length) {
+                        if (!formState.values.relatedCellsDisplaySetting?.typeDetails?.columns?.length) {
                           push({
                             columnId:"",
                             prefix: "",
@@ -242,18 +275,22 @@ export const DisplaySettingAddForm = (props: Props) => {
 
                         return (
                           <div>
-                            {formState.values.relatedCellsDisplaySettings?.typeDetails?.columns?.length
-                             && formState.values.relatedCellsDisplaySettings.typeDetails.columns.map((column, index) => {
+                            {formState.values.relatedCellsDisplaySetting?.typeDetails?.columns?.length
+                             && formState.values.relatedCellsDisplaySetting.typeDetails.columns.map((column, index) => {
                               return (
-                                <div className={`${index !== 0 && "mt-2"}  bg-gray-900 rounded-xl px-4 py-4 pb-5`}>
+                                <div key={index} className={`${index !== 0 && "mt-2"}  bg-gray-900 rounded-xl px-4 py-4 pb-5`}>
 
                                   {/* 第nカラム */}
                                   <div className={`flex flex-row mt-3 `}>
                                     <div className="w-1/3">第{index+1}カラム</div>
                                     <div className="w-2/3">
-                                      <Field name={`relatedCellsDisplaySettings.typeDetails.columns.${index}.columnId`}>
+                                      <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.columnId`}>
                                         {({field, form, ...props}) => (
-                                          <Select {...field} {...props} placeholder="選択してください" isInvalid={(formState.touched.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.columnId && (formState.errors.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.columnId}>
+                                          <Select
+                                            {...field} {...props}
+                                            placeholder="選択してください"
+                                            isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.columnId && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.columnId}
+                                          >
                                             {currentSelectedColumnSpace.columns.children
                                               .filter(column => column.id !== formState.values.mainColumn)
                                               .filter(column => {
@@ -262,7 +299,7 @@ export const DisplaySettingAddForm = (props: Props) => {
                                                 }
                                                 return !formState.values.sortColumns.includes(column.id);
                                               })
-                                              .map(column => <option value={column.id}>{column.name}</option>)
+                                              .map(column => <option key={column.id} value={column.id}>{column.name}</option>)
                                             }
                                           </Select>
                                       )}
@@ -274,8 +311,8 @@ export const DisplaySettingAddForm = (props: Props) => {
                                   <div className="flex flex-row mt-3">
                                     <div className="w-1/3">プレフィクス</div>
                                     <div className="w-2/3">
-                                      <Field name={`relatedCellsDisplaySettings.typeDetails.columns.${index}.prefix`}>
-                                        {({field, form, ...props}) => <Input {...field} {...props} spelCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.prefix && (formState.errors.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.prefix}/>}
+                                      <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.prefix`}>
+                                        {({field, form, ...props}) => <Input {...field} {...props} spellCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.prefix && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.prefix}/>}
                                       </Field>
                                     </div>
                                   </div>
@@ -284,8 +321,8 @@ export const DisplaySettingAddForm = (props: Props) => {
                                   <div className="flex flex-row mt-3">
                                     <div className="w-1/3">サフィックス</div>
                                     <div className="w-2/3">
-                                      <Field name={`relatedCellsDisplaySettings.typeDetails.columns.${index}.suffix`}>
-                                        {({field, form, ...props}) => <Input {...field} {...props} spelCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.suffix && (formState.errors.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.suffix}/>}
+                                      <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.suffix`}>
+                                        {({field, form, ...props}) => <Input {...field} {...props} spellCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.suffix && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.suffix}/>}
                                       </Field>
                                     </div>
                                   </div>
@@ -296,8 +333,8 @@ export const DisplaySettingAddForm = (props: Props) => {
                                     <div className="w-2/3">
                                       <RadioGroup defaultValue="false">
                                         <Stack direction="row">
-                                          <Field name={`relatedCellsDisplaySettings.typeDetails.columns.${index}.needBreakLine`}>{({ field, form, ...props }) => <Radio isInvalid={(formState.touched.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.needBreakLine && (formState.errors.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.needBreakLine} {...field} {...props} value="true">あり</Radio>}</Field>
-                                          <Field name={`relatedCellsDisplaySettings.typeDetails.columns.${index}.needBreakLine`}>{({ field, form, ...props }) => <Radio isInvalid={(formState.touched.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.needBreakLine && (formState.errors.relatedCellsDisplaySettings?.typeDetails as any)?.columns?.[index]?.needBreakLine} {...field} {...props} value="false">なし</Radio>}</Field>
+                                          <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.needBreakLine`}>{({ field, form, ...props }) => <Radio isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.needBreakLine && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.needBreakLine} {...field} {...props} value="true">あり</Radio>}</Field>
+                                          <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.needBreakLine`}>{({ field, form, ...props }) => <Radio isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.needBreakLine && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.needBreakLine} {...field} {...props} value="false">なし</Radio>}</Field>
                                         </Stack>
                                       </RadioGroup>
                                     </div>
@@ -306,15 +343,22 @@ export const DisplaySettingAddForm = (props: Props) => {
                               )
                             })}
 
+                            {/* 表示に含める情報配列のエラー */}
+                            <div className="flex justify-center">
+                              {((formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns &&
+                                typeof (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns === "string") &&
+                                <div className="text-red-600">{(formState.errors.relatedCellsDisplaySetting.typeDetails as any).columns}</div>
+                              }
+                            </div>
 
                             {/* 追加ボタン */}
                             <div className="flex flex-row mt-3 justify-center">
                               <div>
-                                <IconButton disabled={formState.values.relatedCellsDisplaySettings.typeDetails.columns.length <= DisplayDetailCustomList.MIN_COLUMN_LENGTH} aria-label="remove" icon={<MinusIcon />} onClick={() => {
-                                  if (formState.values.relatedCellsDisplaySettings.typeDetails.columns <= DisplayDetailCustomList.MIN_COLUMN_LENGTH) return;
-                                  remove(formState.values.relatedCellsDisplaySettings.typeDetails.columns -1)
+                                <IconButton disabled={formState.values.relatedCellsDisplaySetting.typeDetails.columns.length <= DisplayDetailCustomList.MIN_COLUMN_LENGTH} aria-label="remove" icon={<MinusIcon />} onClick={() => {
+                                  if (formState.values.relatedCellsDisplaySetting.typeDetails.columns <= DisplayDetailCustomList.MIN_COLUMN_LENGTH) return;
+                                  remove(formState.values.relatedCellsDisplaySetting.typeDetails.columns -1)
                                 }} />
-                                <IconButton disabled={DisplayDetailCustomList.isValidColumnLength(formState.values.relatedCellsDisplaySettings.typeDetails.columns.length)} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push({
+                                <IconButton disabled={!DisplayDetailCustomList.isValidColumnLength(formState.values.relatedCellsDisplaySetting.typeDetails.columns.length)} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push({
                                   columnId:"",
                                   prefix: "",
                                   suffix: "",
@@ -333,8 +377,7 @@ export const DisplaySettingAddForm = (props: Props) => {
               }
 
               <div className="text-right mt-6">
-              <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}>確定</Button>
-                {/* <Button type="submit" colorScheme="blue" mr={3} >確定</Button> */}
+                <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}>確定</Button>
               </div>
 
             </div>

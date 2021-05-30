@@ -1,3 +1,4 @@
+import { assert } from "console";
 import { CustomListColumnSetting } from ".";
 import { TrimedFilledString } from "../../value-objects/TrimedFilledString";
 
@@ -12,6 +13,14 @@ export class DisplayDetailCustomList {
   private _columns: CustomListColumnSetting[];
 
   constructor(args: ConstructorArgs) {
+
+    // それぞれ値が入っていること
+    assert(args.title !== null || args.title !== undefined, "タイトルが空です");
+    assert(args.columns !== null || args.columns !== undefined, "カラムが空です");
+
+    // 長さが正しいこと
+    assert(DisplayDetailCustomList.isValidColumnLength(args.columns.length), `${args.title}のカラムの長さに問題があります`)
+
     this._title = args.title;
     this._columns = args.columns;
   }
