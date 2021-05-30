@@ -45,7 +45,7 @@ export const DisplaySettingModal: React.FC<Props> = props => {
 
             {/* 表示設定新規追加フォーム */}
             <div className="w-1/2 pl-4 pb-5">
-              <DisplaySettingAddForm displaySettings={props.displaySettings}/>
+              <DisplaySettingAddForm/>
             </div>
 
             <div style={{width: "2px"}} className="bg-gray-600 mx-3"></div>

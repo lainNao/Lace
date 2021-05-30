@@ -12,28 +12,14 @@ import { useState } from 'react';
 import displaySettingsState from '../../../recoils/atoms/displaySettingsState';
 import { createDisplaySettingUsecase } from '../../../usecases/createDisplaySettingUsecase';
 
-type Props = {
-  displaySettings: DisplaySettings,
-}
-
 const notNullableStringRule = yup.string().min(1).required("必須です").filled("必須です");
-const defaultInitialValues = {
-  name: "",
-  mainColumn: "",
-  sortColumns: [""],
-  relatedCellsDisplaySetting: {
-    type: undefined,
-    typeDetails: undefined,
-  }
-};
 
 
 //TODO 「ソートカラムはメインカラムと違う必要がある」的な仕様が漏れ出してるけどどうすればいいんだろう　仕様クラスとかモデルに入れるとかisValidだとかドメインサービスだとかいろいろあるので考える
-
-export const DisplaySettingAddForm = (props: Props) => {
+//TODO このFormikの警告どうすんだ…「Warning: Cannot update a component (`Formik`) while rendering a different component (`FieldArrayInner`). To locate the bad setState() call inside `FieldArrayInner`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render」
+export const DisplaySettingAddForm = () => {
   const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
   const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));
-  const [initialValues, setInitialValues] = useState(defaultInitialValues);
   const toast = useToast();
 
   const handleOnChangeMainColumn = (event, setFieldValue, currentTypeDetailsColumnLength?: number) => {  //TODO 型
@@ -55,10 +41,11 @@ export const DisplaySettingAddForm = (props: Props) => {
     }
   }
 
-  const handleSubmitDisplaySettingAddForm = useRecoilCallback(({set}) => async (values) => {
+  const handleSubmitDisplaySettingAddForm = useRecoilCallback(({set}) => async (values, {setSubmitting, setErrors, setStatus, resetForm}) => {
 
     /// 現在のカラムスペース用の表示設定を一つ追加
     try {
+      setSubmitting(true);
       const displaySetting = DisplaySetting.createNewFromJSON(values);
       const newDisplaySettings = await createDisplaySettingUsecase(currentSelectedColumnSpaceId, displaySetting);
       set(displaySettingsState, newDisplaySettings);
@@ -69,7 +56,8 @@ export const DisplaySettingAddForm = (props: Props) => {
         isClosable: true,
         duration: 1500,
       });
-      setInitialValues(defaultInitialValues);
+      resetForm();
+      setStatus({success: true})
     } catch (e) {
       console.log(e.stack);
       toast({
@@ -79,6 +67,9 @@ export const DisplaySettingAddForm = (props: Props) => {
         isClosable: true,
         duration: 10000,
       });
+      setStatus({success: false})
+    } finally {
+      setSubmitting(false);
     }
 
   }, [currentSelectedColumnSpaceId]);
@@ -87,8 +78,16 @@ export const DisplaySettingAddForm = (props: Props) => {
 
     <Formik
       enableReinitialize={true}
-      initialValues={initialValues}
-      onSubmit={(values) => handleSubmitDisplaySettingAddForm(values)}
+      initialValues={{
+        name: "",
+        mainColumn: "",
+        sortColumns: [""],
+        relatedCellsDisplaySetting: {
+          type: "",
+          typeDetails: undefined,
+        }
+      }}
+      onSubmit={handleSubmitDisplaySettingAddForm}
       validationSchema={
         yup.object({
           name: notNullableStringRule,
