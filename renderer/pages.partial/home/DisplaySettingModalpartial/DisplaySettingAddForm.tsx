@@ -4,16 +4,14 @@ import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../..
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
-import {  Field, FieldArray, Form, Formik } from 'formik';
+import { Field, FieldArray, Form, Formik } from 'formik';
 import yup from '../../../modules/yup';
 import { RelatedCellsDisplayType } from '../../../resources/RelatedCellsDisplayType';
 import specificColumnSpaceState from '../../../recoils/selectors/specificColumnSpaceState';
-import { useState } from 'react';
 import displaySettingsState from '../../../recoils/atoms/displaySettingsState';
 import { createDisplaySettingUsecase } from '../../../usecases/createDisplaySettingUsecase';
 
 const notNullableStringRule = yup.string().min(1).required("必須です").filled("必須です");
-
 
 //TODO 「ソートカラムはメインカラムと違う必要がある」的な仕様が漏れ出してるけどどうすればいいんだろう　仕様クラスとかモデルに入れるとかisValidだとかドメインサービスだとかいろいろあるので考える
 //TODO このFormikの警告どうすんだ…「Warning: Cannot update a component (`Formik`) while rendering a different component (`FieldArrayInner`). To locate the bad setState() call inside `FieldArrayInner`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render」
