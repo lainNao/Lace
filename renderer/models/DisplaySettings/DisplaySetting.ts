@@ -23,6 +23,9 @@ export class DisplaySetting {
   get mainColumn() { return this._mainColumn; }
   get relatedCellsDisplaySettings() { return this._relatedCellsDisplaySettings; }
 
+  static get MIN_SORT_COLUMN_LENGTH() { return 1; }
+  static get MAX_SORT_COLUMN_LENGTH() { return 5; }
+
   constructor(args: ConstructorArgs) {
     const id = args.id ?? uuidv4();
     //TODO 不変条件
@@ -32,6 +35,10 @@ export class DisplaySetting {
     this._sortColumns = args.sortColumns;
     this._mainColumn = args.mainColumn;
     this._relatedCellsDisplaySettings = args.relatedCellsDisplaySettings;
+  }
+
+  static isValidSortColumnLength(length: number): boolean {
+    return this.MIN_SORT_COLUMN_LENGTH <= length && length <= this.MAX_SORT_COLUMN_LENGTH;
   }
 
   static fromJSON(json): DisplaySetting {

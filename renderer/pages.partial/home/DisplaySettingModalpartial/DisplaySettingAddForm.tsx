@@ -8,7 +8,7 @@ import {
   Radio,
   Stack,
 } from "@chakra-ui/react"
-import {  DisplaySettings } from '../../../models/DisplaySettings';
+import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../../../models/DisplaySettings';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useRecoilValue } from 'recoil';
 import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
@@ -25,10 +25,7 @@ type Props = {
 
 const notNullableStringRule = yup.string().min(1).required("必須です").filled("必須です");
 
-//TODO これモデルとかに移すべきでは　あと全体的に仕様が漏れ出してるなfilterやmapの内容とか　これどう対処するのがベターなのか後で考える　たぶんモデルでの対処法あるはず
-//TODO このMAXあたりは単にモデルにstaticで値持たせればいいのかなとは思う　「ソートカラムはメインカラムと違う必要がある」的な仕様はどうすればいいんだろう　仕様クラスとかモデルに入れるとかisValidだとかドメインサービスだとかいろいろあるので考える
-const MAX_SORT_COLUMN_LENGTH = 5;
-const MAX_TYPEDETAIL_COLUMN_LENGTH = 99;
+//TODO 「ソートカラムはメインカラムと違う必要がある」的な仕様が漏れ出してるけどどうすればいいんだろう　仕様クラスとかモデルに入れるとかisValidだとかドメインサービスだとかいろいろあるので考える
 
 export const DisplaySettingAddForm = (props: Props) => {
   const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
@@ -95,7 +92,7 @@ export const DisplaySettingAddForm = (props: Props) => {
                     prefix: yup.string().nullable(),
                     suffix: yup.string().nullable(),
                     needBreakLine: yup.bool().required("必須です"),
-                  })).min(1).max(MAX_SORT_COLUMN_LENGTH).required()
+                  })).min(1).max(DisplaySetting.MAX_SORT_COLUMN_LENGTH).required()
                 });
               }
               return yup.object().nullable();
@@ -163,11 +160,11 @@ export const DisplaySettingAddForm = (props: Props) => {
 
                         {/* 削除ボタン・追加ボタン */}
                         <div className="mt-2">
-                          <IconButton disabled={formState.values.sortColumns.length <= 1} aria-label="remove" icon={<MinusIcon />} onClick={() => {
-                            if (formState.values.sortColumns.length <= 1) return;
+                          <IconButton disabled={formState.values.sortColumns.length <= DisplaySetting.MIN_SORT_COLUMN_LENGTH} aria-label="remove" icon={<MinusIcon />} onClick={() => {
+                            if (formState.values.sortColumns.length <= DisplaySetting.MIN_SORT_COLUMN_LENGTH) return;
                             remove(formState.values.sortColumns.length-1)
                           }} />
-                          <IconButton disabled={formState.values.sortColumns.length >= MAX_SORT_COLUMN_LENGTH} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push("")} />
+                          <IconButton disabled={!DisplaySetting.isValidSortColumnLength(formState.values.sortColumns.length)} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push("")} />
                         </div>
 
                       </div>
@@ -204,7 +201,11 @@ export const DisplaySettingAddForm = (props: Props) => {
                   <div className="w-1/3">セパレータ</div>
                   <div className="w-2/3">
                     <Field name={`relatedCellsDisplaySettings.typeDetails.separator`}>
-                      {({field, form, ...props}) => <Input {...field} {...props} spelCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySettings.typeDetails as any).separator && (formState.errors.relatedCellsDisplaySettings.typeDetails as any).separator}/>}
+                      {({field, form, ...props}) => {
+                        return (
+                          <Input {...field} {...props} spelCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySettings?.typeDetails as any)?.separator && (formState.errors.relatedCellsDisplaySettings?.typeDetails as any)?.separator}/>
+                        )
+                      }}
                     </Field>
                   </div>
                 </div>
@@ -309,11 +310,11 @@ export const DisplaySettingAddForm = (props: Props) => {
                             {/* 追加ボタン */}
                             <div className="flex flex-row mt-3 justify-center">
                               <div>
-                                <IconButton disabled={formState.values.relatedCellsDisplaySettings.typeDetails.columns.length <= 1} aria-label="remove" icon={<MinusIcon />} onClick={() => {
-                                  if (formState.values.relatedCellsDisplaySettings.typeDetails.columns <= 1) return;
+                                <IconButton disabled={formState.values.relatedCellsDisplaySettings.typeDetails.columns.length <= DisplayDetailCustomList.MIN_COLUMN_LENGTH} aria-label="remove" icon={<MinusIcon />} onClick={() => {
+                                  if (formState.values.relatedCellsDisplaySettings.typeDetails.columns <= DisplayDetailCustomList.MIN_COLUMN_LENGTH) return;
                                   remove(formState.values.relatedCellsDisplaySettings.typeDetails.columns -1)
                                 }} />
-                                <IconButton disabled={formState.values.relatedCellsDisplaySettings.typeDetails.columns.length >= MAX_TYPEDETAIL_COLUMN_LENGTH} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push({
+                                <IconButton disabled={DisplayDetailCustomList.isValidColumnLength(formState.values.relatedCellsDisplaySettings.typeDetails.columns.length)} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push({
                                   columnId:"",
                                   prefix: "",
                                   suffix: "",
