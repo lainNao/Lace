@@ -1,18 +1,6 @@
 import React from 'react';
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  Input,
-  Select,
-  IconButton,
-  Button,
-} from "@chakra-ui/react"
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton } from "@chakra-ui/react"
 import {  DisplaySettings } from '../../models/DisplaySettings';
-import { AddIcon } from '@chakra-ui/icons';
 import { useRecoilValue } from 'recoil';
 import selectedColumnSpaceIdState from '../../recoils/atoms/selectedColumnSpaceIdState';
 import { useWindowHeight } from '@react-hook/window-size';

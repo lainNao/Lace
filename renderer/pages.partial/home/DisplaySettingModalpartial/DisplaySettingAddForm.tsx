@@ -85,7 +85,7 @@ export const DisplaySettingAddForm = () => {
           typeDetails: undefined,
         }
       }}
-      onSubmit={handleSubmitDisplaySettingAddForm}
+      onSubmit={(values, {setSubmitting, setErrors, setStatus, resetForm}) => handleSubmitDisplaySettingAddForm(values, {setSubmitting, setErrors, setStatus, resetForm})}
       validationSchema={
         yup.object({
           name: notNullableStringRule,
