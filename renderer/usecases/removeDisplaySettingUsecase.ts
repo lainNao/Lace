@@ -6,5 +6,4 @@ export const removeDisplaySettingUsecase = async(columnSpaceId: string, displayS
   const displaySettings = await displaySettingsRepository.read();
   const newDisplaySettings = displaySettings.removeDisplaySettingOfSpecificDisplaySettingId(columnSpaceId, displaySettingId);
   return await displaySettingsRepository.save(newDisplaySettings);
-
 }

@@ -2,8 +2,10 @@ import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesReposito
 import { ColumnSpaces } from "../models/ColumnSpaces";
 import { RelatedCells } from "../models/RelatedCells";
 import { RelatedCellsRepositoryJson } from "../repositories/RelatedCellsRepositoryJson";
+import { DisplaySettingsRepositoryJson } from "../repositories/DisplaySettingsRepositoryJson";
+import { DisplaySettings } from "../models/DisplaySettings";
 
-export const removeColumnUsecase = async(columnSpaceId: string, columnId: string): Promise<[ColumnSpaces, RelatedCells]> => {
+export const removeColumnUsecase = async(columnSpaceId: string, columnId: string): Promise<[ColumnSpaces, RelatedCells, DisplaySettings]> => {
   // カラム削除
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
@@ -16,7 +18,11 @@ export const removeColumnUsecase = async(columnSpaceId: string, columnId: string
   const newRelatedCells = relatedCells.removeRelationOfColumn(columnSpaceId, columnId);
   await relatedCellRepository.save(newRelatedCells);
 
-  // TODO 後々一緒に関連する表示設定も消す必要あると思う。ただしこれは大変になるかもな。中間に設定してたカラムが削除されたら、その配下のを上に上げることになるのかな
+  // 関連表示設定削除
+  const displaySettingsRepository = new DisplaySettingsRepositoryJson();
+  const displaySettings = await displaySettingsRepository.read();
+  const newDisplaySettings = displaySettings.removeSpecificColumnAssociatedItem(columnSpaceId, columnId);
+  await displaySettingsRepository.save(newDisplaySettings);
 
-  return [newRootColumnSpaces, newRelatedCells];
+  return [newRootColumnSpaces, newRelatedCells, newDisplaySettings];
 }

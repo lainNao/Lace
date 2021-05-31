@@ -86,4 +86,43 @@ export class DisplaySettings {
     return new DisplaySettings(this);
   }
 
+  /*
+   * 指定カラムスペースの指定カラムに関わる表示設定をいい感じに削除
+   *
+   * 消す対象
+   *  同じカラムスペース内の全設定を走査して以下を探して消す
+   *  ・mainColumnと指定のカラムIDかぶるものは、表示設定ごと消す
+   *  ・sortColumnsで消すIDあるものはそこから消す
+   *  ・relatedCellsDisplaySetting.typeDetails.columns[n].columnIdが消したやつと同じものがあればその配列から消す（relatedCellsDisplaySetting.typeがCustomListの場合のみ）
+   */
+  //TODO テストちゃんとする
+  removeSpecificColumnAssociatedItem(columnSpaceId: string, columnId: string): DisplaySettings {
+
+    // 指定カラムスペースに既存表示設定が無いなら、指定カラムスペースのキー自体も作られてないので、まずキーを作る
+    if (!this._children[columnSpaceId]) {
+      this._children[columnSpaceId] = [];
+    }
+
+    this._children[columnSpaceId].forEach((displaySetting, index)=> {
+      // メインカラムが消すカラムになってるならその設定ごと消す
+      if (displaySetting.mainColumn === columnId) {
+        this._children[columnSpaceId].splice(index, 1);
+        return;
+      }
+
+      // もしソートカラムの長さが1で、その中の値が指定のカラムなら、不変条件が成り立たなくて面倒なのでいっそその設定ごと消す
+      if (displaySetting.sortColumns.length === 1 && displaySetting.sortColumns[0] === columnId) {
+        this._children[columnSpaceId].splice(index, 1);
+        return;
+      }
+    })
+
+    // 他消す
+    this._children[columnSpaceId].forEach((displaySetting, index)=> {
+      this._children[columnSpaceId][index] = displaySetting.removeSpecificColumnAssociatedItem(columnId);
+    })
+
+    return new DisplaySettings(this);
+  }
+
 }

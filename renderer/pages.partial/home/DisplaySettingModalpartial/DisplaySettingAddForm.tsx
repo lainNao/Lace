@@ -47,24 +47,12 @@ export const DisplaySettingAddForm = () => {
       const displaySetting = DisplaySetting.createNewFromJSON(values);
       const newDisplaySettings = await createDisplaySettingUsecase(currentSelectedColumnSpaceId, displaySetting);
       set(displaySettingsState, newDisplaySettings);
-      toast({
-        title: "追加しました",
-        status: "success",
-        position: "bottom-right",
-        isClosable: true,
-        duration: 1500,
-      });
+      toast({ title: "追加しました", status: "success", position: "bottom-right", isClosable: true, duration: 1500 });
       resetForm();
       setStatus({success: true})
     } catch (e) {
       console.log(e.stack);
-      toast({
-        title: e.message,
-        status: "error",
-        position: "bottom-right",
-        isClosable: true,
-        duration: 10000,
-      });
+      toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000});
       setStatus({success: false})
     } finally {
       setSubmitting(false);

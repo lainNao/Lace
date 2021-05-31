@@ -85,7 +85,6 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
       const newDisplaySettings = await updateDisplaySettingUsecase(currentSelectedColumnSpaceId, displaySetting);
       set(displaySettingsState, newDisplaySettings);
       toast({ title: "更新しました", status: "success", position: "bottom-right", isClosable: true, duration: 1500 });
-      resetForm();
       setStatus({success: true})
       props.onClose();
     } catch (e) {

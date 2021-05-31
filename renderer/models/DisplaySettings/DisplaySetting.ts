@@ -84,4 +84,21 @@ export class DisplaySetting {
     }
   }
 
+  removeSpecificColumnAssociatedItem(columnId: string): DisplaySetting {
+
+    // ソートカラムから対象カラムを削除
+    this._sortColumns = this._sortColumns.filter(sortColumn => sortColumn !== columnId);
+
+    // CustomListの場合そこで使うカラムを使ってるものは消す
+    this._relatedCellsDisplaySetting = this._relatedCellsDisplaySetting.removeSpecificColumnAssociatedItem(columnId);
+
+    return new DisplaySetting({
+      id: this._id,
+      name: this._name,
+      sortColumns: this._sortColumns,
+      mainColumn: this._mainColumn,
+      relatedCellsDisplaySetting: this._relatedCellsDisplaySetting,
+    });
+  }
+
 }

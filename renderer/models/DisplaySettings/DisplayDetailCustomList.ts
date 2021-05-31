@@ -51,4 +51,15 @@ export class DisplayDetailCustomList {
     }
   }
 
+
+  removeSpecificColumnAssociatedItem(columnId: string): DisplayDetailCustomList {
+
+    this._columns = this._columns.filter(column => column.columnId !== columnId)
+
+    return new DisplayDetailCustomList({
+      title: this._title,
+      columns: this._columns,
+    });
+  }
+
 }

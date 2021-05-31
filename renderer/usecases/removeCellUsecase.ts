@@ -3,7 +3,6 @@ import { ColumnSpaces } from "../models/ColumnSpaces";
 import { RelatedCells } from "../models/RelatedCells";
 import { RelatedCellsRepositoryJson } from "../repositories/RelatedCellsRepositoryJson";
 
-// TODO ちゃんと動作確認したいところ
 export const removeCellUsecase = async(columnSpaceId: string, columnId: string, cellId: string): Promise<[ColumnSpaces, RelatedCells]> => {
   // カラム削除
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();

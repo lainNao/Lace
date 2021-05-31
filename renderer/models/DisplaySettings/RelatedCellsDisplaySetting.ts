@@ -37,4 +37,16 @@ export class RelatedCellsDisplaySetting {
     }
   }
 
+  removeSpecificColumnAssociatedItem(columnId: string): RelatedCellsDisplaySetting {
+
+    if (this._type === RelatedCellsDisplayType.CustomList) {
+      this._typeDetails = (this._typeDetails as DisplayDetailCustomList).removeSpecificColumnAssociatedItem(columnId);
+    }
+
+    return new RelatedCellsDisplaySetting({
+      type: this._type,
+      typeDetails: this._typeDetails,
+    });
+  }
+
 }

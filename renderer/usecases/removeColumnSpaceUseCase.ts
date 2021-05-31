@@ -2,8 +2,10 @@ import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesReposito
 import { ColumnSpaces } from "../models/ColumnSpaces";
 import { RelatedCells } from "../models/RelatedCells";
 import { RelatedCellsRepositoryJson } from "../repositories/RelatedCellsRepositoryJson";
+import { DisplaySettingsRepositoryJson } from "../repositories/DisplaySettingsRepositoryJson";
+import { DisplaySettings } from "../models/DisplaySettings";
 
-export const removeColumnSpaceUsecase = async(columnSpaceId: string): Promise<[ColumnSpaces, RelatedCells]> => {
+export const removeColumnSpaceUsecase = async(columnSpaceId: string): Promise<[ColumnSpaces, RelatedCells, DisplaySettings]> => {
   //TODO トランザクション的なことしたいところ
 
   // カラムスペース削除
@@ -18,7 +20,11 @@ export const removeColumnSpaceUsecase = async(columnSpaceId: string): Promise<[C
   const newRelatedCells = relatedCells.removeRelationOfColumnSpace(columnSpaceId);
   await relatedCellRepository.save(newRelatedCells);
 
-  // TODO 後々一緒に表示設定も消す必要あると思う
+  // 表示設定削除
+  const displaySettingsRepository = new DisplaySettingsRepositoryJson();
+  const displaySettings = await displaySettingsRepository.read();
+  const newDisplaySettings = displaySettings.removeDisplaySettingOfSpecificColumnSpaceId(columnSpaceId);
+  await displaySettingsRepository.save(newDisplaySettings);
 
-  return [newRootColumnSpaces, newRelatedCells];
+  return [newRootColumnSpaces, newRelatedCells, newDisplaySettings];
 }

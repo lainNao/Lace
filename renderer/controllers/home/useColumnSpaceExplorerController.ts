@@ -131,9 +131,10 @@ export const useColumnSpaceExplorerController = () => {
         }).then(async (res) => {
           if (res.response === 1) { //「はい」を選択した時
             try {
-              const [newColumnSpaces, newRelatedCells] = await removeColumnSpaceUsecase(targetDataset.id);
+              const [newColumnSpaces, newRelatedCells, newDisplaySettings] = await removeColumnSpaceUsecase(targetDataset.id);
               setColumnSpaces(newColumnSpaces);
               setRelatedCells(newRelatedCells);
+              setDisplaySettings(newDisplaySettings);
             } catch (e) {
               console.log(e.stack);
               toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
@@ -180,9 +181,10 @@ export const useColumnSpaceExplorerController = () => {
         }).then(async (res) => {
           if (res.response === 1) { //「はい」を選択した時
             try {
-              const [newColumnSpaces, newRelatedCells] = await removeColumnUsecase(targetDataset.columnSpaceId, targetDataset.id);
+              const [newColumnSpaces, newRelatedCells, newDisplaySettings] = await removeColumnUsecase(targetDataset.columnSpaceId, targetDataset.id);
               setColumnSpaces(newColumnSpaces);
               setRelatedCells(newRelatedCells);
+              setDisplaySettings(newDisplaySettings);
             } catch (e) {
               console.log(e.stack);
               toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
