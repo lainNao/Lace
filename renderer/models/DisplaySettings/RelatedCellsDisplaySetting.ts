@@ -1,16 +1,17 @@
 import { assert } from "console";
+import { DisplayDetailCustomList, DisplayDetailHListSeparator } from ".";
 import { DisplayTypeDetailsFactory } from "../../factories/DisplayTypeDetailsFactory";
 import { RelatedCellsDisplayType } from "../../resources/RelatedCellsDisplayType";
 
 interface ConstructorArgs {
   type: RelatedCellsDisplayType,
-  typeDetails: any,
+  typeDetails: DisplayDetailCustomList | DisplayDetailHListSeparator,
 }
 
 export class RelatedCellsDisplaySetting {
 
   private _type: RelatedCellsDisplayType;
-  private _typeDetails: any;    //上のenumによって違うモデルを入れる;
+  private _typeDetails: DisplayDetailCustomList | DisplayDetailHListSeparator;
 
   get type() { return this._type; }
   get private() { return this._typeDetails; }

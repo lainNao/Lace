@@ -1,3 +1,4 @@
+import assert from "assert";
 import { DisplaySetting } from ".";
 
 type ColumnSpacesHasArray = {
@@ -15,14 +16,28 @@ export class DisplaySettings {
   get children() { return this._children; }
 
   constructor(args: ConstructorArgs) {
+
+    // カラムスペース配下のidにかぶりが無いこと
+    DisplaySettings.isChildrenUnique(args.children);
+
     this._children = (args == null) ? {} : args.children;
+  }
+
+  static isChildrenUnique(children: ColumnSpacesHasArray | []) {
+    Object.keys(children).forEach(columnSpaceId => {
+      const ids = [];
+      children[columnSpaceId].forEach(displaySetting => {
+        ids.push(displaySetting.id);
+      });
+      assert.ok(children[columnSpaceId].length === new Set(ids).size, `${columnSpaceId}のDisplaySettingのidが重複しています`);
+    })
   }
 
   static fromJSON(json) {
     const children = {};
     for (let [columnSpaceId, displaySettings] of Object.entries<[]>(json)) {
       children[columnSpaceId] = [];
-      children[columnSpaceId] = displaySettings.map(displaySetting => DisplaySetting.fromJSON(displaySetting));
+      children[columnSpaceId] = displaySettings.map(displaySetting =>  DisplaySetting.fromJSON(displaySetting));
     }
 
     return new DisplaySettings({
@@ -43,31 +58,32 @@ export class DisplaySettings {
     }
 
     this._children[columnSpaceId].push(displaySetting);
-    return this;
+    return new DisplaySettings(this);
   }
 
   // 指定カラムスペース、指定表示設定をIDで探して更新
   updateDisplaySetting(columnSpaceId: string, displaySetting: DisplaySetting): DisplaySettings {
     this._children[columnSpaceId] = this._children[columnSpaceId].map(ds => {
-      if (ds.id !== displaySetting.id) {
+      if (ds.id === displaySetting.id) {
         return displaySetting;
       }
 
       return ds;
     });
-    return this;
+
+    return new DisplaySettings(this);
   }
 
   // 指定カラムスペース、表示設定IDの表示設定を削除
   removeDisplaySettingOfSpecificDisplaySettingId(columnSpaceId: string, displaySettingId): DisplaySettings {
     this._children[columnSpaceId] = this._children[columnSpaceId].filter(displaySetting => displaySetting.id !== displaySettingId);
-    return this;
+    return new DisplaySettings(this);
   }
 
   // 指定カラムスペースの表示設定を全て削除
   removeDisplaySettingOfSpecificColumnSpaceId(columnSpaceId: string): DisplaySettings {
     delete this._children[columnSpaceId];
-    return this;
+    return new DisplaySettings(this);
   }
 
 }

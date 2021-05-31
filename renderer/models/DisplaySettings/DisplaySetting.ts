@@ -60,7 +60,7 @@ export class DisplaySetting {
   }
 
   static createNewFromJSON(json): DisplaySetting {
-    json.id = uuidv4();
+    json.id = json.id ?? uuidv4();
     return DisplaySetting.fromJSON(json);
   }
 
@@ -77,7 +77,7 @@ export class DisplaySetting {
   toJSON() {
     return {
       id: this._id,
-      name: this._name,
+      name: this._name.toString(),
       sortColumns: this._sortColumns,
       mainColumn: this._mainColumn,
       relatedCellsDisplaySetting: this._relatedCellsDisplaySetting,
