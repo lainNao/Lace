@@ -28,7 +28,6 @@ export const DisplaySettingModal: React.FC<Props> = props => {
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
 
   const handleOnDisplaySettingContextMenu = useRecoilCallback(({set, snapshot}) => async(event: React.MouseEvent<HTMLElement> ) => {
-    //TODO 右クリメニュー（編集、削除）
     const target = event.target as HTMLElement;
     const targetDataset = target.parentElement.dataset;
 

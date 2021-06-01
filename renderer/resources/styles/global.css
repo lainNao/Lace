@@ -12,7 +12,6 @@ body {
   @apply bg-gray-900 text-white ;
 }
 
-
 /* Start purging... */
 @tailwind utilities;
 /* Stop purging. */
@@ -27,5 +26,4 @@ button {
 
 /* Your own custom utilities */
 @import url("./_scrollbar.css");
-@import url("./_layout.css");
 

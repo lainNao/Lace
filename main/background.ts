@@ -6,6 +6,11 @@ const darkBackgroundColor = 'black';
 const lightBackgroundColor = 'white';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+}
 
 if (isProd) {
   serve({ directory: 'app' });
