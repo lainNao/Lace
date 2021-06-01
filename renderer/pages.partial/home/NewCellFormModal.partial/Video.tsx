@@ -186,7 +186,7 @@ export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (p
                   return (
                     <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-path={(cell.data as VideoCellData).path} data-name={displayName}>
                       <hr/>
-                      <div key={cell.id} className="break-all pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as VideoCellData).path} data-cell-id={cell.id} data-name={displayName}>
+                      <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as VideoCellData).path} data-cell-id={cell.id} data-name={displayName}>
                         {/* TODO ここ、折りたたみも可能にしたほうがいいかも */}
                         <div>{displayName}</div>
                         <video src={(cell.data as VideoCellData).path} controls className="outline-none"/>

@@ -168,7 +168,7 @@ export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> =
                 {currentColumn.cells.mapChildren((cell, index) => (
                   <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-cell-text={(cell.data as MarkdownCellData).text}>
                     <hr/>
-                    <div key={cell.id} className="pb-2 pl-1" style={{minHeight: "10px"}}>
+                    <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
                       {(cell.data as MarkdownCellData).title}
                     </div>
                   </div>

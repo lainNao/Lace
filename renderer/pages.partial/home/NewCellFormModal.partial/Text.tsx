@@ -160,7 +160,7 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
                 {currentColumn.cells.mapChildren((cell, index) => (
                   <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} >
                     <hr/>
-                    <div key={cell.id} className="break-all pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
+                    <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
                       {(cell.data as TextCellData).text}
                     </div>
                   </div>

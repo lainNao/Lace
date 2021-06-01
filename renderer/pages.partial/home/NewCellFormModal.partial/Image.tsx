@@ -175,7 +175,7 @@ export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (p
                   return (
                     <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-path={(cell.data as ImageCellData).path} data-name={displayName}>
                       <hr/>
-                      <div key={cell.id} className="break-all pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as ImageCellData).path} data-cell-id={cell.id} data-name={displayName}>
+                      <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as ImageCellData).path} data-cell-id={cell.id} data-name={displayName}>
                         {/* TODO ここ、折りたたみも可能にしたほうがいいかも */}
                         {/* TODO 画像はクリックで拡大表示したいところ… */}
                         <div>{displayName}</div>

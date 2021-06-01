@@ -8,12 +8,10 @@
 
 html,
 body {
-  @apply bg-gray-900 text-white h-screen;
+  font-size: small;
+  @apply bg-gray-900 text-white ;
 }
 
-#__next {
-  @apply h-screen;
-}
 
 /* Start purging... */
 @tailwind utilities;

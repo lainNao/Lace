@@ -1,6 +1,9 @@
-import { app } from 'electron';
+import { app, nativeTheme } from 'electron';
 import serve from 'electron-serve';
 import { createWindow, registerIpc, registerEvents, registerMenus } from './helpers';
+
+const darkBackgroundColor = 'black';
+const lightBackgroundColor = 'white';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 
@@ -15,8 +18,12 @@ if (isProd) {
 
   const mainWindow = createWindow('main', {
     width: 1000,
+    minWidth: 1000,
     height: 600,
+    minHeight: 500,
     frame: false,
+    show: false,
+    backgroundColor: nativeTheme.shouldUseDarkColors ? darkBackgroundColor : lightBackgroundColor,
     webPreferences: {
       contextIsolation: false,  //レンダラープロセスでnode.jsのAPIを使いたかった
       nodeIntegration: true,    //レンダラープロセスでnode.jsのAPIを使いたかった
@@ -26,6 +33,10 @@ if (isProd) {
 
     // transparent: true,
     // resizable: false,
+  });
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
   });
 
   if (isProd) {

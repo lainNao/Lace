@@ -5,7 +5,6 @@ import { Cell } from "../models/ColumnSpaces";
 import { CellData } from "../models/ColumnSpaces/CellData";
 import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../models/ColumnSpaces/CellData.implemented";
 
-
 export enum CellDataType {
   // text
   Text = "Text",
