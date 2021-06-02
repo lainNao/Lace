@@ -87,6 +87,7 @@ export const RelationTargetForm = (props: Props) => {
 
   }, [rootRelatedCells]);
 
+  // カラムIDリセット
   useEffect(() => {
     return () => {
       setToClumnId(null);

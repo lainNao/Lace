@@ -9,7 +9,6 @@ import { showColumnSpaceContextMenu } from '../../context-menus/showColumnSpaceC
 import { showEmptySpaceContextMenu } from '../../context-menus/showEmptySpaceContextMenu';
 import { remote } from "electron"
 import { removeColumnSpaceUsecase } from '../../usecases/removeColumnSpaceUsecase';
-import useSetupSettings from '../../hooks/useSetupSettings';
 import { createDescendantColumnSpaceUsecase } from '../../usecases/createDescendantColumnSpaceUsecase';
 import { TrimedFilledString } from '../../value-objects/TrimedFilledString';
 import { createColumnUsecase } from '../../usecases/createColumnUsecase';
@@ -28,6 +27,7 @@ import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRelationModalSubmit';
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import { CellManagerModalDataType } from '../../pages.partial/home/ColumnSpaceExplorer.partial/CellManagerModal';
+import useExpandedColumnSpaces from '../../hooks/useExpandedColumnSpaces';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -39,8 +39,8 @@ export const useColumnSpaceExplorerController = () => {
   const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
   const [relatedCells, setRelatedCells] = useRecoilState(relatedCellsState);
   const [displaySettings, setDisplaySettings] = useRecoilState(displaySettingsState);
+  const [expandedColumnSpaces, setExpandedColumnSpaces] = useExpandedColumnSpaces();
   // UI状態類
-  const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
   const [cellmanagerModalData, setCellManagerModalData] = useState<CellManagerModalDataType>(null);
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import useSetupColumnSpaces from '../../hooks/useSetupColumnSpaces';
 import useSetupDisplaySettings from '../../hooks/useSetupDisplaySettings';
@@ -9,7 +8,6 @@ export const useHomeController = () => {
   const [relatedCells, setRelatedCells] = useSetupRelatedCells();
   const [displaySettings, setDisplaySettings] = useSetupDisplaySettings();
   const isLoading = columnSpaces;
-
 
   return {
     // データ

@@ -16,7 +16,7 @@ export const BaseLayout = (props: Props) => {
 
     <div className="flex flex-col h-screen">
       {/* メニューバー */}
-      <div className=" bg-gray-900  flex justify-between" style={{height: "25px"}}>
+      <div className=" bg-gray-900 text-sm flex justify-between" style={{height: "25px"}}>
 
         {/* メニュー */}
         <div className="flex">

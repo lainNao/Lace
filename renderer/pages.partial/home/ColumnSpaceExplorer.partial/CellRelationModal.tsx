@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Button, Select } from "@chakra-ui/react"
-import { ErrorMessage, Field, FieldArray, Form, Formik, useFormik } from 'formik';
+import { ErrorMessage, Field, FieldArray, Form, Formik } from 'formik';
 import yup from '../../../modules/yup';
 import { CustomSelect } from '../../../components/CustomSelect';
-import { Column, ColumnSpace } from '../../../models/ColumnSpaces';
+import { Column } from '../../../models/ColumnSpaces';
 import { CellPreview, cellDataTypeSelectOptionText, CellDataType } from '../../../resources/CellDataType';
 import { CheckboxContainer, CheckboxControl } from "formik-chakra-ui";
 import { RelatedCells } from '../../../models/RelatedCells';
@@ -11,6 +11,7 @@ import { cloneDeep } from "lodash"
 import { useRecoilValue } from 'recoil';
 import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
 import specificColumnSpaceState from "../../../recoils/selectors/specificColumnSpaceState";
+import { CellInfo } from './CellManagerModal.partial/ParticularCellRelationModal/CellInfo';
 
 export type CellRelationFormData = {
   targetCell: {
@@ -31,12 +32,12 @@ type Props = {
   relatedCells: RelatedCells,
 }
 
-const validationSchema = yup.object().shape({
-    targetCell: yup.object().shape({
-      columnId: yup.string().required("必須です"),
-      cellId: yup.string().required("必須です"),
-    }),
-  });
+const validationSchema = yup.object({
+  targetCell: yup.object({
+    columnId: yup.string().required("必須です"),
+    cellId: yup.string().required("必須です"),
+  }),
+});
 
 export const CellRerationModal: React.FC<Props> = props => {
   const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
@@ -169,7 +170,7 @@ export const CellRerationModal: React.FC<Props> = props => {
   }
 
   return (
-    <Modal isOpen={props.isOpen} onClose={onCloseModal} size="3xl" closeOnEsc={false} closeOnOverlayClick={false}>
+    <Modal isOpen={props.isOpen} onClose={onCloseModal} size="6xl" closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{currentSelectedColumnSpace.name}のリレーション</ModalHeader>
@@ -182,105 +183,113 @@ export const CellRerationModal: React.FC<Props> = props => {
               props.onSubmit(values, currentSelectedColumnSpace.id);
             }}
             validationSchema={validationSchema}
-          >{({ setFieldValue }) => {
+          >{(formState) => {
             return (
               <Form>
+                <div className="flex flex-row">
 
-                {/* 関連元カラムとセル */}
-                <div className="mb-1">関連元の選択</div>
-                <FieldArray name="targetCell">
-                  {() => (
-                    <div className="flex flex-col max-h-48 ml-5">
+                  {/* 関連元カラムとセル */}
+                  <div className="w-1/2 pr-3 pb-12">
+                    <div className="mb-1 font-bold">対象セル</div>
+                    <FieldArray name="targetCell">
+                      {() => (
+                        <div className="flex flex-col ml-5">
 
-                      {/* 関連元カラム */}
-                      <div className="flex flex-col ">
-                        <Field
-                          name="targetCell.columnId"
-                          component={CustomSelect}
-                          placeholder="カラムを選択"
-                          options={currentFromColumnOptions}
-                          value={fromColumnValue}
-                          onChange={onChangeFromColumnId}
-                        />
-                        <ErrorMessage name={`targetCell.columnId`} component="div" className="field-error font-black text-red-700 text-sm"/>
-                      </div>
+                          {/* 関連元カラム */}
+                          <div className="flex flex-col">
+                            <div>カラム</div>
+                            <div className="mt-1 ml-4">
+                              <Field
+                                name="targetCell.columnId"
+                                component={CustomSelect}
+                                placeholder="カラムを選択"
+                                options={currentFromColumnOptions}
+                                value={fromColumnValue}
+                                onChange={onChangeFromColumnId}
+                              />
+                              <ErrorMessage name={`targetCell.columnId`} component="div" className="field-error font-black text-red-700 text-sm"/>
+                            </div>
+                          </div>
 
-                      {/* 関連元セル */}
-                      <div className="flex flex-col mt-3">
-                        {/* TODO ここはファイルカラムならちゃんとそのファイルを再生できるようにもしたい。できるのかな？画像ならstyleのbackground-imageをセットすることでできなくもなさそうだけどその他は無理かな。選択されてるやつを下にぼろっと表示するのはできるけどそれはやるか */}
-                        <Field
-                          name="targetCell.cellId"
-                          component={CustomSelect}
-                          placeholder="セルを選択"
-                          options={currentColumnFromCellOptions}
-                          value={fromCellValue}
-                          onChange={onChangeFromCellId}
-                        />
-                        <ErrorMessage name={`targetCell.cellId`} component="div" className="field-error font-black text-red-700 text-sm"/>
-                      </div>
+                          {/* 関連元セル */}
+                          <div className="flex flex-col mt-3 ">
+                            <div>セル</div>
+                            <div className="mt-1 ml-4">
+                              {/* TODO ここはファイルカラムならちゃんとそのファイルを再生できるようにもしたい。できるのかな？画像ならstyleのbackground-imageをセットすることでできなくもなさそうだけどその他は無理かな。選択されてるやつを下にぼろっと表示するのはできるけどそれはやるか */}
+                              <Field
+                                name="targetCell.cellId"
+                                component={CustomSelect}
+                                placeholder="セルを選択"
+                                options={currentColumnFromCellOptions}
+                                value={fromCellValue}
+                                onChange={onChangeFromCellId}
+                              />
+                              <ErrorMessage name={`targetCell.cellId`} component="div" className="field-error font-black text-red-700 text-sm"/>
+                            </div>
+                          </div>
 
-                      {/* プレビュー */}
-                      {/* TODO プレビュー用コンポネント完成させる */}
-                      {currentCell &&
-                        <div className={`flex flex-col items-center mt-4`}>
-                          <CellPreview cell={currentCell} className={`
-                            ${currentCell.type === CellDataType.Sound && "h-7"}
-                            ${currentCell.type === CellDataType.Image && "h-32"}
-                            outline-none`
-                            } />
+                          {/* プレビュー */}
+                          {currentCell &&
+                            <div className="bg-gray-900 mt-4 pb-3 pt-2 rounded-2xl">
+                              <CellInfo cell={currentCell}/>
+                            </div>
+                          }
                         </div>
-                      }
+                      )}
+                    </FieldArray>
+                  </div>
 
-                    </div>
-                  )}
-                </FieldArray>
+                  <div style={{width: "2px"}} className="bg-gray-600"></div>
 
-                <div className="mb-1 mt-10">関連先の変更</div>
-                <div className="flex flex-col ml-5">
+                  {/* リレーション対象 */}
+                  <div className="w-1/2 pl-4 pb-12">
+                    <div className="mb-1 font-bold">リレーション対象</div>
+                    <div className="flex flex-col ml-5">
 
-                  {/* 関連先カラム */}
-                  <Select placeholder="カラムを選択" onChange={(e) => onChangeToColumnId(e, setFieldValue)}>
-                    {currentSelectedColumnSpace?.columns
-                      .filterChildren(col => col.id !== fromColumnValue)
-                      .map(col => {
-                        const column = col as Column;
-                        return (
-                          <option key={column.id} value={column.id}  className={`${column.id === fromColumnValue ? "hidden" : ""}`}>
-                            {column.name}
-                          </option>
-                        )
-                      })
-                    }
-                  </Select>
-
-                  {/* 関連先セル */}
-                  <FieldArray name="relatedCells">
-                    {() => (
-                      <div className={`${!fromCellValue ? "hidden" : ""}  `}>
-                        {currentSelectedColumnSpace.columns.mapChildren((col, columnIndex) => {
+                      <Select placeholder="カラムを選択" onChange={(e) => onChangeToColumnId(e, formState.setFieldValue)}>
+                        {currentSelectedColumnSpace?.columns
+                          .filterChildren(col => col.id !== fromColumnValue)
+                          .map(col => {
                             const column = col as Column;
-                            // TODO パフォーマンスの問題でUXが微妙なのでいつか手を入れるかも
                             return (
-                              <div key={column.id} className={`${(column.id === fromColumnValue) ? "hidden" : ""}`}>  {/* NOTE: 今選択されているカラムIDを持たないのは表示しないがフォーム上値は存在させるためhidden化 */}
-                                <CheckboxContainer name={`relatedCells.${column.id}.cellIds`} className={`${(column.id !== toColumnValue) ? "hidden" : ""}`}>
-                                  {currentToCellOptions[column.id].map((option, cellIndex) => (
-                                    <CheckboxControl key={option.value + columnIndex + cellIndex} name={`relatedCells.${column.id}.cellIds`} value={option.value} >
-                                      {option.label}
-                                    </CheckboxControl>
-                                  ))}
-                                </CheckboxContainer>
-                              </div>
+                              <option key={column.id} value={column.id}  className={`${column.id === fromColumnValue ? "hidden" : ""}`}>
+                                {column.name}
+                              </option>
                             )
                           })
                         }
-                      </div>
-                    )}
-                  </FieldArray>
+                      </Select>
+
+                      {/* 関連先セル */}
+                      <FieldArray name="relatedCells">
+                        {() => (
+                          <div className={`${!fromCellValue ? "hidden" : ""}  `}>
+                            {currentSelectedColumnSpace.columns.mapChildren((col, columnIndex) => {
+                                const column = col as Column;
+                                // TODO パフォーマンスの問題でUXが微妙なのでいつか手を入れるかも
+                                return (
+                                  <div key={column.id} className={`${(column.id === fromColumnValue) ? "hidden" : ""}`}>  {/* NOTE: 今選択されているカラムIDを持たないのは表示しないがフォーム上値は存在させるためhidden化 */}
+                                    <CheckboxContainer name={`relatedCells.${column.id}.cellIds`} className={`${(column.id !== toColumnValue) ? "hidden" : ""}`}>
+                                      {currentToCellOptions[column.id].map((option, cellIndex) => (
+                                        <CheckboxControl key={option.value + columnIndex + cellIndex} name={`relatedCells.${column.id}.cellIds`} value={option.value} >
+                                          {option.label}
+                                        </CheckboxControl>
+                                      ))}
+                                    </CheckboxContainer>
+                                  </div>
+                                )
+                              })
+                            }
+                          </div>
+                        )}
+                      </FieldArray>
+                    </div>
+                  </div>
                 </div>
 
-                {/* モーダルフッター */}
+                {/* 各種ボタン */}
                 <div className="float-right mt-3 mb-2">
-                  <Button type="submit" colorScheme="blue" mr={3} >完了</Button>
+                  <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.isValid || formState.isSubmitting}>完了</Button>
                   <Button variant="ghost" onClick={onCloseModal}>キャンセル</Button>
                 </div>
               </Form>

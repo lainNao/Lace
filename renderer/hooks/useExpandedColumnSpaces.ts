@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function useSetupSettings() {
+export default function useExpandedColumnSpaces() {
 
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useState<string[]>([]);
 
@@ -11,7 +11,7 @@ export default function useSetupSettings() {
 
     const expandedColumnSpaces = localStorage.getItem("expandedColumnSpaces")
     setExpandedColumnSpaces((expandedColumnSpaces) ? JSON.parse(expandedColumnSpaces): [])
-  }, [])
+  }, []);
 
   useEffect(() => {
     console.debug("expandedColumnSpacesをlocalStorageに保存");

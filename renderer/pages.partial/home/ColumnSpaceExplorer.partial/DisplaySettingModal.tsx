@@ -106,7 +106,7 @@ export const DisplaySettingModal: React.FC<Props> = props => {
                       {props.displaySettings.children[currentSelectedColumnSpaceId].map((displaySetting, index) => (
                         <div key={displaySetting.id} onContextMenu={handleOnDisplaySettingContextMenu} data-display-setting-id={displaySetting.id} >
                           <hr/>
-                          <div key={displaySetting.id} className="break-all pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
+                          <div key={displaySetting.id} className="break-all pb-2 pl-1 whitespace-pre-wrap hover:bg-gray-800" style={{minHeight: "10px"}}>
                             {displaySetting.name}
                           </div>
                         </div>

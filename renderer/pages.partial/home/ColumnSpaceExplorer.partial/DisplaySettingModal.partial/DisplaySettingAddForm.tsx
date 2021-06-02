@@ -381,7 +381,7 @@ export const DisplaySettingAddForm = () => {
               }
 
               <div className="text-right mt-6">
-                <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}>確定</Button>
+                <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}>追加</Button>
               </div>
 
             </div>
