@@ -109,23 +109,24 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                     data-name={column.name}
                     tabIndex={0}
                     label={(
-                      <>
-                        <div
-                          className="font-sans text-blue-400 text-sm"
-                          ref={elem => controller.columnNameRefs.current[column.id] = elem}
-                        >
-                          {cellDataTypeIcons(column.type, "w-3 h-3 inline-block mr-2")}
+                      <div className="flex">
+                        {/* アイコン */}
+                        <span>{cellDataTypeIcons(column.type, "w-3 h-3 mr-2")}</span>
+                        {/* カラム名 */}
+                        <span className="font-sans text-blue-400 text-sm" ref={elem => controller.columnNameRefs.current[column.id] = elem}>
                           {column.name}
-                        </div>
+                        </span>
+                        {/* 編集フォーム */}
                         <form
                           className="hidden"
                           data-id={column.id}
                           onSubmit={event => controller.handleSubmitNewColumnName(event, column.id)}
                           ref={elem => controller.newColumnNameInputRefs.current[column.id] = elem}
+                          style={{height: "16px"}}
                         >
-                          <input name="new-column-name" className="bg-gray-700" spellCheck={false}></input>
+                          <input name="new-column-name" className="bg-gray-700 text-sm border border-blue-500 outline-none" spellCheck={false}></input>
                         </form>
-                      </>
+                      </div>
                     )}
                   />
                 )

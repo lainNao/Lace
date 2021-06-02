@@ -29,7 +29,6 @@ import { CellRelationFormData } from '../../pages.partial/home/ColumnSpaceExplor
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRelationModalSubmit';
 import { CellDataType } from '../../resources/CellDataType';
-import { DisplaySetting } from '../../models/DisplaySettings';
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 
 
