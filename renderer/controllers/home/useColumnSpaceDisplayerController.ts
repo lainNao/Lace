@@ -16,6 +16,6 @@ export const useColumnSpaceDisplayerController = () => {
     relatedCells,
     displaySettings,
     selectedColumnSpaceId,
-    isLoading: columnSpaces && relatedCells && displaySettings,
+    hasInitialized: columnSpaces && relatedCells && displaySettings,
   }
 }

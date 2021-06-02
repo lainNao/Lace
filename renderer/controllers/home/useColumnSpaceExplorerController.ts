@@ -1,5 +1,5 @@
 import React, { useCallback, useState} from 'react';
-import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilCallback, useRecoilState } from 'recoil';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import { FileSystemEnum } from "../../resources/enums/app"
 import { createTopLevelColumnSpaceUsecase } from '../../usecases/createTopLevelColumnSpaceUsecase';
@@ -82,10 +82,8 @@ export const useColumnSpaceExplorerController = () => {
   const handleClickColumnSpace = useRecoilCallback(({snapshot, set}) => async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムスペースの左クリック");
 
-    /// エクスプローラにて子カラムがあるカラムスペースを左クリックしたら、それをcurrentColumnSpaceとしてatomsに反映
-    // TODO これはlocalStorageにも保存するかな（同じことをできるのを右クリメニューにも作るか…）
-    const targetDataset = (event.target as HTMLElement).dataset;
-    set(selectedColumnSpaceIdState, targetDataset.id);
+    // const targetDataset = (event.target as HTMLElement).dataset;
+    // set(selectedColumnSpaceIdState, targetDataset.id);
   }, []);
 
   /* -----------------------------------------------------コンテキストメニュー管理----------------------------------------------------------- */
@@ -97,9 +95,11 @@ export const useColumnSpaceExplorerController = () => {
 
     const targetDataset = (event.target as HTMLElement).dataset;
     setSelectedNodeId(targetDataset.id);
-    set(selectedColumnSpaceIdState, targetDataset.id);
 
     showColumnSpaceContextMenu(event, {
+      handleClickSetDisplayTarget: async () => {
+        set(selectedColumnSpaceIdState, targetDataset.id);
+      },
       handleClickAddChildColumnSpace: async () => {
         newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
         newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
@@ -109,11 +109,13 @@ export const useColumnSpaceExplorerController = () => {
         openDisplaySettingModal();
       },
       handleClickAddChildColumn: async () => {
+        set(selectedColumnSpaceIdState, targetDataset.id);
         setNewColumnFormParentId(targetDataset.id);
         openNewColumnForm();
         newColumnFormRef.current.elements.namedItem("column-name").focus();
       },
       handleClickRelateCells: async () => {
+        set(selectedColumnSpaceIdState, targetDataset.id);
         openCellRelationFormOpen();
       },
       handleClickDeleteColumnSpace: async () => {
