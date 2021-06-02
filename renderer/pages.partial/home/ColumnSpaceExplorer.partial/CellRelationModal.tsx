@@ -8,6 +8,9 @@ import { CellPreview, cellDataTypeSelectOptionText, CellDataType } from '../../.
 import { CheckboxContainer, CheckboxControl } from "formik-chakra-ui";
 import { RelatedCells } from '../../../models/RelatedCells';
 import { cloneDeep } from "lodash"
+import { useRecoilValue } from 'recoil';
+import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
+import specificColumnSpaceState from "../../../recoils/selectors/specificColumnSpaceState";
 
 export type CellRelationFormData = {
   targetCell: {
@@ -25,7 +28,6 @@ type Props = {
   isOpen: boolean,
   onClose: any, //TODO 何の型
   onSubmit: any, //TODO 何の型
-  currentSelectedColumnSpace: ColumnSpace,
   relatedCells: RelatedCells,
 }
 
@@ -37,6 +39,8 @@ const validationSchema = yup.object().shape({
   });
 
 export const CellRerationModal: React.FC<Props> = props => {
+  const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
+  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));
   const [currentColumnFromCellOptions, setCurrentColumnFromCellOptions] = useState([]);
   const [fromColumnValue, setFromColumnValue] = useState(null);
   const [fromCellValue, setFromCellValue] = useState(null);
@@ -45,9 +49,9 @@ export const CellRerationModal: React.FC<Props> = props => {
 
   /// 関連元カラムの選択肢を作成
   const currentFromColumnOptions = useMemo(() => {
-    if (!(props.relatedCells && props.currentSelectedColumnSpace)) return [];
+    if (!(props.relatedCells && currentSelectedColumnSpace)) return [];
 
-    const fromColumnOptions = props.currentSelectedColumnSpace.columns?.mapChildren(column => {
+    const fromColumnOptions = currentSelectedColumnSpace.columns?.mapChildren(column => {
       return { value: column.id, label: column.name }
     }) as {value:any, label:string}[];
 
@@ -55,19 +59,19 @@ export const CellRerationModal: React.FC<Props> = props => {
 
     return fromColumnOptions;
 
-  }, [props.relatedCells, props.currentSelectedColumnSpace]);
+  }, [props.relatedCells, currentSelectedColumnSpace]);
 
   /// 関連先セルの選択肢を作成
   const currentToCellOptions = useMemo(() => {
     // {"カラムID": [セルid,...],}
     const options = {};
-    props.currentSelectedColumnSpace.columns?.children?.forEach(column => { //NOTE: 直接かなり深いところまで行ってるから暇ならどうにかする
+    currentSelectedColumnSpace.columns?.children?.forEach(column => { //NOTE: 直接かなり深いところまで行ってるから暇ならどうにかする
       options[column.id] = column.mapCells(cell => {
         return { value: cell.id, label: cellDataTypeSelectOptionText(cell.type, cell.data) }  //TODO ここ、可能ならメディアのプレビュー程度も選択肢に一緒に見せたい。まあ後で
       })
     })
     return options;
-  }, [props.currentSelectedColumnSpace]);
+  }, [currentSelectedColumnSpace]);
 
   /// 関連元カラムの変更イベント
   const onChangeFromColumnId = useCallback((columnId, setFieldValue) => {
@@ -79,7 +83,7 @@ export const CellRerationModal: React.FC<Props> = props => {
     setCurrentCell(null);
 
     // セルの選択肢を変える
-    const fromCellOptions = props.currentSelectedColumnSpace.columns?.findChildColumn(columnId)?.mapCells(cell => {
+    const fromCellOptions = currentSelectedColumnSpace.columns?.findChildColumn(columnId)?.mapCells(cell => {
       return { value: cell.id, label: cellDataTypeSelectOptionText(cell.type, cell.data) }    //TODO ここ、可能ならメディアのプレビュー程度も選択肢に一緒に見せたい。まあ後で
     }) as {value:any, label:string}[];
     if (!fromCellOptions) {
@@ -87,26 +91,26 @@ export const CellRerationModal: React.FC<Props> = props => {
       return;
     }
     setCurrentColumnFromCellOptions(fromCellOptions);
-  }, [props.currentSelectedColumnSpace]);
+  }, [currentSelectedColumnSpace]);
 
   /// 関連元セルの変更イベント
   const onChangeFromCellId = useCallback((cellId, setFieldValue) => {
     setFieldValue("targetCell.cellId", cellId);
     setFromCellValue(cellId);
 
-    const cell = props.currentSelectedColumnSpace.findBellowCell(cellId, fromColumnValue);
+    const cell = currentSelectedColumnSpace.findBellowCell(cellId, fromColumnValue);
     setCurrentCell(cell);
-  }, [props.currentSelectedColumnSpace, fromColumnValue]);
+  }, [currentSelectedColumnSpace, fromColumnValue]);
 
   /// 関連先カラムの変更イベント
   const onChangeToColumnId = useCallback((event, setFieldValue) => {
     setToColumnValue(event.target.value);
 
-  }, [props.currentSelectedColumnSpace]);
+  }, [currentSelectedColumnSpace]);
 
   // 関連先の選択状態によってフォームの値を変更する
   const initialValues = useMemo(() => {
-    if (!(props.relatedCells && props.currentSelectedColumnSpace && fromColumnValue && fromCellValue)) {
+    if (!(props.relatedCells && currentSelectedColumnSpace && fromColumnValue && fromCellValue)) {
       return {
         targetCell: {
           columnId: fromColumnValue ?? "",
@@ -120,16 +124,16 @@ export const CellRerationModal: React.FC<Props> = props => {
     const relatedCellsTemp = cloneDeep(props.relatedCells); // NOTE: propsはイミュータブルなので一時変数に置き換えているだけ
 
     // 使うキーが無い場合は事前作成（でないとエラー起きるため）
-    if (!relatedCellsTemp.data[props.currentSelectedColumnSpace.id]) {
-      relatedCellsTemp.data[props.currentSelectedColumnSpace.id] = {};
+    if (!relatedCellsTemp.data[currentSelectedColumnSpace.id]) {
+      relatedCellsTemp.data[currentSelectedColumnSpace.id] = {};
     }
-    if (!relatedCellsTemp.data[props.currentSelectedColumnSpace.id][fromColumnValue]) {
-      relatedCellsTemp.data[props.currentSelectedColumnSpace.id][fromColumnValue] = {};
+    if (!relatedCellsTemp.data[currentSelectedColumnSpace.id][fromColumnValue]) {
+      relatedCellsTemp.data[currentSelectedColumnSpace.id][fromColumnValue] = {};
     }
 
     // 関連セル情報（relatedCellsオブジェクト）を設定
-    for (const column of props.currentSelectedColumnSpace.columns.children) {
-      const defaultCells = relatedCellsTemp.data[props.currentSelectedColumnSpace.id]?.[fromColumnValue]?.[fromCellValue];
+    for (const column of currentSelectedColumnSpace.columns.children) {
+      const defaultCells = relatedCellsTemp.data[currentSelectedColumnSpace.id]?.[fromColumnValue]?.[fromCellValue];
       relatedCells[column.id] = (defaultCells && defaultCells[column.id]) ? {cellIds: defaultCells[column.id]} : {cellIds: []}; //NOTE: ここ汚くてごめん　cellIds消す方法わからなかったからつける
     }
 
@@ -141,7 +145,7 @@ export const CellRerationModal: React.FC<Props> = props => {
       relatedCells,
     };
 
-  }, [props.relatedCells, props.currentSelectedColumnSpace, fromColumnValue, fromCellValue]);
+  }, [props.relatedCells, currentSelectedColumnSpace, fromColumnValue, fromCellValue]);
 
   // モーダル閉じる前のイベント
   const onCloseModal = useCallback(() => {
@@ -164,20 +168,18 @@ export const CellRerationModal: React.FC<Props> = props => {
     )
   }
 
-  //TODO たまにセル右クリしてるとwarning出るじゃん？その時にセル作成モーダルを開くとカラムが未選択みたいになっててundefinedな感じになってるよ。
-
   return (
     <Modal isOpen={props.isOpen} onClose={onCloseModal} size="3xl" closeOnEsc={false} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{props.currentSelectedColumnSpace.name}のリレーション</ModalHeader>
+        <ModalHeader>{currentSelectedColumnSpace.name}のリレーション</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Formik
             enableReinitialize={true}
             initialValues={initialValues}
             onSubmit={async (values) => {
-              props.onSubmit(values, props.currentSelectedColumnSpace.id);
+              props.onSubmit(values, currentSelectedColumnSpace.id);
             }}
             validationSchema={validationSchema}
           >{({ setFieldValue }) => {
@@ -238,7 +240,7 @@ export const CellRerationModal: React.FC<Props> = props => {
 
                   {/* 関連先カラム */}
                   <Select placeholder="カラムを選択" onChange={(e) => onChangeToColumnId(e, setFieldValue)}>
-                    {props.currentSelectedColumnSpace?.columns
+                    {currentSelectedColumnSpace?.columns
                       .filterChildren(col => col.id !== fromColumnValue)
                       .map(col => {
                         const column = col as Column;
@@ -255,7 +257,7 @@ export const CellRerationModal: React.FC<Props> = props => {
                   <FieldArray name="relatedCells">
                     {() => (
                       <div className={`${!fromCellValue ? "hidden" : ""}  `}>
-                        {props.currentSelectedColumnSpace.columns.mapChildren((col, columnIndex) => {
+                        {currentSelectedColumnSpace.columns.mapChildren((col, columnIndex) => {
                             const column = col as Column;
                             // TODO パフォーマンスの問題でUXが微妙なのでいつか手を入れるかも
                             return (

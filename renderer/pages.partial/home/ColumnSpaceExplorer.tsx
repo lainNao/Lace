@@ -33,14 +33,6 @@ export type CellManagerModalBodyProps = {
   columnId: string,
 }
 
-//TODO テーマとかどうするか
-//TODO カラムの横幅を変えられるやつを導入したい resizable panel react とか split pane とかググればそれっぽいの出てくる　react-split-paneがシンプルでよい？re-resizableの方が？
-//TODO あとslackみたいにカーソルがエクスプローラー側にある時だけエクスプローラー側にスクロールバー出したい
-//TODO カラムの右側にカラムタイプをラベルで表示しておく（またはアイコンで左に）
-//TODO カラムのデータタイプの選択肢は多言語対応させたい（データとして格納するEnumとは別のまた見せる用の選択肢のEnumとか作ればいいかも）
-//TODO カラムは縦線でつなげたい（通じる言葉で書けない）。カラム今青文字で判断してるけどそれを青文字じゃなくて、左側に「|」の線置いて判断したい感じ
-//TODO カラムのソート処理、それ用のコンポーネントに任せたほうがよかったかも…（探してもどれも惜しくて、優先度低い）
-
 export const ColumnSpaceExplorer: React.FC<Props> = props => {
 
   const controller = useColumnSpaceExplorerController();
@@ -224,12 +216,11 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       }
 
       {/* セル関連付けモーダル */}
-      {controller.currentSelectedColumnSpace &&
+      {controller.isCellRelationFormOpen &&
         <CellRerationModal
           isOpen={controller.isCellRelationFormOpen}
           onClose={controller.closeCellRelationForm}
           onSubmit={controller.handleSubmitCellRelationForm}
-          currentSelectedColumnSpace={controller.currentSelectedColumnSpace}
           relatedCells={controller.relatedCells}
         />
       }

@@ -8,7 +8,6 @@ import { showColumnContextMenu } from '../../context-menus/showColumnContextMenu
 import { showColumnSpaceContextMenu } from '../../context-menus/showColumnSpaceContextMenu';
 import { showEmptySpaceContextMenu } from '../../context-menus/showEmptySpaceContextMenu';
 import { remote } from "electron"
-import useSetupColumnSpaces from '../../hooks/useSetupColumnSpaces';
 import { removeColumnSpaceUsecase } from '../../usecases/removeColumnSpaceUsecase';
 import useSetupSettings from '../../hooks/useSetupSettings';
 import { createDescendantColumnSpaceUsecase } from '../../usecases/createDescendantColumnSpaceUsecase';
@@ -23,7 +22,6 @@ import { renameColumnUsecase } from '../../usecases/renameColumnUsecase';
 import { ColumnDataset } from '../../resources/types';
 import { useToast } from "@chakra-ui/react"
 import { createCellsUsecase } from '../../usecases/createCellsUsecase';
-import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
 import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceIdState"
 import { CellRelationFormData } from '../../pages.partial/home/ColumnSpaceExplorer.partial/CellRelationModal';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
@@ -37,8 +35,8 @@ import { CellManagerModalDataType } from '../../pages.partial/home/ColumnSpaceEx
 
 //NOTE: 基本的にコントローラーでカラムスペースを扱う時はidだけで扱う。責務的に。
 export const useColumnSpaceExplorerController = () => {
-  // メタ状態類
-  const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();           //TODO これhome.tsxでやってるからもう不要で、useRecoilStateに変えたほうがいいのでは
+  // グローバル状態類
+  const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
   const [relatedCells, setRelatedCells] = useRecoilState(relatedCellsState);
   const [displaySettings, setDisplaySettings] = useRecoilState(displaySettingsState);
   // UI状態類
@@ -48,8 +46,6 @@ export const useColumnSpaceExplorerController = () => {
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
-  const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
-  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));  //TODO これ、モーダル内に隠蔽したほうがいいのでは。毎回発火しなくていいし
   // モーダル管理
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
   const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
@@ -160,7 +156,6 @@ export const useColumnSpaceExplorerController = () => {
     setSelectedNodeId(targetDataset.id);
     showColumnContextMenu(event, {
       handleClickCreateNewCell: async () => {
-        console.log(targetDataset)
         const currentRootColumnSpaces = await snapshot.getPromise(columnSpacesState);
         const columnSpace = currentRootColumnSpaces.findDescendantColumnSpace(targetDataset.columnSpaceId);
         const column = currentRootColumnSpaces.findDescendantColumn(targetDataset.id);
@@ -639,7 +634,6 @@ export const useColumnSpaceExplorerController = () => {
     columnSpaces,
     relatedCells,
     displaySettings,
-    currentSelectedColumnSpace,
     expandedColumnSpaces,
     selectedNodeId,
     cellmanagerModalData,

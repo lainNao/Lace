@@ -21,14 +21,13 @@ type Props = {
   onClickCreateNewCell: any //TODO 型
   handleClickNewCellFormClose: any //TODO 型
   onSubmitRelationForm: any //TODO 型
-  handleNewCellFormCloseButtonClick: any,
-  handleNewCellFormCreateButtonClick: any,
+  handleNewCellFormCloseButtonClick: any,//TODO 型
+  handleNewCellFormCreateButtonClick: any,//TODO 型
 }
 
-//TODO なぜかこのモーダル上で右クリしたらemptyスペースを右クリしたのと同じコンテキストメニューが出てるから直す
 export const CellManagerModal: React.FC<Props> = props => {
 
-  const CellManagerModalBody = CellManagerModalBodyComponents[props.cellManagerModalData?.columnType];
+  const CellManagerModalBody = CellManagerModalBodyComponents[props.cellManagerModalData.columnType];
 
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="6xl" closeOnEsc={false} closeOnOverlayClick={false} >

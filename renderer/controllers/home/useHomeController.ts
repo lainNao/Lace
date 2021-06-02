@@ -8,12 +8,12 @@ export const useHomeController = () => {
   const [columnSpaces, setColumnSpaces] = useSetupColumnSpaces();
   const [relatedCells, setRelatedCells] = useSetupRelatedCells();
   const [displaySettings, setDisplaySettings] = useSetupDisplaySettings();
-  const isInitializeFinished = columnSpaces;
+  const isLoading = columnSpaces;
 
 
   return {
     // データ
     columnSpaces,
-    isInitializeFinished,
+    isLoading,
   }
 }
