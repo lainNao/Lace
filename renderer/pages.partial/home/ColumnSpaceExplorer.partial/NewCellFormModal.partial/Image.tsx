@@ -1,26 +1,25 @@
 import React, { useCallback, useState } from 'react';
-import { NewCellFormModalBodyProps } from "../ColumnSpaceExplorer";
+import { NewCellFormModalBodyProps } from "../../ColumnSpaceExplorer";
 import { useDropzone } from 'react-dropzone';
-import { hasCompatibleVideoExtension } from "../../../modules/validator";
+import { hasCompatibleImageExtension } from "../../../../modules/validator";
 import { Button, useToast, useDisclosure } from "@chakra-ui/react"
 import InfiniteScroll from "react-infinite-scroll-component";
-import specificColumnState from "../../../recoils/selectors/specificColumnState";
 import { useRecoilCallback, useRecoilValue } from "recoil";
-import { VideoCellData } from "../../../models/ColumnSpaces/CellData.implemented";
+import { ImageCellData } from "../../../../models/ColumnSpaces/CellData.implemented";
 import { useWindowHeight } from '@react-hook/window-size'
 import { useRef } from "react";
-import { showCellContextMenu } from "../../../context-menus/showCellContextMenu";
+import { showCellContextMenu } from "../../../../context-menus/showCellContextMenu";
 import { remote } from "electron";
-import { removeCellUsecase } from "../../../usecases/removeCellUsecase";
-import columnSpacesState from "../../../recoils/atoms/columnSpacesState";
-import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
+import { removeCellUsecase } from "../../../../usecases/removeCellUsecase";
+import columnSpacesState from "../../../../recoils/atoms/columnSpacesState";
+import relatedCellsState from "../../../../recoils/atoms/relatedCellsState";
 import { FileCellBaseInfo, FileRenameModal } from "./UpdateCellModal/FileRename"
-import { CellDataType } from "../../../resources/CellDataType";
-import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
-import { Cell } from '../../../models/ColumnSpaces';
-import specificColumnSpaceState from '../../../recoils/selectors/specificColumnSpaceState';
+import { CellDataType } from "../../../../resources/CellDataType";
+import { ParticularCellRelationModal } from "../NewCellFormModal.partial/ParticularCellRelationModal";
+import { Cell } from '../../../../models/ColumnSpaces';
+import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
 
-export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (props) => {
+export const NewCellFormModalBodyImage: React.FC<NewCellFormModalBodyProps> = (props) => {
 
   const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
   const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);
@@ -47,7 +46,7 @@ export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (p
           columnSpaceId: currentColumnSpace.id,
           columnId: currentColumn.id,
           cellId: targetDataset.cellId,
-          type: CellDataType.Video,
+          type: CellDataType.Image,
           data: {
             path: targetDataset.path,
             alias: targetDataset.name,
@@ -99,7 +98,7 @@ export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (p
     // 対応する拡張子のみ受け入れる
     const acceptedFilePaths = Array.from<File>(acceptedFiles)
       .map(file => file.path)
-      .filter(filepath => hasCompatibleVideoExtension(filepath));
+      .filter(filepath => hasCompatibleImageExtension(filepath));
 
     if (acceptedFiles.length !== acceptedFilePaths.length) {
       toast({
@@ -118,6 +117,7 @@ export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (p
   const handleSubmit = useCallback((e) => { //TODO 型
     e.preventDefault();
     e.stopPropagation();
+
     props.onClickCreateNewCell({
       columnSpaceId: currentColumnSpace.id,
       id: currentColumn.id,
@@ -128,7 +128,6 @@ export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (p
     setPaths([]);
   }, [paths, currentColumnSpace, currentColumn]);
 
-
   //TODO アップロードしようとしたけどやめたファイルを「☓」ボタンで消せるようにする
 
   return (
@@ -138,32 +137,22 @@ export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (p
         {/* アップロードフォーム */}
         <form onSubmit={handleSubmit} className="w-1/2">
 
-          <div {...getRootProps()} className={`${isDragActive ? "border-gray-100" : "border-gray-500"} border-2 border-dashed  rounded-lg flex flex-col p-5`} >
-            <div className="text-center">追加したい動画ファイル（mp4、m4v、webm対応）をこのエリアにドラッグ＆ドロップしてから「登録」ボタンを押せば登録されます。</div>
-
-            {paths.length > 0 &&
-            <div className="mt-3 font-thin text-xs">
-              <ul>
-                {/* TODO このパスの名前切り抜くやつ、OS違うと駄目かもだから留意 */}
-                {/* TODO ここでローカルファイルを画像表示するために「webSecurity: false」にしてるので、嫌ならあとでやめる */}
-                {/* TODO 再生ボタンを横に一応つけたいところ */}
-                {paths.map((filePath, index) => (
-                  <li key={index} className="mt-2">
-                    {filePath.split("\\").pop()}
-                  </li>
-                ))}
-              </ul>
+          <div {...getRootProps()} className={`${isDragActive ? "border-gray-100" : "border-gray-500"} border-2 border-dashed  rounded-lg flex flex-col items-center text-center p-5`} >
+            <div>追加したい画像ファイル（jpg、jpeg、png、gif、webp対応）をこのエリアにドラッグ＆ドロップしてから「登録」ボタンを押せば登録されます。</div>
+            <div>
+              {/* TODO このパスの名前切り抜くやつ、OS違うと駄目かもだから留意 */}
+              {/* TODO ここでローカルファイルを画像表示するために「webSecurity: false」にしてるので、嫌ならあとでやめる */}
+              {paths.map((filePath, index) => (
+                <div key={index} className="flex flex-col items-center mt-5">
+                  {filePath.split("\\").pop()}<img src={filePath}></img>
+                </div>
+              ))}
             </div>
-            }
           </div>
 
           {/* 各種ボタン */}
           <div className="float-right mt-3 mb-2">
-            {paths.length > 0 && (
-              <div className="inline-block mr-3"><span className="font-black mx-1">{paths.length}</span><span className="text-sm">ファイル</span></div>
-            )}
             <Button type="submit" isDisabled={!(paths.length)} colorScheme="blue" mr={3} >登録</Button>
-            <Button variant="ghost" onClick={props.handleClickNewCellFormClose}>キャンセル</Button>
           </div>
 
         </form>
@@ -182,14 +171,15 @@ export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (p
                 height={windowHeight-260}
               >
                 {currentColumn.cells.mapChildren((cell, index) => {
-                  const displayName = (cell.data as VideoCellData).alias;
+                  const displayName = (cell.data as ImageCellData).alias;
                   return (
-                    <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-path={(cell.data as VideoCellData).path} data-name={displayName}>
+                    <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-path={(cell.data as ImageCellData).path} data-name={displayName}>
                       <hr/>
-                      <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as VideoCellData).path} data-cell-id={cell.id} data-name={displayName}>
+                      <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as ImageCellData).path} data-cell-id={cell.id} data-name={displayName}>
                         {/* TODO ここ、折りたたみも可能にしたほうがいいかも */}
+                        {/* TODO 画像はクリックで拡大表示したいところ… */}
                         <div>{displayName}</div>
-                        <video src={(cell.data as VideoCellData).path} controls className="outline-none"/>
+                        <img src={(cell.data as ImageCellData).path} />
                       </div>
                     </div>
                   )

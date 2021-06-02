@@ -1,5 +1,5 @@
 import { RelatedCells } from "../models/RelatedCells";
-import { CellRelationFormData } from "../pages.partial/home/CellRelationModal";
+import { CellRelationFormData } from "../pages.partial/home/ColumnSpaceExplorer.partial/CellRelationModal";
 import { RelatedCellsRepositoryJson } from "../repositories/RelatedCellsRepositoryJson";
 
 export const dispatchCellRelationModalSubmit = async (columnSpaceId: string, cellRelationFormData: CellRelationFormData): Promise<RelatedCells> => {

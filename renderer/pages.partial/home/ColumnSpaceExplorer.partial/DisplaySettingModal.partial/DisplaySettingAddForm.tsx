@@ -1,15 +1,15 @@
 import React from 'react';
 import { Input, Select, IconButton, Button, RadioGroup, Radio, Stack, useToast } from "@chakra-ui/react"
-import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../../../models/DisplaySettings';
+import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../../../../models/DisplaySettings';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
+import selectedColumnSpaceIdState from '../../../../recoils/atoms/selectedColumnSpaceIdState';
 import { Field, FieldArray, Form, Formik } from 'formik';
-import yup from '../../../modules/yup';
-import { RelatedCellsDisplayType } from '../../../resources/RelatedCellsDisplayType';
-import specificColumnSpaceState from '../../../recoils/selectors/specificColumnSpaceState';
-import displaySettingsState from '../../../recoils/atoms/displaySettingsState';
-import { createDisplaySettingUsecase } from '../../../usecases/createDisplaySettingUsecase';
+import yup from '../../../../modules/yup';
+import { RelatedCellsDisplayType } from '../../../../resources/RelatedCellsDisplayType';
+import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
+import displaySettingsState from '../../../../recoils/atoms/displaySettingsState';
+import { createDisplaySettingUsecase } from '../../../../usecases/createDisplaySettingUsecase';
 
 const notNullableStringRule = yup.string().min(1).required("必須です").filled("必須です");
 

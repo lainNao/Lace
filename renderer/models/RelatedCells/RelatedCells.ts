@@ -1,6 +1,6 @@
 import { assert } from "console";
 import { merge } from "lodash";
-import { CellRelationFormData } from "../../pages.partial/home/CellRelationModal";
+import { CellRelationFormData } from "../../pages.partial/home/ColumnSpaceExplorer.partial/CellRelationModal";
 import { difference } from "lodash"
 
 interface ConstructorArgs {

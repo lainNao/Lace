@@ -52,10 +52,10 @@ export const BaseLayout = (props: Props) => {
       </div>
 
       {/* ボディ */}
-      <div className="flex flex-row w-screen flex-auto ">
+      <div className="flex flex-row w-screen flex-auto" style={{height: "95%"}}>
 
         {/* 一番左の部分 */}
-        <div className="flex flex-col items-center p-2 space-y-2.5">
+        <div className="flex flex-col items-center p-2 space-y-2.5 bg-gray-900">
           <Link href="/home"><IconButton aria-label="search" icon={<HomeIcon className={`${props.leftMenuType === LeftMenuType.HOME && "text-blue-400"}`} />} /></Link>
           <Link href="/settings"><IconButton aria-label="edit" icon={<CogIcon className={`${props.leftMenuType === LeftMenuType.SETTINGS && "text-blue-400"}`} />}/></Link>
         </div>

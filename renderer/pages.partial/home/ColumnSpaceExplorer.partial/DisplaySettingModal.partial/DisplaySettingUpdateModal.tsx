@@ -1,22 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useToast, useDisclosure } from "@chakra-ui/react"
-import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
-import { useWindowHeight } from '@react-hook/window-size';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { DisplaySettingAddForm } from '.';
-import { remote } from 'electron';
-import { removeDisplaySettingUsecase } from '../../../usecases/removeDisplaySettingUsecase';
-import displaySettingsState from '../../../recoils/atoms/displaySettingsState';
-import { showDisplaySettingContextMenu } from '../../../context-menus/showDisplaySettingContextMenu';
+import selectedColumnSpaceIdState from '../../../../recoils/atoms/selectedColumnSpaceIdState';
+import displaySettingsState from '../../../../recoils/atoms/displaySettingsState';
 import { Input, Select, IconButton, Button, RadioGroup, Radio, Stack } from "@chakra-ui/react"
-import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../../../models/DisplaySettings';
+import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../../../../models/DisplaySettings';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { Field, FieldArray, Form, Formik } from 'formik';
-import yup from '../../../modules/yup';
-import { RelatedCellsDisplayType } from '../../../resources/RelatedCellsDisplayType';
-import specificColumnSpaceState from '../../../recoils/selectors/specificColumnSpaceState';
-import { updateDisplaySettingUsecase } from '../../../usecases/updateDisplaySettingUsecase';
+import yup from '../../../../modules/yup';
+import { RelatedCellsDisplayType } from '../../../../resources/RelatedCellsDisplayType';
+import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
+import { updateDisplaySettingUsecase } from '../../../../usecases/updateDisplaySettingUsecase';
 
 
 const notNullableStringRule = yup.string().min(1).required("必須です").filled("必須です");

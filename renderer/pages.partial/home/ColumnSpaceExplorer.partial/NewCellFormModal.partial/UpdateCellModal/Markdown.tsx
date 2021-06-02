@@ -1,13 +1,13 @@
 import { Button, Textarea, useToast, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, Input } from "@chakra-ui/react"
 import React from 'react';
 import { ErrorMessage, Field, FieldArray, Form, Formik, useFormik } from 'formik';
-import yup from '../../../../modules/yup';
+import yup from '../../../../../modules/yup';
 import { useSetRecoilState } from "recoil";
-import { updateCellUsecase } from "../../../../usecases/updateCellUsecase";
-import columnSpacesState from "../../../../recoils/atoms/columnSpacesState";
-import { CellDataFactory } from "../../../../factories/CellDataFactory";
-import { CellDataType } from "../../../../resources/CellDataType";
-import { Cell } from "../../../../models/ColumnSpaces";
+import { updateCellUsecase } from "../../../../../usecases/updateCellUsecase";
+import columnSpacesState from "../../../../../recoils/atoms/columnSpacesState";
+import { CellDataFactory } from "../../../../../factories/CellDataFactory";
+import { CellDataType } from "../../../../../resources/CellDataType";
+import { Cell } from "../../../../../models/ColumnSpaces";
 
 export type MarkdownCellBaseInfo = {
   columnSpaceId: string,

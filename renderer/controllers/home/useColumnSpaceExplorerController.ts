@@ -25,7 +25,7 @@ import { useToast } from "@chakra-ui/react"
 import { createCellsUsecase } from '../../usecases/createCellsUsecase';
 import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
 import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceIdState"
-import { CellRelationFormData } from '../../pages.partial/home/CellRelationModal';
+import { CellRelationFormData } from '../../pages.partial/home/ColumnSpaceExplorer.partial/CellRelationModal';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRelationModalSubmit';
 import { CellDataType } from '../../resources/CellDataType';

@@ -25,7 +25,7 @@ const Home: React.FC = () => {
     >
       {/* エクスプローラ */}
       <ColumnSpaceExplorer
-        classeName="min-w-300px w-300px bg-gray-800 whitespace-pre overflow-y-auto p-3"
+        classeName="min-w-300px w-300px whitespace-pre overflow-y-auto p-3"
       />
 
       {/* メイン表示 */}

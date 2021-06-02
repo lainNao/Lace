@@ -1,9 +1,8 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton } from "@chakra-ui/react"
-import yup from '../../../../modules/yup';
-import { Cell } from "../../../../models/ColumnSpaces";
+import { Cell } from "../../../../../models/ColumnSpaces";
 import React from 'react';
-import { Column, ColumnSpace } from '../../../../models/ColumnSpaces';
-import { CellDataType, cellDataTypeIcons } from '../../../../resources/CellDataType';
+import { Column, ColumnSpace } from '../../../../../models/ColumnSpaces';
+import { cellDataTypeIcons } from '../../../../../resources/CellDataType';
 import { CellInfo } from "./CellInfo";
 import { RelationTargetForm } from "./RelationTargetForm";
 

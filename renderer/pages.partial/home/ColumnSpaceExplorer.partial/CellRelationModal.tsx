@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Button, Select } from "@chakra-ui/react"
 import { ErrorMessage, Field, FieldArray, Form, Formik, useFormik } from 'formik';
-import yup from '../../modules/yup';
-import { CustomSelect } from '../../components/CustomSelect';
-import { Column, ColumnSpace } from '../../models/ColumnSpaces';
-import { CellPreview, cellDataTypeSelectOptionText, CellDataType } from '../../resources/CellDataType';
+import yup from '../../../modules/yup';
+import { CustomSelect } from '../../../components/CustomSelect';
+import { Column, ColumnSpace } from '../../../models/ColumnSpaces';
+import { CellPreview, cellDataTypeSelectOptionText, CellDataType } from '../../../resources/CellDataType';
 import { CheckboxContainer, CheckboxControl } from "formik-chakra-ui";
-import { RelatedCells } from '../../models/RelatedCells';
+import { RelatedCells } from '../../../models/RelatedCells';
 import { cloneDeep } from "lodash"
 
 export type CellRelationFormData = {

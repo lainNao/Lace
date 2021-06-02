@@ -4,7 +4,7 @@ import { NewCellFormModalBodySound } from "./Sound";
 import { NewCellFormModalBodyImage } from "./Image";
 import { NewCellFormModalBodyVideo } from "./Video";
 import { NewCellFormModalBodyNull } from "./Null";
-import { CellDataType } from "../../../resources/CellDataType";
+import { CellDataType } from "../../../../resources/CellDataType";
 
 export const newCellFormModalBodyComponents = {
   // text

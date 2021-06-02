@@ -1,17 +1,17 @@
 import React, { useRef, useState } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useToast, useDisclosure } from "@chakra-ui/react"
-import {  DisplaySetting, DisplaySettings } from '../../models/DisplaySettings';
+import {  DisplaySetting, DisplaySettings } from '../../../models/DisplaySettings';
 import { useRecoilValue } from 'recoil';
-import selectedColumnSpaceIdState from '../../recoils/atoms/selectedColumnSpaceIdState';
+import selectedColumnSpaceIdState from '../../../recoils/atoms/selectedColumnSpaceIdState';
 import { useWindowHeight } from '@react-hook/window-size';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { DisplaySettingAddForm } from './DisplaySettingModalpartial';
+import { DisplaySettingAddForm } from './DisplaySettingModal.partial';
 import { useRecoilCallback } from 'recoil';
 import { remote } from 'electron';
-import { removeDisplaySettingUsecase } from '../../usecases/removeDisplaySettingUsecase';
-import displaySettingsState from '../../recoils/atoms/displaySettingsState';
-import { showDisplaySettingContextMenu } from '../../context-menus/showDisplaySettingContextMenu';
-import { DisplaySettingUpdateModal } from './DisplaySettingModalpartial/DisplaySettingUpdateModal';
+import { removeDisplaySettingUsecase } from '../../../usecases/removeDisplaySettingUsecase';
+import displaySettingsState from '../../../recoils/atoms/displaySettingsState';
+import { showDisplaySettingContextMenu } from '../../../context-menus/showDisplaySettingContextMenu';
+import { DisplaySettingUpdateModal } from './DisplaySettingModal.partial/DisplaySettingUpdateModal';
 
 type Props = {
   isOpen: boolean,

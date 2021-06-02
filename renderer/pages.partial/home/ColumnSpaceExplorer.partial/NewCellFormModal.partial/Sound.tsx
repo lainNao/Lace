@@ -1,23 +1,23 @@
 import React, { useCallback, useState } from 'react';
-import { NewCellFormModalBodyProps } from "../ColumnSpaceExplorer";
+import { NewCellFormModalBodyProps } from "../../ColumnSpaceExplorer";
 import { useDropzone } from 'react-dropzone';
-import { hasCompatibleSoundExtension } from "../../../modules/validator";
+import { hasCompatibleSoundExtension } from "../../../../modules/validator";
 import { Button, useToast, useDisclosure } from "@chakra-ui/react"
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useRecoilCallback, useRecoilValue } from "recoil";
-import { SoundCellData } from "../../../models/ColumnSpaces/CellData.implemented";
+import { SoundCellData } from "../../../../models/ColumnSpaces/CellData.implemented";
 import { useWindowHeight } from '@react-hook/window-size'
 import { useRef } from "react";
-import { showCellContextMenu } from "../../../context-menus/showCellContextMenu";
+import { showCellContextMenu } from "../../../../context-menus/showCellContextMenu";
 import { remote } from "electron";
-import { removeCellUsecase } from "../../../usecases/removeCellUsecase";
-import columnSpacesState from "../../../recoils/atoms/columnSpacesState";
-import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
+import { removeCellUsecase } from "../../../../usecases/removeCellUsecase";
+import columnSpacesState from "../../../../recoils/atoms/columnSpacesState";
+import relatedCellsState from "../../../../recoils/atoms/relatedCellsState";
 import { FileCellBaseInfo, FileRenameModal } from "./UpdateCellModal/FileRename"
-import { CellDataType } from "../../../resources/CellDataType";
+import { CellDataType } from "../../../../resources/CellDataType";
 import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
-import { Cell } from '../../../models/ColumnSpaces';
-import specificColumnSpaceState from '../../../recoils/selectors/specificColumnSpaceState';
+import { Cell } from '../../../../models/ColumnSpaces';
+import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
 
 //TODO 同階層のTextと同じような感じに変更する
 export const NewCellFormModalBodySound: React.FC<NewCellFormModalBodyProps> = (props) => {

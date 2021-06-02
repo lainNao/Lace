@@ -1,16 +1,16 @@
 import { Button, Select } from "@chakra-ui/react"
-import { ErrorMessage, Field, FieldArray, Form, Formik } from 'formik';
-import yup from '../../../../modules/yup';
+import { FieldArray, Form, Formik } from 'formik';
+import yup from '../../../../../modules/yup';
 import { useRecoilState } from "recoil";
 import React, { useCallback, useMemo, useState } from 'react';
-import { Cell, Column, ColumnSpace } from '../../../../models/ColumnSpaces';
-import { cellDataTypeSelectOptionText } from '../../../../resources/CellDataType';
+import { Cell, Column, ColumnSpace } from '../../../../../models/ColumnSpaces';
+import { cellDataTypeSelectOptionText } from '../../../../../resources/CellDataType';
 import { CheckboxContainer, CheckboxControl } from "formik-chakra-ui";
-import relatedCellsState from "../../../../recoils/atoms/relatedCellsState";
+import relatedCellsState from "../../../../../recoils/atoms/relatedCellsState";
 import { cloneDeep } from "lodash";
 import { CellRelationFormData } from "../../CellRelationModal";
 import { useEffect } from "react";
-import { RelatedCells } from "../../../../models/RelatedCells";
+import { RelatedCells } from "../../../../../models/RelatedCells";
 
 const validationSchema = yup.object().shape({
   targetCell: yup.object().shape({

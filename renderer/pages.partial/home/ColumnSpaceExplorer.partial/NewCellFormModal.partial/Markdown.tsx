@@ -1,35 +1,37 @@
+import React, { useState } from 'react';
+import { Field, Form, Formik } from 'formik';
+import yup from '../../../../modules/yup';
+import { Input } from "@chakra-ui/react"
 import { Button, Textarea, useToast, useDisclosure } from "@chakra-ui/react"
-import React, { useCallback, useState } from 'react';
-import { ErrorMessage, Field, FieldArray, Form, Formik, useFormik } from 'formik';
-import yup from '../../../modules/yup';
-import { NewCellFormModalBodyProps } from "../ColumnSpaceExplorer";
-import { AddIcon, HamburgerIcon, ExternalLinkIcon, RepeatIcon, EditIcon } from "@chakra-ui/icons";
+import { NewCellFormModalBodyProps } from "../../ColumnSpaceExplorer";
+import { AddIcon } from "@chakra-ui/icons";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useRecoilCallback, useRecoilValue } from "recoil";
-import { TextCellData } from "../../../models/ColumnSpaces/CellData.implemented";
+import { MarkdownCellData } from "../../../../models/ColumnSpaces/CellData.implemented";
 import { useWindowHeight } from '@react-hook/window-size'
 import { useRef } from "react";
-import { showCellContextMenu } from "../../../context-menus/showCellContextMenu";
+import { showCellContextMenu } from "../../../../context-menus/showCellContextMenu";
 import { remote } from "electron";
-import { removeCellUsecase } from "../../../usecases/removeCellUsecase";
-import columnSpacesState from "../../../recoils/atoms/columnSpacesState";
-import relatedCellsState from "../../../recoils/atoms/relatedCellsState";
-import { TextCellBaseInfo, TextCellUpdateModal } from "./UpdateCellModal/Text"
-import { CellDataType } from "../../../resources/CellDataType";
+import { removeCellUsecase } from "../../../../usecases/removeCellUsecase";
+import columnSpacesState from "../../../../recoils/atoms/columnSpacesState";
+import relatedCellsState from "../../../../recoils/atoms/relatedCellsState";
+import { MarkdownCellBaseInfo, MarkdownCellUpdateModal } from "./UpdateCellModal/Markdown"
+import { CellDataType } from "../../../../resources/CellDataType";
 import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
-import { Cell } from "../../../models/ColumnSpaces";
-import specificColumnSpaceState from "../../../recoils/selectors/specificColumnSpaceState";
+import { Cell } from '../../../../models/ColumnSpaces';
+import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
 
-export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (props) => {
+export const NewCellFormModalBodyMarkdown: React.FC<NewCellFormModalBodyProps> = (props) => {
+
+  //TODO 左サイドの下部半分をプレビューに使いたい
 
   const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
   const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);
 
-  const newTextInputRef = useRef(null);
   const windowHeight = useWindowHeight()
   const rightClickedCellRef = useRef(null);
   const toast = useToast();
-  const [updateTargetCellData, setUpdateTargetCellData] = useState<TextCellBaseInfo>(null);
+  const [updateTargetCellData, setUpdateTargetCellData] = useState<MarkdownCellBaseInfo>(null);
   const [relationTargetCell, setRelationTargetCell] = useState<Cell>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
   const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
@@ -46,18 +48,14 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
         setUpdateTargetCellData({
           columnSpaceId: currentColumnSpace.id,
           columnId: currentColumn.id,
-          cellId: targetDataset.cellId,
-          type: CellDataType.Text,
+          cellId: targetDataset.CellId,
+          type: CellDataType.Markdown,
           data: {
-            text: target.innerText,
+            title: target.innerText,
+            text: targetDataset.cellText,
           }
         });
         openUpdateModal();
-      },
-      handleClickUpdateRelation: async() => {
-        const cell = currentColumn.findCell(targetDataset.cellId);
-        setRelationTargetCell(cell);
-        openParticularCellRelationModal();
       },
       handleClickDeleteCell: async () => {
         rightClickedCellRef.current.classList.add("bg-gray-800");
@@ -86,6 +84,11 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
           }
         });
       },
+      handleClickUpdateRelation: async() => {
+        const cell = currentColumn.findCell(targetDataset.cellId);
+        setRelationTargetCell(cell);
+        openParticularCellRelationModal();
+      },
       handleMenuWillClose: async () => {
         rightClickedCellRef.current.classList.remove("bg-gray-800");
       }
@@ -93,63 +96,68 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
 
   }, [currentColumnSpace, currentColumn])
 
-  //TODO サブミットが成功したらテキストエリアを空にしたい　失敗したらそのままにしたい
-
   return (
     <>
       <div className="flex flex-row">
-
         {/* 新規追加フォーム */}
         <Formik
           initialValues={{
-            text: "",
+            title: '',
+            text: '',
           }}
           onSubmit={async (value) => {
-            const successMessage = (value.text.length > 15)
-              ? value.text.substring(0, 15)+"..."
-              : value.text;
+            const successMessage = (value.title.length > 15)
+              ? value.title.substring(0, 15)+"..."
+              : value.title;
 
             props.onClickCreateNewCell({
               columnSpaceId: currentColumnSpace.id,
               id: currentColumn.id,
               columnType: currentColumn.type,
             }, [value], successMessage+"を追加しました");
-            newTextInputRef.current.focus();
           }}
           validationSchema={
             yup.object().shape({
-              text: yup
+              title: yup
                 .string()
-                .required("必須です")
-                .filled("必須です")
+                .required("タイトルは必須です")
+                .filled("タイトルは必須です")
+              ,text: yup
+                .string()
+                .required("本文は必須です")
+                .filled("本文は必須です")
             })
           }
         >{(formState) => {
           return (
-            <Form className="w-1/2">
+            <Form>
+              <div>
+                <div className="mb-3">新規マークダウン</div>
+                <label htmlFor="title">タイトル</label>
+                <Field name="title">
+                  {({ field, form, ...props }) => <Input {...field} {...props} spellCheck={false}/> }
+                </Field>
+                {/* <ErrorMessage name="title" component="div" className="field-error font-black text-red-700 text-sm" /> */}
 
-              <div className="mb-2">
-                <label htmlFor="text">新規テキスト</label>
+                <label htmlFor="text">本文（マークダウン）</label>
+                <Field name="text" >
+                  {({ field, form, ...props }) => <Textarea {...field} {...props} spellCheck={false} rows={15} /> }
+                </Field>
+                {/* <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/> */}
               </div>
-              <Field name="text" >
-                {({ field, form, ...props }) => <Textarea {...field} {...props} spellCheck={false} rows={10} ref={newTextInputRef} /> }
-              </Field>
-              {/* <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/> */}
 
               <div className="float-right mt-3 mb-2">
                 <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}><AddIcon className="mr-2"/>追加</Button>
               </div>
             </Form>
-
           )}}
         </Formik>
 
         {/* 一覧 */}
         <div className="w-1/2 pb-3 pr-2 pl-10">
-
           <div className="mb-2">セル一覧（右クリックで編集/削除）</div>
           {currentColumn.cells.children.length === 0
-            ? <div className="outline-none" style={{height: windowHeight-260 +"px"}}>0件</div>
+            ? <div  className="outline-none" style={{height: windowHeight-260 +"px"}}>0件</div>
             : <InfiniteScroll
                 dataLength={currentColumn.cells.children.length}
                 loader={<h4>Loading...</h4>}
@@ -158,21 +166,22 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
                 height={windowHeight-260}
               >
                 {currentColumn.cells.mapChildren((cell, index) => (
-                  <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} >
+                  <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-cell-text={(cell.data as MarkdownCellData).text}>
                     <hr/>
                     <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
-                      {(cell.data as TextCellData).text}
+                      {(cell.data as MarkdownCellData).title}
                     </div>
                   </div>
                 ))}
               </InfiniteScroll>
           }
         </div>
+
       </div>
 
       {/* 編集モーダル */}
       {updateTargetCellData &&
-        <TextCellUpdateModal
+        <MarkdownCellUpdateModal
           isOpen={isOpenUpdateModal}
           onClose={onCloseUpdateModal}
           cellData={updateTargetCellData}
@@ -184,15 +193,14 @@ export const NewCellFormModalBodyText: React.FC<NewCellFormModalBodyProps> = (pr
         <ParticularCellRelationModal
           isOpen={isOpenParticularCellRelationModal}
           onClose={onCloseParticularCellRelationModal}
+          onSubmitRelationForm={props.onSubmitRelationForm}
           columnSpace={currentColumnSpace}
           column={currentColumn}
-          onSubmitRelationForm={props.onSubmitRelationForm}
           cell={relationTargetCell}
         />
       }
 
     </>
-
   )
 }
 

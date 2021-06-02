@@ -1,9 +1,9 @@
 
 import { Input, Textarea } from "@chakra-ui/react"
 import React from 'react';
-import { Cell } from "../../../../models/ColumnSpaces";
-import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../../../../models/ColumnSpaces/CellData.implemented";
-import { CellDataType } from "../../../../resources/CellDataType";
+import { Cell } from "../../../../../models/ColumnSpaces";
+import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../../../../../models/ColumnSpaces/CellData.implemented";
+import { CellDataType } from "../../../../../resources/CellDataType";
 
 type CellInfoProps = {
   cell: Cell,

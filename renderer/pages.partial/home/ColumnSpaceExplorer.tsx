@@ -10,11 +10,11 @@ import { FileSystemEnum } from '../../resources/enums/app';
 import { CellDataType, cellDataTypeIcons, cellDataTypeStrings } from '../../resources/CellDataType'
 import { TreeItem } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
-import { Column, ColumnSpace, ColumnSpaces } from '../../models/ColumnSpaces';
-import { NewCellFormModal } from './NewCellFormModal';
-import { newCellFormModalBodyComponents } from "./NewCellFormModal.partial"
-import { CellRerationModal } from './CellRelationModal';
-import { DisplaySettingModal } from './DisplaySettingModal';
+import { ColumnSpaces } from '../../models/ColumnSpaces';
+import { NewCellFormModal } from './ColumnSpaceExplorer.partial/NewCellFormModal';
+import { newCellFormModalBodyComponents } from './ColumnSpaceExplorer.partial/NewCellFormModal.partial'
+import { CellRerationModal } from './ColumnSpaceExplorer.partial/CellRelationModal';
+import { DisplaySettingModal } from './ColumnSpaceExplorer.partial/DisplaySettingModal';
 
 type Props = {
   classeName?: string;
