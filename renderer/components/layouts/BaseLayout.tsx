@@ -16,7 +16,7 @@ export const BaseLayout = (props: Props) => {
 
     <div className="flex flex-col h-screen">
       {/* メニューバー */}
-      <div className=" bg-gray-900  flex justify-between">
+      <div className=" bg-gray-900  flex justify-between" style={{height: "25px"}}>
 
         {/* メニュー */}
         <div className="flex">
@@ -52,7 +52,7 @@ export const BaseLayout = (props: Props) => {
       </div>
 
       {/* ボディ */}
-      <div className="flex flex-row w-screen flex-auto" style={{height: "95%"}}>
+      <div className="flex flex-row w-screen flex-auto overflow-y-hidden" style={{height: "95%"}}>
 
         {/* 一番左の部分 */}
         <div className="flex flex-col items-center p-2 space-y-2.5 bg-gray-900">
@@ -65,7 +65,7 @@ export const BaseLayout = (props: Props) => {
       </div>
 
       {/* フッター */}
-      <div className="">
+      <div className="" style={{height: "25px"}}>
         foot（状態表示など）
       </div>
 
