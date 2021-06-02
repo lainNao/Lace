@@ -28,8 +28,8 @@ import selectedColumnSpaceIdState from "../../recoils/atoms/selectedColumnSpaceI
 import { CellRelationFormData } from '../../pages.partial/home/ColumnSpaceExplorer.partial/CellRelationModal';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRelationModalSubmit';
-import { CellDataType } from '../../resources/CellDataType';
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
+import { CellManagerModalDataType } from '../../pages.partial/home/ColumnSpaceExplorer.partial/CellManagerModal';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -44,7 +44,7 @@ export const useColumnSpaceExplorerController = () => {
   // UI状態類
   const [expandedColumnSpaces, setExpandedColumnSpaces] = useSetupSettings();
   const [selectedNodeId, setSelectedNodeId] = useState<string>(null);
-  const [cellmanagerModalData, setCellManagerModalData] = useState<{columnSpaceId: string, columnId: string, columnType: CellDataType, columnName: string}>(null);
+  const [cellmanagerModalData, setCellManagerModalData] = useState<CellManagerModalDataType>(null);
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);

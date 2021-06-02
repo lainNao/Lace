@@ -12,7 +12,6 @@ import { TreeItem } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
 import { ColumnSpaces } from '../../models/ColumnSpaces';
 import { CellManagerModal } from './ColumnSpaceExplorer.partial/CellManagerModal';
-import { CellManagerModalBodyComponents } from './ColumnSpaceExplorer.partial/CellManagerModal.partial'
 import { CellRerationModal } from './ColumnSpaceExplorer.partial/CellRelationModal';
 import { DisplaySettingModal } from './ColumnSpaceExplorer.partial/DisplaySettingModal';
 
@@ -22,7 +21,7 @@ type Props = {
 
 const useStyles = makeStyles({
   label: {
-    fontSize: "15px"
+    fontSize: "14px"
   },
 });
 
@@ -109,7 +108,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                     data-name={column.name}
                     tabIndex={0}
                     label={(
-                      <div className="flex">
+                      <div className="flex items-center">
                         {/* アイコン */}
                         <span>{cellDataTypeIcons(column.type, "w-3 h-3 mr-2")}</span>
                         {/* カラム名 */}
@@ -144,12 +143,6 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       )
     })
   }, []);
-
-  // TODO もしやここ毎回わざわざビルドされてしまう？NewCellFormModalの中に閉じ込めれば良いのでは？
-  const CellManagerModalBody = CellManagerModalBodyComponents[controller.cellmanagerModalData?.columnType];
-
-  // TODO エクスプローラにて子カラムがあるカラムスペースを左クリックしたら、それをcurrentColumnSpaceとしてatomsに反映したい。これはlocalStorageにも保存するかな（同じことをできるのを右クリメニューにも作るか…）
-  // TODO 大量データで動作確認してないので後でそこ調整する前提で
 
   return (
     <>
@@ -218,14 +211,15 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
           isOpen={controller.isNewCellFormOpen}
           onClose={controller.handleNewCellFormClose}
           title={`${controller.cellmanagerModalData.columnName}の${cellDataTypeStrings[controller.cellmanagerModalData.columnType]}データ管理`}
+          // 以下ボディ用
+          cellManagerModalData={controller.cellmanagerModalData}
+          onClickCreateNewCell={controller.handleNewCellFormCreateButtonClick}
+          handleClickNewCellFormClose={controller.handleNewCellFormCloseButtonClick}
+          handleNewCellFormCloseButtonClick={controller.handleNewCellFormCloseButtonClick}
+          handleNewCellFormCreateButtonClick={controller.handleNewCellFormCreateButtonClick}
+          // 以下リレーション用
+          onSubmitRelationForm={controller.handleSubmitCellRelationForm}
         >
-          <CellManagerModalBody
-            onClickCreateNewCell={controller.handleNewCellFormCreateButtonClick}
-            handleClickNewCellFormClose={controller.handleNewCellFormCloseButtonClick}
-            columnSpaceId={controller.cellmanagerModalData.columnSpaceId}
-            columnId={controller.cellmanagerModalData.columnId}
-            onSubmitRelationForm={controller.handleSubmitCellRelationForm}
-          />
         </CellManagerModal>
       }
 

@@ -8,7 +8,6 @@
 
 html,
 body {
-  font-size: small;
   @apply bg-gray-900 text-white ;
 }
 
