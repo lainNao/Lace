@@ -149,10 +149,18 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("カラムのコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
-    const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
+    const targetDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset.id    //NOTE: htmlの構造的に右クリされるのがパターンあるのでこうなってしまってる
+      ? (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset
+      : (event.target as HTMLElement).parentElement.parentElement.parentElement.parentElement.dataset
+
+    if (!targetDataset.id) {
+      return;
+    }
+
     setSelectedNodeId(targetDataset.id);
     showColumnContextMenu(event, {
       handleClickCreateNewCell: async () => {
+        console.log(targetDataset)
         const currentRootColumnSpaces = await snapshot.getPromise(columnSpacesState);
         const columnSpace = currentRootColumnSpaces.findDescendantColumnSpace(targetDataset.columnSpaceId);
         const column = currentRootColumnSpaces.findDescendantColumn(targetDataset.id);

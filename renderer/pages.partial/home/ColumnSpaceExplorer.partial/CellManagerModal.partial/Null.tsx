@@ -1,4 +1,4 @@
-export const NewCellFormModalBodyNull = () => {
+export const CellManagerModalBodyNull = () => {
   return (
     <div>
       Null

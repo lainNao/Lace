@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { NewCellFormModalBodyProps } from "../../ColumnSpaceExplorer";
+import { CellManagerModalBodyProps } from "../../ColumnSpaceExplorer";
 import { useDropzone } from 'react-dropzone';
 import { hasCompatibleVideoExtension } from "../../../../modules/validator";
 import { Button, useToast, useDisclosure } from "@chakra-ui/react"
@@ -19,7 +19,7 @@ import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
 import { Cell } from '../../../../models/ColumnSpaces';
 import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
 
-export const NewCellFormModalBodyVideo: React.FC<NewCellFormModalBodyProps> = (props) => {
+export const CellManagerModalBodyVideo: React.FC<CellManagerModalBodyProps> = (props) => {
 
   const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
   const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);

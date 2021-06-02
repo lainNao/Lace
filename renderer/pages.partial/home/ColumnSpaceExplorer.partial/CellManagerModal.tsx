@@ -16,7 +16,7 @@ type Props = {
 }
 
 //TODO なぜかこのモーダル上で右クリしたらemptyスペースを右クリしたのと同じコンテキストメニューが出てるから直す
-export const NewCellFormModal: React.FC<Props> = props => {
+export const CellManagerModal: React.FC<Props> = props => {
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="6xl" closeOnEsc={false} closeOnOverlayClick={false} >
       <ModalOverlay />
