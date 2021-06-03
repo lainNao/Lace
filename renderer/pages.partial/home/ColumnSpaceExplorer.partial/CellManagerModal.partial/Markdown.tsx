@@ -48,7 +48,7 @@ export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> =
         setUpdateTargetCellData({
           columnSpaceId: currentColumnSpace.id,
           columnId: currentColumn.id,
-          cellId: targetDataset.CellId,
+          cellId: targetDataset.cellId,
           type: CellDataType.Markdown,
           data: {
             title: target.innerText,
