@@ -12,5 +12,4 @@ export class GlobalSettingsRepositoryJson extends RepositoryJson<GlobalSettings>
     super();
   }
 
-
 }
