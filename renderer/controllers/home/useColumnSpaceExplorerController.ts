@@ -93,6 +93,13 @@ export const useColumnSpaceExplorerController = () => {
     event.preventDefault();
     event.stopPropagation();
 
+    try {
+      throw new Error("test")
+    } catch(e) {
+      console.log(e.name, e.message)
+    }
+    return;
+
     const targetDataset = (event.target as HTMLElement).dataset;
     setSelectedNodeId(targetDataset.id);
 

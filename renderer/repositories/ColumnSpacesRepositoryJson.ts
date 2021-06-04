@@ -1,12 +1,13 @@
 import fs from 'fs'
 import path from 'path';
-import { Cells, ColumnSpace, ColumnSpaces } from '../models/ColumnSpaces';
+import { ColumnSpaces } from '../models/ColumnSpaces';
+import { DbFileNameEnum } from '../resources/enums/app';
 import { RepositoryJson } from './RepositoryJson';
 
 export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
 
   model = ColumnSpaces;
-  dbFileName: string = "database.json";
+  dbFileName: string = DbFileNameEnum.COLUMN_SPACES;
   private columnDataDir: string = "file_datas"; //TODO この定数どっかに移す
   initialDB: any = [       //TODO モックなので後で直す
     {

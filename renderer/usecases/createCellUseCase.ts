@@ -7,6 +7,7 @@ import {
   createVideoCellUsecase,
 } from "./createCellUsecase.partial";
 import { ColumnSpaces } from "../models/ColumnSpaces";
+import { DbFilesExclusiveTransaction } from "../modules/db";
 
 export interface CreateCellUsecasesArgs {
   columnSpaceId: string,
@@ -28,6 +29,11 @@ const makeSpecificUsecase = (cellDataType: CellDataType) => {
 
 export const createCellUsecase = async(columnSpaceId: string, columnId: string, columnType: CellDataType, cellData: any): Promise<ColumnSpaces> => {
   const targetUsecase = makeSpecificUsecase(columnType);
-  const newColumnSpaces = await targetUsecase({columnSpaceId, columnId, columnType, cellData});
-  return newColumnSpaces;
+  return await DbFilesExclusiveTransaction(
+    async () => {
+      const newColumnSpaces = await targetUsecase({columnSpaceId, columnId, columnType, cellData});
+      return newColumnSpaces;
+    }
+  );
+
 }
