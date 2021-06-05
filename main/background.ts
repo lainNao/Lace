@@ -1,4 +1,4 @@
-import { app, nativeTheme } from 'electron';
+import { app, nativeTheme, shell } from 'electron';
 import serve from 'electron-serve';
 import { createWindow, registerIpc, registerEvents, registerMenus } from './helpers';
 
@@ -38,6 +38,11 @@ if (isProd) {
 
     // transparent: true,
     // resizable: false,
+  });
+
+  mainWindow.webContents.on('new-window', (event, url)=> {
+    event.preventDefault();
+    shell.openExternal(url);
   });
 
   mainWindow.once('ready-to-show', () => {

@@ -12,19 +12,19 @@ export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
   initialDB: any = [       //TODO モックなので後で直す
     {
       "id": "1111",
-      "name": "test_column_space",
+      "name": "サンプルカラムスペース",
       "childColumnSpaces": [],
       "columns": [
         {
           "id": "2222",
-          "name": "test_text_column",
+          "name": "サンプルカラム",
           "type": "Text",
           "cells": [
             {
               "id": "3333",
               "type": "Text",
               "data": {
-                "text": "テスト文章です"
+                "text": "サンプルテキストカラムです"
               }
             }
           ]

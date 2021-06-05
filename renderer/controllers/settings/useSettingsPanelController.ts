@@ -10,11 +10,8 @@ import { getSaveDirPath } from "../../modules/ipc";
 export const useSettingsPanelController = () => {
   const [globalSettings, setGlobalSettings] = useRecoilState(globalSettingsState);
   const { isOpen: isOpenProgressModal, onOpen: openProgressModal, onClose: onCloseProgressModal} = useDisclosure()
-
   // 他
   const toast = useToast()
-
-
 
   const handleClickCustomSaveDirPath = useRecoilCallback(({snapshot, set}) => async (event) => {
 
@@ -30,8 +27,6 @@ export const useSettingsPanelController = () => {
     if (!newCustomSaveDirPath) {
       return;
     }
-
-    console.log(oldUserDirectory, newCustomSaveDirPath)
 
     // NOTE: 再帰コピーにならないように、サブディレクトリの選択はできないようにする
     // TODO このif文ドメイン知識流出してる気がするので対策あれば後で考えたい。単にif文をモデルのコンストラクタに噛ませばいいと思いきや変更判定ができなくてうーん。

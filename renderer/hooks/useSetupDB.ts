@@ -49,7 +49,7 @@ export default function useSetupDB() {
         setHasError(true);
       }
     })()
-  }, [])
+  }, []);
 
   // DBファイルの保存先は変更があるたびにlocalStorageに反映
   //TODO これはここに書くもの感薄いので考える
@@ -60,6 +60,6 @@ export default function useSetupDB() {
     localStorage.setItem(LocalStorageKeys.CUSTOM_SAVE_DIR_PATH, globalSettings.data?.[GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH]);
   }, [globalSettings?.data?.[GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH]])
 
-  return [hasLoaded, hasError];
+  return [hasLoaded, hasError, setHasLoaded, setHasError];
 
 }

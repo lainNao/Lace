@@ -1,10 +1,16 @@
 import React from 'react';
-import { IconButton } from "@chakra-ui/react"
+import { IconButton, Button, useToast } from "@chakra-ui/react"
 import Link from 'next/link';
 import { remote } from "electron";
 import { CogIcon, HomeIcon } from '../../components/icons';
 import { LeftMenuType } from '../../resources/LeftMenuType';
 import useSetupDB from '../../hooks/useSetupDB';
+import { useRecoilCallback } from 'recoil';
+import { initializeApplicationUsecase } from '../../usecases/initializeApplicationUsecase';
+import columnSpacesState from '../../recoils/atoms/columnSpacesState';
+import relatedCellsState from '../../recoils/atoms/relatedCellsState';
+import displaySettingsState from '../../recoils/atoms/displaySettingsState';
+import globalSettingsState from '../../recoils/atoms/globalSettingsState';
 
 type Props = {
   children: React.ReactNode,
@@ -13,7 +19,22 @@ type Props = {
 
 export const BaseLayout = (props: Props) => {
 
-  const [hasLoaded, hasError] = useSetupDB();
+  const [hasLoaded, hasError, setHasLoaded, setHasError] = useSetupDB();
+  const toast = useToast();
+
+  const handleClickSetup = useRecoilCallback(({snapshot, set}) => async (event) => {
+    try {
+      const [newColumnSpaces, newRelatedCells, newDisplaySettings, newGlobalSettings] = await initializeApplicationUsecase();
+      set(columnSpacesState, newColumnSpaces);
+      set(relatedCellsState, newRelatedCells);
+      set(displaySettingsState, newDisplaySettings);
+      set(globalSettingsState, newGlobalSettings);
+      setHasLoaded(true);
+      setHasError(false);
+    } catch (e) {
+      toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
+    }
+  }, []);
 
   return (
 
@@ -57,13 +78,23 @@ export const BaseLayout = (props: Props) => {
       {/* ボディ */}
       <div className="flex flex-row w-screen flex-auto overflow-y-hidden" style={{height: "95%"}}>
         {hasError &&
-          <div>初期化を促す</div>
+          <div className="grid place-items-center w-full">
+            <div className="flex items-center">
+              <img src="/images/icon-title.png" className=""/>
+              <div className="flex flex-col items-center mt-4">
+                <Button colorScheme="gray" size="sm" onClick={handleClickSetup}>初期データのセットアップ</Button>
+                <div className="mt-3 text-sm">
+                  <a href="https://github.com/lainNao/Lace" target="_blank" rel="noopener" className="text-blue-500">README</a>
+                </div>
+              </div>
+            </div>
+            {/* <div>既存データが読み込めない等の場合　FAQ</div> */}
+          </div>
         }
 
         {(!hasError && !hasLoaded) &&
           <div>
-            {/* TODO もう少しどうにかする */}
-            読込中
+            {/* TODO 一瞬チラ見するのが気になるからどうするかな */}
           </div>
         }
 

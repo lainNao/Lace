@@ -67,8 +67,8 @@ export const RelationTargetForm = (props: Props) => {
     if (!relatedCellsTemp.data[props.columnSpace.id]) {
       relatedCellsTemp.data[props.columnSpace.id] = {};
     }
-    if (!relatedCellsTemp.data[props.columnSpace.id][props.columnSpace.id]) {
-      relatedCellsTemp.data[props.columnSpace.id][props.columnSpace.id] = {};
+    if (!relatedCellsTemp.data[props.columnSpace.id][props.column.id]) {
+      relatedCellsTemp.data[props.columnSpace.id][props.column.id] = {};
     }
 
     // 関連セル情報（relatedCellsオブジェクト）を設定
