@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { LocalStorageKeys } from "../resources/enums/app";
 
 export default function useExpandedColumnSpaces() {
 
@@ -15,7 +16,7 @@ export default function useExpandedColumnSpaces() {
 
   useEffect(() => {
     console.debug("expandedColumnSpacesをlocalStorageに保存");
-    localStorage.setItem("expandedColumnSpaces", JSON.stringify(expandedColumnSpaces));
+    localStorage.setItem(LocalStorageKeys.EXPANDED_COLUMN_SPACES, JSON.stringify(expandedColumnSpaces));
   }, [expandedColumnSpaces]);
 
   return [expandedColumnSpaces, setExpandedColumnSpaces] as const;

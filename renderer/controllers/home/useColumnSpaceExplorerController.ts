@@ -357,22 +357,10 @@ export const useColumnSpaceExplorerController = () => {
     try {
       const newColumnSpaces = await createCellsUsecase(columnDataset.columnSpaceId, columnDataset.id, columnDataset.columnType, formData);
       set(columnSpacesState, newColumnSpaces);
-      toast({
-        title: successMessage ?? "セルを追加しました",
-        status: "success",
-        position: "bottom-right",
-        isClosable: true,
-        duration: 1500,
-      })
+      toast({ title: successMessage ?? "セルを追加しました", status: "success", position: "bottom-right", isClosable: true, duration: 1500,})
     } catch (e) {
       console.log(e.stack);
-      toast({
-        title: e.message,
-        status: "error",
-        position: "bottom-right",
-        isClosable: true,
-        duration: 10000,
-      })
+      toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
     }
 
   }, []);
