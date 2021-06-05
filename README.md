@@ -1,7 +1,10 @@
-```
-# development mode
-$ yarn dev (or `npm run dev` or `pnpm run dev`)
+# Laceについて（α版）
+セルとセルを関連付けて表示できるメディアエクスプローラーです。
+まだα版ですが一応使えます。
 
-# production build
-$ yarn build (or `npm run build` or `pnpm run build`)
-```
+# インストール
+後で
+
+# ライセンス
+後で
+
