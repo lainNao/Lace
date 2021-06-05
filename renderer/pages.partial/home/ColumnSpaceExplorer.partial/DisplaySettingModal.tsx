@@ -12,6 +12,7 @@ import { removeDisplaySettingUsecase } from '../../../usecases/removeDisplaySett
 import displaySettingsState from '../../../recoils/atoms/displaySettingsState';
 import { showDisplaySettingContextMenu } from '../../../context-menus/showDisplaySettingContextMenu';
 import { DisplaySettingUpdateModal } from './DisplaySettingModal.partial/DisplaySettingUpdateModal';
+import { updateDisplaySettingOrderUsecase } from '../../../usecases/updateDisplaySettingOrderUsecase';
 
 type Props = {
   isOpen: boolean,
@@ -35,6 +36,26 @@ export const DisplaySettingModal: React.FC<Props> = props => {
     rightClickedCellRef.current.classList.add("bg-gray-800");
 
     showDisplaySettingContextMenu({
+      targetIndex: Number(targetDataset.index),
+      lastListIndex: props.displaySettings.children[currentSelectedColumnSpaceId].length -1,
+      handleClickUp: async () => {
+        try{
+          const newDisplaySettings = await updateDisplaySettingOrderUsecase(currentSelectedColumnSpaceId, Number(targetDataset.index), Number(targetDataset.index)-1);
+          set(displaySettingsState, newDisplaySettings);
+        } catch (e) {
+          toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
+          console.log(e.stack)
+        }
+      },
+      handleClickDown: async () => {
+        try{
+          const newDisplaySettings = await updateDisplaySettingOrderUsecase(currentSelectedColumnSpaceId, Number(targetDataset.index), Number(targetDataset.index)+1);
+          set(displaySettingsState, newDisplaySettings);
+        } catch (e) {
+          toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
+          console.log(e.stack)
+        }
+      },
       handleClickUpdateDisplaySetting: async () => {
         const displaySettings = await snapshot.getPromise(displaySettingsState);
         const targetDisplaySetting = displaySettings.children[currentSelectedColumnSpaceId].find(ds => ds.id === targetDataset.displaySettingId);
@@ -72,7 +93,7 @@ export const DisplaySettingModal: React.FC<Props> = props => {
       }
     })
 
-  }, [currentSelectedColumnSpaceId]);
+  }, [currentSelectedColumnSpaceId, props.displaySettings.children[currentSelectedColumnSpaceId]]);
 
   return (
     <>
@@ -104,7 +125,7 @@ export const DisplaySettingModal: React.FC<Props> = props => {
                       height={windowHeight-260}
                     >
                       {props.displaySettings.children[currentSelectedColumnSpaceId].map((displaySetting, index) => (
-                        <div key={displaySetting.id} onContextMenu={handleOnDisplaySettingContextMenu} data-display-setting-id={displaySetting.id} >
+                        <div key={displaySetting.id} onContextMenu={handleOnDisplaySettingContextMenu} data-display-setting-id={displaySetting.id} data-index={index}>
                           <hr/>
                           <div key={displaySetting.id} className="break-all pb-2 pl-1 whitespace-pre-wrap hover:bg-gray-800" style={{minHeight: "10px"}}>
                             {displaySetting.name}

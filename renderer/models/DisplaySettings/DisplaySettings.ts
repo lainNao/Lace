@@ -1,5 +1,6 @@
 import assert from "assert";
 import { DisplaySetting } from ".";
+import { array_move } from "../../modules/array";
 
 type ColumnSpacesHasArray = {
   [columnSpaceUuid: string]: DisplaySetting[]
@@ -71,6 +72,12 @@ export class DisplaySettings {
       return ds;
     });
 
+    return new DisplaySettings(this);
+  }
+
+  // 指定カラムスペースの表示設定配列の順番を変える
+  updateDisplaySettingOrder(columnSpaceId: string, fromIndex: number, toIndex: number): DisplaySettings {
+    this._children[columnSpaceId] = array_move(this._children[columnSpaceId], fromIndex, toIndex);
     return new DisplaySettings(this);
   }
 
