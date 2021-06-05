@@ -1,7 +1,6 @@
 import React from 'react';
 import { BaseLayout } from '../components/layouts/BaseLayout';
 import { SettingsPanel } from '../pages.partial/settings/SettingsPanel';
-import { LeftMenuType } from '../resources/LeftMenuType';
 
 const SettingsLayout: React.FC = () => {
 

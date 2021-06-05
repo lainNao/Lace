@@ -167,7 +167,7 @@ export const BaseLayout = (props: Props) => {
 
       {/* フッター */}
       <div className="flex justify-center items-center" style={{height: "25px"}}>
-        <img src="/images/icon.png" className="w-5 h-5" /><span className="ml-2 font-serif text-sm">Lace</span>
+        <img src="/images/icon.png" className="w-5 h-5" /><span className="ml-2 font-serif text-sm select-none">Lace</span>
       </div>
 
     </div>

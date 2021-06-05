@@ -1,5 +1,4 @@
 import { useRecoilState } from "recoil";
-import useSetupDB from "../../hooks/useSetupDB";
 import selectedLeftMenuState from "../../recoils/atoms/selectedLeftMenuState";
 
 

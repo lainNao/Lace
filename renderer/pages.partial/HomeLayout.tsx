@@ -1,12 +1,8 @@
 import React from 'react';
-import { useHomeController } from '../controllers/home/useHomeController';
 import { ColumnSpaceExplorer } from "../pages.partial/home/ColumnSpaceExplorer";
 import { BaseLayout } from '../components/layouts/BaseLayout';
-import { LeftMenuType } from '../resources/LeftMenuType';
 import { ColumnSpaceDisplayer } from '../pages.partial/home/ColumnSpaceDisplayer';
 
-// TODO ツリーの表示がもっさりしてるから別のライブラリに切り替えるか、または今のツリーのオプションを探す
-// TODO カラムスペース追加時に一瞬ガクっとなる（高さが限界を超える場合）のをいつか直す
 const HomeLayout: React.FC = () => {
 
   return (
