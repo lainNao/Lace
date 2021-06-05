@@ -4,6 +4,11 @@ export enum FileSystemEnum {
   Cell,
 }
 
+export enum LeftMenus {
+  HOME = "HOME",
+  SETTINGS = "SETTINGS",
+}
+
 export enum DbFileNameEnum {
   COLUMN_SPACES = "column_spaces.json",
   RELATED_CELLS = "related_cells.json",

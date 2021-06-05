@@ -3,27 +3,27 @@ import { IconButton, Button, useToast } from "@chakra-ui/react"
 import Link from 'next/link';
 import { remote } from "electron";
 import { CogIcon, HomeIcon } from '../../components/icons';
-import { LeftMenuType } from '../../resources/LeftMenuType';
 import useSetupDB from '../../hooks/useSetupDB';
-import { useRecoilCallback } from 'recoil';
+import { useRecoilCallback, useRecoilState } from 'recoil';
 import { initializeApplicationUsecase } from '../../usecases/initializeApplicationUsecase';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import globalSettingsState from '../../recoils/atoms/globalSettingsState';
-import { LocalStorageKeys } from '../../resources/enums/app';
+import { LeftMenus, LocalStorageKeys } from '../../resources/enums/app';
 import * as packageJson from "../../../package.json"
 import { Menu, MenuItem, MenuButton, MenuDivider, MenuHeader } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
+import selectedLeftMenuState from '../../recoils/atoms/selectedLeftMenuState';
 
 type Props = {
   children: React.ReactNode,
-  leftMenuType: LeftMenuType,
 }
 
 export const BaseLayout = (props: Props) => {
 
   const [hasLoaded, hasError, setHasLoaded, setHasError] = useSetupDB();
+  const [selectedLeftMenu, setSelectedLeftMenu] = useRecoilState(selectedLeftMenuState);
   const toast = useToast();
 
   const handleClickSetup = useRecoilCallback(({snapshot, set}) => async (event) => {
@@ -135,8 +135,12 @@ export const BaseLayout = (props: Props) => {
           <>
             {/* 一番左の部分 */}
             <div className="flex flex-col items-center p-2 space-y-2.5 bg-gray-900">
-              <Link href="/home"><IconButton aria-label="search" style={{outline:"none"}} icon={<HomeIcon className={`${props.leftMenuType === LeftMenuType.HOME && "text-blue-400"}`} />} /></Link>
-              <Link href="/settings"><IconButton aria-label="edit" style={{outline:"none"}} icon={<CogIcon className={`${props.leftMenuType === LeftMenuType.SETTINGS && "text-blue-400"}`} />}/></Link>
+              <IconButton aria-label="home" style={{outline:"none"}} onClick={() => setSelectedLeftMenu(LeftMenus.HOME)} icon={
+                <HomeIcon className={`${selectedLeftMenu === LeftMenus.HOME && "text-blue-400"}`} />
+              } />
+              <IconButton aria-label="settings" style={{outline:"none"}} onClick={() => setSelectedLeftMenu(LeftMenus.SETTINGS)} icon={
+                <CogIcon className={`${selectedLeftMenu === LeftMenus.SETTINGS && "text-blue-400"}`} />
+              } />
             </div>
 
             {props.children}
