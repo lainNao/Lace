@@ -12,6 +12,7 @@ export enum DbFileNameEnum {
 }
 
 export enum LocalStorageKeys {
-  CUSTOM_SAVE_DIR_PATH = "customSaveDirPath",
-  EXPANDED_COLUMN_SPACES = "expandedColumnSpaces",
+  CUSTOM_SAVE_DIR_PATH = "customSaveDirPath", //ユーザが変更したセーブディレクトリのパス
+  EXPANDED_COLUMN_SPACES = "expandedColumnSpaces", //展開しているカラムスペースのIDリスト
+  HAS_ONCE_INITIALIZED = "hasOnceInitialized",  //「初期化したことあるのにDB読み込みエラーが起きたとき」の判別に使う
 }

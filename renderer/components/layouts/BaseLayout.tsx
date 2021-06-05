@@ -11,6 +11,7 @@ import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import globalSettingsState from '../../recoils/atoms/globalSettingsState';
+import { LocalStorageKeys } from '../../resources/enums/app';
 
 type Props = {
   children: React.ReactNode,
@@ -31,6 +32,9 @@ export const BaseLayout = (props: Props) => {
       set(globalSettingsState, newGlobalSettings);
       setHasLoaded(true);
       setHasError(false);
+
+      //NOTE: 1度でも初期化したことあるというフラグを立てる。基本的にこれが立ってれば、あとはもうここが呼ばれることは無いはず。（ただし最初期化機能作った時はまた呼ばれる）
+      localStorage.setItem(LocalStorageKeys.HAS_ONCE_INITIALIZED, "true");
     } catch (e) {
       toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
     }
@@ -82,7 +86,21 @@ export const BaseLayout = (props: Props) => {
             <div className="flex items-center">
               <img src="/images/icon-title.png" className=""/>
               <div className="flex flex-col items-center mt-4">
-                <Button colorScheme="gray" size="sm" onClick={handleClickSetup}>初期データのセットアップ</Button>
+                {localStorage.getItem(LocalStorageKeys.HAS_ONCE_INITIALIZED)
+                    //過去に初期化したことはあるが、なんらかの原因でDBが読み込めない場合
+                    ? <div>
+                      <div>データが読み込めませんか？</div>
+                      <div>なんらかのエラーが起きている可能性があるのでまずデータのバックアップを取ってください。</div>
+                      <div>（データはOSのユーザ用ディレクトリの中の「Lace」ディレクトリか、または過去に変更したディレクトリパスにあります）</div>
+                      <div>次にFAQを探して解決してください（後で用意するつもりです…）</div>
+                      <div>または無料なので諦め、以下のボタンを押して新しく初期化してください（既存データは消えます）</div>
+                      <div className="mt-3">
+                        <Button colorScheme="gray" size="sm" onClick={handleClickSetup}>データの初期化</Button>
+                      </div>
+                    </div>
+                  //過去に初期化したこともなく、読み込めない場合（通常の最初期化）
+                  : <Button colorScheme="gray" size="sm" onClick={handleClickSetup}>初期データのセットアップ</Button>
+                }
                 <div className="mt-3 text-sm">
                   <a href="https://github.com/lainNao/Lace" target="_blank" rel="noopener" className="text-blue-500">README</a>
                 </div>
