@@ -20,12 +20,12 @@ export const SettingsPanel = () => {
           <Thead>
             <Tr>
               <Th>設定名</Th>
-              <Th>設定値</Th>
+              <Th>値</Th>
             </Tr>
           </Thead>
           <Tbody>
             <Tr>
-              <Td>DBファイル保存先ディレクトリ</Td>
+              <Td>データ保存先ディレクトリ</Td>
               <Td>
                 {controller.saveDirPath}
                 <Button className="ml-3" colorScheme="teal" size="sm" onClick={controller.handleClickCustomSaveDirPath}>変更</Button>

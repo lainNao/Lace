@@ -25,6 +25,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "*",
     "@react-hook/window-size": "^3.0.7",
+    "@szhsin/react-menu": "^1.10.1",
     "@types/lodash": "^4.14.168",
     "@types/material-ui": "^0.21.8",
     "@types/react-select": "^4.0.15",
