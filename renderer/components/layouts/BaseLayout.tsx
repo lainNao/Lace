@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { remote } from "electron";
 import { CogIcon, HomeIcon } from '../../components/icons';
 import useSetupDB from '../../hooks/useSetupDB';
-import { useRecoilCallback, useRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import { initializeApplicationUsecase } from '../../usecases/initializeApplicationUsecase';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
@@ -15,6 +15,8 @@ import * as packageJson from "../../../package.json"
 import { Menu, MenuItem, MenuButton, MenuDivider, MenuHeader } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 import selectedLeftMenuState from '../../recoils/atoms/selectedLeftMenuState';
+import selectedColumnSpaceIdState from '../../recoils/atoms/selectedColumnSpaceIdState';
+import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
 
 type Props = {
   children: React.ReactNode,
@@ -24,6 +26,9 @@ export const BaseLayout = (props: Props) => {
 
   const [hasLoaded, hasError, setHasLoaded, setHasError] = useSetupDB();
   const [selectedLeftMenu, setSelectedLeftMenu] = useRecoilState(selectedLeftMenuState);
+  const currentSelectedColumnSpaceId = useRecoilValue(selectedColumnSpaceIdState);
+  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));
+
   const toast = useToast();
 
   const handleClickSetup = useRecoilCallback(({snapshot, set}) => async (event) => {
@@ -67,7 +72,19 @@ export const BaseLayout = (props: Props) => {
           </Menu>
         </div>
 
-        <div className="webkit-app-region-drag flex-auto"></div>
+        {/* 中央表示部分 */}
+        <div className="webkit-app-region-drag flex-auto text-center">
+        {selectedLeftMenu === LeftMenus.HOME &&
+            <div>
+              <span>Home - {currentSelectedColumnSpace?.name}</span>
+            </div>
+          }
+          {selectedLeftMenu === LeftMenus.SETTINGS &&
+            <div>
+              <span>Settings</span>
+            </div>
+          }
+        </div>
 
         {/* 各種ボタン */}
         <div className="flex">
@@ -149,8 +166,8 @@ export const BaseLayout = (props: Props) => {
       </div>
 
       {/* フッター */}
-      <div className="" style={{height: "25px"}}>
-        foot（状態表示など）
+      <div className="flex justify-center items-center" style={{height: "25px"}}>
+        <img src="/images/icon.png" className="w-5 h-5" /><span className="ml-2 font-serif text-sm">Lace</span>
       </div>
 
     </div>
