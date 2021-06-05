@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "kari",
-  "description": "kari",
-  "version": "1.0.0",
-  "author": "kari",
+  "name": "Lace",
+  "description": "Lace - A Relational Cell Explorer",
+  "version": "0.1.0",
+  "author": "lainNao",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
