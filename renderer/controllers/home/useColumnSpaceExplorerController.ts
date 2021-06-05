@@ -377,6 +377,13 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------カラムスペースのDnD----------------------------------------------------------- */
 
+  const handleDragEnterOnEmptySpace = useRecoilCallback(({snapshot}) => async(event: React.DragEvent<HTMLElement>) => {
+    console.debug("emptyスペースへのドラッグエンター")
+    if (lastAddedBorderElementRef.current) {
+      lastAddedBorderElementRef.current.classList.remove("border-t-2");
+    }
+  }, []);
+
   const handleDropOnEmptySpace = useRecoilCallback(({set}) => async(event: React.DragEvent<HTMLElement>) => {
     console.debug("emptyスペースへのドロップ");
     const columnSpaceId = event.dataTransfer.getData("columnSpaceId");
@@ -436,8 +443,11 @@ export const useColumnSpaceExplorerController = () => {
     if (draggingNodeDataset && Number(draggingNodeDataset.type) === FileSystemEnum.Column && draggingNodeDataset.columnSpaceId === enteredColumnSpaceDataset.id) {
       // カラムをドラッグしており、その親のカラムスペースへのエンターの場合
       isLeavingToParentColumnSpace.current = true;
-      lastAddedBorderElementRef.current.classList.remove("border-b-2");
-      lastAddedBorderElementRef.current.classList.add("border-t-2");
+
+      if (lastAddedBorderElementRef.current) {
+        lastAddedBorderElementRef.current.classList.remove("border-b-2");
+        lastAddedBorderElementRef.current.classList.add("border-t-2");
+      }
     } else {
       // それ以外の普通のカラムスペースへのドラッグエンターの場合
       if (lastAddedBorderElementRef.current) {
@@ -539,8 +549,10 @@ export const useColumnSpaceExplorerController = () => {
       return;
     } else {
       // 違うカラムスペースのカラムへのEnterなら
-      lastAddedBorderElementRef.current.classList.remove("border-b-2");
-      lastAddedBorderElementRef.current.classList.remove("border-t-2");
+      if (lastAddedBorderElementRef.current) {
+        lastAddedBorderElementRef.current.classList.remove("border-b-2");
+        lastAddedBorderElementRef.current.classList.remove("border-t-2");
+      }
       return;
     }
 
@@ -575,6 +587,7 @@ export const useColumnSpaceExplorerController = () => {
     const targetColumnDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     set(draggingNodeDatasetState, null);
 
+    // スタイル調整
     if (lastAddedBorderElementRef.current) {
       lastAddedBorderElementRef.current.classList.remove("border-b-2");
       lastAddedBorderElementRef.current = null;
@@ -654,6 +667,7 @@ export const useColumnSpaceExplorerController = () => {
     handleRightClickOnEmptySpace,
     handleRightClickOnColumnSpace,
     handleRightClickOnColumn,
+    handleDragEnterOnEmptySpace,
     handleDragOverOnEmptySpace,
     handleDragStartOnColumnSpace,
     handleDragEnterOnColumnSpace,

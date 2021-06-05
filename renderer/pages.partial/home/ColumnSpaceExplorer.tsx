@@ -141,6 +141,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
       <div
         className={`${props.classeName}`}
         onContextMenu={controller.handleRightClickOnEmptySpace}
+        onDragEnter={controller.handleDragEnterOnEmptySpace}
         onDragOver={controller.handleDragOverOnEmptySpace}
         onDrop={controller.handleDropOnEmptySpace}
       >
