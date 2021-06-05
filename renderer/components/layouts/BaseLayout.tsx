@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { remote } from "electron";
 import { CogIcon, HomeIcon } from '../../components/icons';
 import { LeftMenuType } from '../../resources/LeftMenuType';
+import useSetupDB from '../../hooks/useSetupDB';
 
 type Props = {
   children: React.ReactNode,
@@ -11,6 +12,8 @@ type Props = {
 }
 
 export const BaseLayout = (props: Props) => {
+
+  const [hasLoaded, hasError] = useSetupDB();
 
   return (
 
@@ -53,15 +56,28 @@ export const BaseLayout = (props: Props) => {
 
       {/* ボディ */}
       <div className="flex flex-row w-screen flex-auto overflow-y-hidden" style={{height: "95%"}}>
+        {hasError &&
+          <div>初期化を促す</div>
+        }
 
-        {/* 一番左の部分 */}
-        <div className="flex flex-col items-center p-2 space-y-2.5 bg-gray-900">
-          <Link href="/home"><IconButton aria-label="search" style={{outline:"none"}} icon={<HomeIcon className={`${props.leftMenuType === LeftMenuType.HOME && "text-blue-400"}`} />} /></Link>
-          <Link href="/settings"><IconButton aria-label="edit" style={{outline:"none"}} icon={<CogIcon className={`${props.leftMenuType === LeftMenuType.SETTINGS && "text-blue-400"}`} />}/></Link>
-        </div>
+        {(!hasError && !hasLoaded) &&
+          <div>
+            {/* TODO もう少しどうにかする */}
+            読込中
+          </div>
+        }
 
-        {props.children}
+        {(!hasError && hasLoaded) &&
+          <>
+            {/* 一番左の部分 */}
+            <div className="flex flex-col items-center p-2 space-y-2.5 bg-gray-900">
+              <Link href="/home"><IconButton aria-label="search" style={{outline:"none"}} icon={<HomeIcon className={`${props.leftMenuType === LeftMenuType.HOME && "text-blue-400"}`} />} /></Link>
+              <Link href="/settings"><IconButton aria-label="edit" style={{outline:"none"}} icon={<CogIcon className={`${props.leftMenuType === LeftMenuType.SETTINGS && "text-blue-400"}`} />}/></Link>
+            </div>
 
+            {props.children}
+          </>
+        }
       </div>
 
       {/* フッター */}

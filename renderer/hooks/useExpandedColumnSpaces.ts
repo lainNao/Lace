@@ -15,7 +15,6 @@ export default function useExpandedColumnSpaces() {
   }, []);
 
   useEffect(() => {
-    console.debug("expandedColumnSpacesをlocalStorageに保存");
     localStorage.setItem(LocalStorageKeys.EXPANDED_COLUMN_SPACES, JSON.stringify(expandedColumnSpaces));
   }, [expandedColumnSpaces]);
 

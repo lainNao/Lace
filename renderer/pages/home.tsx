@@ -11,11 +11,6 @@ const Home: React.FC = () => {
 
   const controller = useHomeController();
 
-  if (!controller.hasInitialized) {
-    return (
-      <div>読込中</div>
-    )
-  }
 
   return (
     <BaseLayout

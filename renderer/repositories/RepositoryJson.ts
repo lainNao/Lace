@@ -40,16 +40,6 @@ export class RepositoryJson<T> {
     return this.data;
   }
 
-  //TODO これは廃止する。read使う側でcatchなどして、ユーザーに確認して必要ならinitializeを改めて行うようにする
-  async readOrInitialize(): Promise<T> {
-    try {
-      return await this.read();
-    } catch {
-      // TODO これ、readに失敗しただけでイニシャライズしちゃうのはきついのでは…　絶対に良くないと思う…　readとinitializeは実行タイミングはユーザーの選択によって分けたほうがいいと思う…
-      return await this.initialize()
-    }
-  }
-
   async read(): Promise<T> {
     assert(this.model, "modelが設定されていません");
     assert(this.model.fromJSON, "modelにfromJSONが定義されていません");

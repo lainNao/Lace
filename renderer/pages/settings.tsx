@@ -7,12 +7,6 @@ import { LeftMenuType } from '../resources/LeftMenuType';
 const Settings: React.FC = () => {
   const controller = useSettingsController();
 
-  if (!controller.hasInitialized) {
-    return (
-      <div>読込中</div>
-    )
-  }
-
   return (
     <BaseLayout
       leftMenuType={LeftMenuType.SETTINGS}
