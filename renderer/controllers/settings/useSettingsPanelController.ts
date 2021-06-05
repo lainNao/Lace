@@ -6,10 +6,13 @@ import { GlobalSettingKeys } from "../../models/GlobalSettings/GlobalSettings";
 import { useDisclosure, useToast } from "@chakra-ui/react";
 import { updateDbPathUsecase } from "../../usecases/updateDbPathUsecase";
 import { getSaveDirPath } from "../../modules/ipc";
+import { useEffect, useMemo, useState } from "react";
+import { isSubDir } from "../../modules/string";
 
 export const useSettingsPanelController = () => {
   const [globalSettings, setGlobalSettings] = useRecoilState(globalSettingsState);
   const { isOpen: isOpenProgressModal, onOpen: openProgressModal, onClose: onCloseProgressModal} = useDisclosure()
+  const [saveDirPath, setSaveDirPath] = useState(null);
   // 他
   const toast = useToast()
 
@@ -30,7 +33,7 @@ export const useSettingsPanelController = () => {
 
     // NOTE: 再帰コピーにならないように、サブディレクトリの選択はできないようにする
     // TODO このif文ドメイン知識流出してる気がするので対策あれば後で考えたい。単にif文をモデルのコンストラクタに噛ませばいいと思いきや変更判定ができなくてうーん。
-    if (newCustomSaveDirPath.startsWith(oldUserDirectory)) {
+    if (isSubDir(oldUserDirectory, newCustomSaveDirPath)) {
       toast({ title: "同一ディレクトリまたはサブディレクトリを選択することはできません", status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
       return;
     }
@@ -53,14 +56,26 @@ export const useSettingsPanelController = () => {
 
   }, []);
 
+  // 表示用のDBファイル保存先ディレクトリの設定を反映
+  useEffect(() => {
+    (async () => {
+      if (globalSettings?.data?.[GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH]) {
+        setSaveDirPath(globalSettings?.data?.[GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH]);
+      } else {
+        const path = await getSaveDirPath();
+        setSaveDirPath(path);
+      }
+    })()
+  }, [globalSettings?.data?.[GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH]]);
+
   return {
     // 状態
     globalSettings,
+    saveDirPath,
     // イベントハンドラ
     handleClickCustomSaveDirPath,
     // モーダル管理
     isOpenProgressModal,
     onCloseProgressModal,
-
   }
 }

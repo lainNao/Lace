@@ -93,7 +93,7 @@ export const BaseLayout = (props: Props) => {
         }
 
         {(!hasError && !hasLoaded) &&
-          <div>
+          <div className="bg-gray-900">
             {/* TODO 一瞬チラ見するのが気になるからどうするかな */}
           </div>
         }

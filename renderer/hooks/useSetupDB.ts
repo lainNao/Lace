@@ -45,6 +45,7 @@ export default function useSetupDB() {
 
         setHasLoaded(true);
       } catch (e) {
+        console.log(e);
         // 失敗したらDBが無いかなんらかの異常なので、初期化をユーザーにうながす
         setHasError(true);
       }

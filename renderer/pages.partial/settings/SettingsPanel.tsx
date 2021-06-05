@@ -27,7 +27,7 @@ export const SettingsPanel = () => {
             <Tr>
               <Td>DBファイル保存先ディレクトリ</Td>
               <Td>
-                {controller.globalSettings.data?.[GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH] ?? "デフォルトパス"}
+                {controller.saveDirPath}
                 <Button className="ml-3" colorScheme="teal" size="sm" onClick={controller.handleClickCustomSaveDirPath}>変更</Button>
               </Td>
             </Tr>
