@@ -4,7 +4,7 @@ import { remote } from "electron";
 import { CogIcon, HomeIcon } from '../components/icons';
 import { LeftMenus, LocalStorageKeys } from '../resources/enums/app';
 import * as packageJson from "../../package.json"
-import { Menu, MenuItem, MenuButton, MenuDivider, MenuHeader } from '@szhsin/react-menu';
+import { Menu, MenuItem, MenuDivider, MenuHeader } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 import HomeBody from '../pages.partial/HomeBody';
 import SettingsBody from '../pages.partial/SettingsBody';
@@ -39,7 +39,7 @@ export const Home = () => {
 
         {/* 中央表示部分 */}
         <div className="webkit-app-region-drag flex-auto text-center">
-        {controller.selectedLeftMenu === LeftMenus.HOME &&
+          {controller.selectedLeftMenu === LeftMenus.HOME &&
             <div>
               <span>Home{controller.currentSelectedColumnSpace?.name && ` - ${controller.currentSelectedColumnSpace?.name}`}</span>
             </div>
