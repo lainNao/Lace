@@ -8,6 +8,9 @@ import { updateDbPathUsecase } from "../../usecases/updateDbPathUsecase";
 import { getSaveDirPath } from "../../modules/ipc";
 import { useEffect, useMemo, useState } from "react";
 import { isSubDir } from "../../modules/string";
+import * as packageJson from "../../../package.json"
+import path from "path";
+import fs from "fs";
 
 export const useSettingsPanelController = () => {
   const [globalSettings, setGlobalSettings] = useRecoilState(globalSettingsState);
@@ -20,21 +23,27 @@ export const useSettingsPanelController = () => {
 
     //1, ディレクトリ選択ダイアログを開く
     const dialog = remote.require('electron').dialog;
-    const path = await dialog.showOpenDialog({
+    const selectedPath = await dialog.showOpenDialog({
       properties: ['openDirectory']
     });
 
     const oldUserDirectory = await getSaveDirPath();
 
-    const newCustomSaveDirPath = path?.filePaths?.[0];
-    if (!newCustomSaveDirPath) {
+    const selectedDirectoryPath = selectedPath?.filePaths?.[0];
+    if (!selectedDirectoryPath) {
       return;
     }
+    const newCustomSaveDirPath = path.join(selectedDirectoryPath, packageJson.name) ;
 
+    // TODO ここらへんのif文ドメイン知識流出してる気がするので対策あれば後で考えたい。単にif文をモデルのコンストラクタに噛ませばいいと思いきや変更判定ができなくてうーん。
     // NOTE: 再帰コピーにならないように、サブディレクトリの選択はできないようにする
-    // TODO このif文ドメイン知識流出してる気がするので対策あれば後で考えたい。単にif文をモデルのコンストラクタに噛ませばいいと思いきや変更判定ができなくてうーん。
     if (isSubDir(oldUserDirectory, newCustomSaveDirPath)) {
       toast({ title: "同一ディレクトリまたはサブディレクトリを選択することはできません", status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
+      return;
+    }
+    // Laceディレクトリが選択したディレクトリ直下にあったらかぶるのでreturn
+    if (fs.lstatSync(newCustomSaveDirPath).isDirectory) {
+      toast({ title: `選択したディレクトリ直下に既に${packageJson.name}ディレクトリが存在します`, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
       return;
     }
 
