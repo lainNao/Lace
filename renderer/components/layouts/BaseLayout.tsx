@@ -76,7 +76,7 @@ export const BaseLayout = (props: Props) => {
         <div className="webkit-app-region-drag flex-auto text-center">
         {selectedLeftMenu === LeftMenus.HOME &&
             <div>
-              <span>Home - {currentSelectedColumnSpace?.name}</span>
+              <span>Home{currentSelectedColumnSpace?.name && ` - ${currentSelectedColumnSpace?.name}`}</span>
             </div>
           }
           {selectedLeftMenu === LeftMenus.SETTINGS &&
@@ -142,12 +142,6 @@ export const BaseLayout = (props: Props) => {
           </div>
         }
 
-        {(!hasError && !hasLoaded) &&
-          <div className="bg-gray-900">
-            {/* TODO 一瞬チラ見するのが気になるからどうするかな */}
-          </div>
-        }
-
         {(!hasError && hasLoaded) &&
           <>
             {/* 一番左の部分 */}
@@ -166,7 +160,7 @@ export const BaseLayout = (props: Props) => {
       </div>
 
       {/* フッター */}
-      <div className="flex justify-center items-center" style={{height: "25px"}}>
+      <div className="flex justify-center items-center bg-gray-900" style={{height: "25px"}}>
         <img src="/images/icon.png" className="w-5 h-5" /><span className="ml-2 font-serif text-sm select-none">Lace</span>
       </div>
 
