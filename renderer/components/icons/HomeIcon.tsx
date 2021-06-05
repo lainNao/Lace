@@ -1,5 +1,5 @@
 type Props = {
-  className: string;
+  className?: string;
 }
 
 export const HomeIcon = (props: Props) => (

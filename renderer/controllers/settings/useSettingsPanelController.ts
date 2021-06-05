@@ -56,6 +56,10 @@ export const useSettingsPanelController = () => {
 
   }, []);
 
+  const handleClickOptimizeDbSize = useRecoilCallback(({snapshot, set}) => async (event) => {
+    //TODO 実装
+  }, []);
+
   // 表示用のDBファイル保存先ディレクトリの設定を反映
   useEffect(() => {
     (async () => {
@@ -74,6 +78,7 @@ export const useSettingsPanelController = () => {
     saveDirPath,
     // イベントハンドラ
     handleClickCustomSaveDirPath,
+    handleClickOptimizeDbSize,
     // モーダル管理
     isOpenProgressModal,
     onCloseProgressModal,
