@@ -154,10 +154,8 @@ export const MainPane = (props: Props) => {
       <div className="mb-3"><Tag colorScheme="cyan">分類済</Tag></div>
       {generateMainPaneElementTree(0, [])}
 
-      <div className="bg-gray-800 h-1 mr-3 mt-12 mb-4 rounded-full"/>
-
       {/* 関連づいてないもの */}
-      <div className="mb-3"><Tag colorScheme="cyan">未分類</Tag></div>
+      <div className="mt-10 mb-3"><Tag colorScheme="cyan">未分類</Tag></div>
       {generateMainPaneUnrelatedElementTree()}
     </div>
   )
