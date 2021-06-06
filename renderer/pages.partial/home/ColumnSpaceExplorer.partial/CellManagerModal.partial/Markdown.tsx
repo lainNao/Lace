@@ -20,10 +20,10 @@ import { CellDataType } from "../../../../resources/CellDataType";
 import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
 import { Cell } from '../../../../models/ColumnSpaces';
 import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
+import MarkdownPreview from '@uiw/react-markdown-preview';
+import "@uiw/react-markdown-preview/dist/markdown.css";
 
 export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> = (props) => {
-
-  //TODO 左サイドの下部半分をプレビューに使いたい
 
   const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
   const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);
@@ -137,17 +137,22 @@ export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> =
                 <Field name="title">
                   {({ field, form, ...props }) => <Input {...field} {...props} spellCheck={false}/> }
                 </Field>
-                {/* <ErrorMessage name="title" component="div" className="field-error font-black text-red-700 text-sm" /> */}
 
                 <label htmlFor="text">本文（マークダウン）</label>
                 <Field name="text" >
                   {({ field, form, ...props }) => <Textarea {...field} {...props} spellCheck={false} rows={15} /> }
                 </Field>
-                {/* <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/> */}
               </div>
 
-              <div className="float-right mt-3 mb-2">
+              <div className="flex justify-end mt-3 mb-2">
                 <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}><AddIcon className="mr-2"/>追加</Button>
+              </div>
+
+              <div className="mt-3">
+                <div>本文プレビュー</div>
+                <div className="rounded-lg p-3 mb-3 bg-gray-900">
+                  <MarkdownPreview source={formState.values?.text} />
+                </div>
               </div>
             </Form>
           )}}

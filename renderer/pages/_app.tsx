@@ -5,6 +5,7 @@ import "../resources/styles/global.css";
 import { ChakraProvider } from "@chakra-ui/react"
 import dark from "../resources/themes/dark"
 import { RecoilRoot } from 'recoil';
+import * as packageJson from "../../package.json"
 
 function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -31,7 +32,7 @@ function App(props: AppProps) {
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
-        <title>with-typescript-material-ui</title>
+        <title>{packageJson.name}</title>
         <script dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }} />
       </Head>
       <ChakraProvider theme={dark}>

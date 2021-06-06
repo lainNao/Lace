@@ -8,6 +8,8 @@ import columnSpacesState from "../../../../../recoils/atoms/columnSpacesState";
 import { CellDataFactory } from "../../../../../factories/CellDataFactory";
 import { CellDataType } from "../../../../../resources/CellDataType";
 import { Cell } from "../../../../../models/ColumnSpaces";
+import MarkdownPreview from '@uiw/react-markdown-preview';
+import "@uiw/react-markdown-preview/dist/markdown.css";
 
 export type MarkdownCellBaseInfo = {
   columnSpaceId: string,
@@ -91,9 +93,17 @@ export const MarkdownCellUpdateModal = (props: Props) => {
                     {/* <ErrorMessage name="text" component="div" className="field-error font-black text-red-700 text-sm"/> */}
                   </div>
 
-                  <div className="float-right mt-3 mb-2">
+                  <div className="flex justify-end mt-3 mb-2">
                     <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.isValid || formState.isSubmitting}>完了</Button>
                     <Button variant="ghost" onClick={props.onClose}>キャンセル</Button>
+                  </div>
+
+
+                  <div className="mt-3">
+                    <div>本文プレビュー</div>
+                    <div className="rounded-lg p-3 mb-3 bg-gray-900">
+                      <MarkdownPreview source={formState.values?.text} />
+                    </div>
                   </div>
                 </Form>
                 )
