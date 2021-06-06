@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useRecoilCallback, useRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import selectedColumnSpaceIdState from '../../recoils/atoms/selectedColumnSpaceIdState';
+import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
 
 export const useColumnSpaceDisplayerController = () => {
   const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
@@ -12,6 +13,9 @@ export const useColumnSpaceDisplayerController = () => {
   const [selectedColumnSpaceId, setSelectedColumnSpaceId] = useRecoilState(selectedColumnSpaceIdState)
   const [tabIndex, setTabIndex] = useState(0);
   const [targetCellId, setTargetCellId] = useState(null);
+  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(selectedColumnSpaceId));
+
+
 
   const handleDisplaySettingChange = useRecoilCallback(({snapshot, set}) => async (tabIndex: number) => {
     console.debug("表示設定のタブ選択変更");
@@ -37,6 +41,7 @@ export const useColumnSpaceDisplayerController = () => {
     relatedCells,
     displaySettings,
     selectedColumnSpaceId,
+    currentSelectedColumnSpace,
     hasInitialized: columnSpaces && relatedCells && displaySettings,
     tabIndex,
     targetCellId,

@@ -1,5 +1,4 @@
 import React from "react";
-import { ImagePreview, MarkdownPreview, SoundPreview, TextPreview, VideoPreview } from "../components/cell-data-previews";
 import { TextIcon, MarkdownIcon, SoundIcon, VideoIcon, ImageIcon } from "../components/column-type-icons";
 import { Cell } from "../models/ColumnSpaces";
 import { CellData } from "../models/ColumnSpaces/CellData";
@@ -58,15 +57,4 @@ export const cellDataTypeSelectOptionText = (cellDataType: CellDataType, cellDat
 type CellPreviewProps = {
   cell: Cell,
   className: string,
-}
-
-export const CellPreview = (props: CellPreviewProps) => {
-  switch (props.cell.type) {
-    case CellDataType.Text: return <TextPreview cell={props.cell} className={props.className} />;
-    case CellDataType.Markdown: return <MarkdownPreview cell={props.cell} className={props.className} />;
-    case CellDataType.Image: return <ImagePreview cell={props.cell} className={props.className} />;
-    case CellDataType.Sound: return <SoundPreview cell={props.cell} className={props.className} />;
-    case CellDataType.Video: return <VideoPreview cell={props.cell} className={props.className} />;
-    default: throw new Error("不明なCellDataTypeです");
-  }
 }

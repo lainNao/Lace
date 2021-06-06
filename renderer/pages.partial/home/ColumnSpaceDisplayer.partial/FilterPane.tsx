@@ -1,8 +1,10 @@
+import { ColumnSpace } from "../../../models/ColumnSpaces"
 import { DisplaySetting } from "../../../models/DisplaySettings"
 
 type Props = {
   className: string;
   displaySetting: DisplaySetting;
+  columnSpace: ColumnSpace;
   onFilterUpdate: (checkedCellIds: {
     [columnId: string] : string[]
   }) => void;

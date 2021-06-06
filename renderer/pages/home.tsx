@@ -136,8 +136,8 @@ export const Home = () => {
       </div>
 
       {/* フッター */}
-      <div className="flex justify-center items-center bg-gray-900" style={{height: "25px"}}>
-        <img src="/images/icon.png" className="w-5 h-5" /><span className="ml-2 font-serif text-sm select-none text-gray-300">Lace</span>
+      <div className="flex justify-center items-center bg-gray-900 select-none" style={{height: "25px"}}>
+        <img src="/images/icon.png" className="w-5 h-5" /><span className="ml-2 font-serif text-sm text-gray-300">Lace</span>
       </div>
 
     </div>

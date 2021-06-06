@@ -1,9 +1,11 @@
+import { ColumnSpace } from "../../../models/ColumnSpaces"
 import { DisplaySetting } from "../../../models/DisplaySettings"
 
 type Props = {
   className: string;
   displaySetting: DisplaySetting;
   targetCellId: string;
+  columnSpace: ColumnSpace;
 }
 
 export const SubPane = (props: Props) => {

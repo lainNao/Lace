@@ -13,7 +13,7 @@ const HomeBody: React.FC = () => {
 
       {/* データ表示 */}
       <ColumnSpaceDisplayer
-        className="bg-gray-900 px-3 pt-1 w-full"
+        className="bg-gray-900 px-3 pt-1 w-full h-full"
       />
 
     </>

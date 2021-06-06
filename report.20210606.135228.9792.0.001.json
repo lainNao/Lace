@@ -1,0 +1,632 @@
+
+{
+  "header": {
+    "reportVersion": 1,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20210606.135228.9792.0.001.json",
+    "dumpEventTime": "2021-06-06T13:52:28Z",
+    "dumpEventTimeStamp": "1622955148391",
+    "processId": 9792,
+    "cwd": "I:\\software\\program(server)\\xampp2\\htdocs\\my_repo\\music_player_for_analysis\\custom-media-player",
+    "commandLine": [
+      "node",
+      "I:\\software\\program(server)\\xampp2\\htdocs\\my_repo\\music_player_for_analysis\\custom-media-player\\node_modules\\.bin\\\\..\\next\\dist\\bin\\next",
+      "-p",
+      "8888",
+      "renderer"
+    ],
+    "nodejsVersion": "v12.16.1",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "win32",
+    "componentVersions": {
+      "node": "12.16.1",
+      "v8": "7.8.279.23-node.31",
+      "uv": "1.34.0",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "72",
+      "nghttp2": "1.40.0",
+      "napi": "5",
+      "llhttp": "2.0.4",
+      "http_parser": "2.9.3",
+      "openssl": "1.1.1d",
+      "cldr": "35.1",
+      "icu": "64.2",
+      "tz": "2019c",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "lts": "Erbium",
+      "headersUrl": "https://nodejs.org/download/release/v12.16.1/node-v12.16.1-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v12.16.1/node-v12.16.1.tar.gz",
+      "libUrl": "https://nodejs.org/download/release/v12.16.1/win-x64/node.lib"
+    },
+    "osName": "Windows_NT",
+    "osRelease": "10.0.21390",
+    "osVersion": "Windows 10 Home",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 2484296,
+        "nice": 0,
+        "sys": 6044125,
+        "idle": 50045968,
+        "irq": 806484
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 2717859,
+        "nice": 0,
+        "sys": 2665781,
+        "idle": 53190390,
+        "irq": 97500
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 6170968,
+        "nice": 0,
+        "sys": 4017671,
+        "idle": 48385390,
+        "irq": 100406
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 2734218,
+        "nice": 0,
+        "sys": 2299359,
+        "idle": 53540453,
+        "irq": 77015
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 2786703,
+        "nice": 0,
+        "sys": 2758250,
+        "idle": 53029078,
+        "irq": 82937
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 3494703,
+        "nice": 0,
+        "sys": 2900875,
+        "idle": 52178453,
+        "irq": 93968
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 2897203,
+        "nice": 0,
+        "sys": 2571031,
+        "idle": 53105796,
+        "irq": 82812
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 3611578,
+        "nice": 0,
+        "sys": 3001968,
+        "idle": 51960484,
+        "irq": 91031
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 5407296,
+        "nice": 0,
+        "sys": 1594578,
+        "idle": 51572156,
+        "irq": 31578
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 5380343,
+        "nice": 0,
+        "sys": 1510125,
+        "idle": 51683546,
+        "irq": 31500
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 5805875,
+        "nice": 0,
+        "sys": 1582640,
+        "idle": 51185500,
+        "irq": 31078
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 5734781,
+        "nice": 0,
+        "sys": 1440046,
+        "idle": 51399187,
+        "irq": 26203
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 2968765,
+        "nice": 0,
+        "sys": 2642593,
+        "idle": 52962656,
+        "irq": 90093
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 2955109,
+        "nice": 0,
+        "sys": 2814296,
+        "idle": 52804609,
+        "irq": 95578
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 3571781,
+        "nice": 0,
+        "sys": 2908609,
+        "idle": 52093625,
+        "irq": 87125
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz",
+        "speed": 3600,
+        "user": 3178484,
+        "nice": 0,
+        "sys": 2677500,
+        "idle": 52718031,
+        "irq": 89406
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "イーサネット",
+        "internal": false,
+        "mac": "30:9c:23:8c:08:b6",
+        "address": "240f:53:7352:1:14b5:9550:1f7b:32b6",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "イーサネット",
+        "internal": false,
+        "mac": "30:9c:23:8c:08:b6",
+        "address": "240f:53:7352:1:a09f:b940:76b4:8cd8",
+        "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "イーサネット",
+        "internal": false,
+        "mac": "30:9c:23:8c:08:b6",
+        "address": "fe80::14b5:9550:1f7b:32b6",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 25
+      },
+      {
+        "name": "イーサネット",
+        "internal": false,
+        "mac": "30:9c:23:8c:08:b6",
+        "address": "192.168.0.7",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "VirtualBox Host-Only Network #2",
+        "internal": false,
+        "mac": "0a:00:27:00:00:11",
+        "address": "fe80::cf4:8f4:60a6:d0ef",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 17
+      },
+      {
+        "name": "VirtualBox Host-Only Network #2",
+        "internal": false,
+        "mac": "0a:00:27:00:00:11",
+        "address": "192.168.56.1",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "Npcap Loopback Adapter",
+        "internal": false,
+        "mac": "02:00:4c:4f:4f:50",
+        "address": "fe80::fc92:8f49:352a:248e",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 21
+      },
+      {
+        "name": "Npcap Loopback Adapter",
+        "internal": false,
+        "mac": "02:00:4c:4f:4f:50",
+        "address": "169.254.36.142",
+        "netmask": "255.255.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "VMware Network Adapter VMnet1",
+        "internal": false,
+        "mac": "00:50:56:c0:00:01",
+        "address": "fe80::6d37:3914:4bb1:6e34",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 11
+      },
+      {
+        "name": "VMware Network Adapter VMnet1",
+        "internal": false,
+        "mac": "00:50:56:c0:00:01",
+        "address": "192.168.197.1",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "VMware Network Adapter VMnet8",
+        "internal": false,
+        "mac": "00:50:56:c0:00:08",
+        "address": "fe80::b1f8:7045:1469:eefe",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 13
+      },
+      {
+        "name": "VMware Network Adapter VMnet8",
+        "internal": false,
+        "mac": "00:50:56:c0:00:08",
+        "address": "192.168.187.1",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "Loopback Pseudo-Interface 1",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "::1",
+        "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "Loopback Pseudo-Interface 1",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "127.0.0.1",
+        "netmask": "255.0.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "vEthernet (WSL)",
+        "internal": false,
+        "mac": "00:15:5d:d3:fa:53",
+        "address": "fe80::8189:fa2e:a7fb:8d4a",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 26
+      },
+      {
+        "name": "vEthernet (WSL)",
+        "internal": false,
+        "mac": "00:15:5d:d3:fa:53",
+        "address": "172.22.64.1",
+        "netmask": "255.255.240.0",
+        "family": "IPv4"
+      }
+    ],
+    "host": "Sheddy"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x00007ff67e1819f9",
+      "symbol": "std::basic_ostream<char,std::char_traits<char> >::operator<<+10873"
+    },
+    {
+      "pc": "0x00007ff67e185e1c",
+      "symbol": "std::basic_ostream<char,std::char_traits<char> >::operator<<+28316"
+    },
+    {
+      "pc": "0x00007ff67e184dd8",
+      "symbol": "std::basic_ostream<char,std::char_traits<char> >::operator<<+24152"
+    },
+    {
+      "pc": "0x00007ff67e2834cb",
+      "symbol": "v8::base::CPU::has_sse+38363"
+    },
+    {
+      "pc": "0x00007ff67ea99f4e",
+      "symbol": "v8::Isolate::ReportExternalAllocationLimitReached+94"
+    },
+    {
+      "pc": "0x00007ff67ea82021",
+      "symbol": "v8::SharedArrayBuffer::Externalize+833"
+    },
+    {
+      "pc": "0x00007ff67e94e57c",
+      "symbol": "v8::internal::Heap::EphemeronKeyWriteBarrierFromCode+1436"
+    },
+    {
+      "pc": "0x00007ff67e9597d0",
+      "symbol": "v8::internal::Heap::ProtectUnprotectedMemoryChunks+1312"
+    },
+    {
+      "pc": "0x00007ff67e9562f4",
+      "symbol": "v8::internal::Heap::PageFlagsAreConsistent+3204"
+    },
+    {
+      "pc": "0x00007ff67e94bb13",
+      "symbol": "v8::internal::Heap::CollectGarbage+1283"
+    },
+    {
+      "pc": "0x00007ff67e94a184",
+      "symbol": "v8::internal::Heap::AddRetainedMap+2452"
+    },
+    {
+      "pc": "0x00007ff67e96b36d",
+      "symbol": "v8::internal::Factory::NewFillerObject+61"
+    },
+    {
+      "pc": "0x00007ff67e6d0c51",
+      "symbol": "v8::internal::interpreter::JumpTableTargetOffsets::iterator::operator=+1665"
+    },
+    {
+      "pc": "0x00007ff67eee4ddd",
+      "symbol": "v8::internal::SetupIsolateDelegate::SetupHeap+546637"
+    },
+    {
+      "pc": "0x0000025b9cf9c485",
+      "symbol": ""
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 2165620736,
+    "totalCommittedMemory": 2165620736,
+    "usedMemory": 2130059168,
+    "availableMemory": 49547376,
+    "memoryLimit": 2197815296,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 262144,
+        "committedMemory": 262144,
+        "capacity": 32808,
+        "used": 32808,
+        "available": 0
+      },
+      "new_space": {
+        "memorySize": 16777216,
+        "committedMemory": 16777216,
+        "capacity": 8379648,
+        "used": 683840,
+        "available": 7695808
+      },
+      "old_space": {
+        "memorySize": 1780891648,
+        "committedMemory": 1780891648,
+        "capacity": 1766210440,
+        "used": 1764933080,
+        "available": 1277360
+      },
+      "code_space": {
+        "memorySize": 3051520,
+        "committedMemory": 3051520,
+        "capacity": 2609376,
+        "used": 2609376,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 7868416,
+        "committedMemory": 7868416,
+        "capacity": 5458160,
+        "used": 5458160,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 355573760,
+        "committedMemory": 355573760,
+        "capacity": 355256112,
+        "used": 355256112,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 1196032,
+        "committedMemory": 1196032,
+        "capacity": 1085792,
+        "used": 1085792,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 8379648,
+        "used": 0,
+        "available": 8379648
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 713.25,
+    "kernelCpuSeconds": 51.718,
+    "cpuConsumptionPercent": 35.2357,
+    "maxRss": 2317799424,
+    "pageFaults": {
+      "IORequired": 7144907,
+      "IONotRequired": 0
+    },
+    "fsActivity": {
+      "reads": 10002,
+      "writes": 316
+    }
+  },
+  "libuv": [
+  ],
+  "environmentVariables": {
+    "=I:": "I:\\software\\program(server)\\xampp2\\htdocs\\my_repo\\music_player_for_analysis\\custom-media-player",
+    "ADSK_3DSMAX_x64_2018": "C:\\Program Files\\Autodesk\\3ds Max 2018\\",
+    "ALLUSERSPROFILE": "C:\\ProgramData",
+    "APPDATA": "C:\\Users\\icwjs\\AppData\\Roaming",
+    "ChocolateyInstall": "C:\\ProgramData\\chocolatey",
+    "ChocolateyLastPathUpdate": "132338386047947335",
+    "CHROME_CRASHPAD_PIPE_NAME": "\\\\.\\pipe\\crashpad_21564_CLULCTTGRPDEIKMK",
+    "COLOR": "1",
+    "COLORTERM": "truecolor",
+    "CommonProgramFiles": "C:\\Program Files\\Common Files",
+    "CommonProgramFiles(x86)": "C:\\Program Files (x86)\\Common Files",
+    "CommonProgramW6432": "C:\\Program Files\\Common Files",
+    "COMPUTERNAME": "SHEDDY",
+    "ComSpec": "C:\\WINDOWS\\system32\\cmd.exe",
+    "DriverData": "C:\\Windows\\System32\\Drivers\\DriverData",
+    "EDITOR": "notepad.exe",
+    "FPS_BROWSER_APP_PROFILE_STRING": "Internet Explorer",
+    "FPS_BROWSER_USER_PROFILE_STRING": "Default",
+    "GIT_ASKPASS": "c:\\Users\\icwjs\\AppData\\Local\\Programs\\Microsoft VS Code\\resources\\app\\extensions\\git\\dist\\askpass.sh",
+    "GOPATH": "C:\\Users\\icwjs\\go",
+    "GPU_MAX_ALLOC_PERCENT": "100",
+    "GPU_USE_SYNC_OBJECTS": "1",
+    "GTK_BASEPATH": "C:\\Program Files (x86)\\GtkSharp\\2.12\\",
+    "HOME": "C:\\Users\\icwjs",
+    "HOMEDRIVE": "C:",
+    "HOMEPATH": "\\Users\\icwjs",
+    "INIT_CWD": "I:\\software\\program(server)\\xampp2\\htdocs\\my_repo\\music_player_for_analysis\\custom-media-player",
+    "IntelliJ IDEA Community Edition": "C:\\Program Files\\JetBrains\\IntelliJ IDEA Community Edition 2020.1.4\\bin;",
+    "INTEL_DEV_REDIST": "C:\\Program Files (x86)\\Common Files\\Intel\\Shared Libraries\\",
+    "JAVA_HOME": "C:\\Program Files\\AdoptOpenJDK\\jdk-15.0.2.7-hotspot",
+    "JD2_HOME": "C:\\Users\\icwjs\\AppData\\Local\\JDownloader 2.0",
+    "LANG": "ja_JP.UTF-8",
+    "LOCALAPPDATA": "C:\\Users\\icwjs\\AppData\\Local",
+    "LOGONSERVER": "\\\\SHEDDY",
+    "MIC_LD_LIBRARY_PATH": "C:\\Program Files (x86)\\Common Files\\Intel\\Shared Libraries\\compiler\\lib\\mic",
+    "NODE": "C:\\Program Files\\nodejs\\node.exe",
+    "NODE_ENV": "development",
+    "NODE_EXE": "C:\\Program Files\\nodejs\\\\node.exe",
+    "NPM_CLI_JS": "C:\\Users\\icwjs\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js",
+    "npm_command": "run-script",
+    "npm_config_cache": "C:\\Users\\icwjs\\AppData\\Local\\npm-cache",
+    "npm_config_globalconfig": "C:\\Users\\icwjs\\AppData\\Roaming\\npm\\etc\\npmrc",
+    "npm_config_init_module": "C:\\Users\\icwjs\\.npm-init.js",
+    "npm_config_metrics_registry": "https://registry.npmjs.org/",
+    "npm_config_node_gyp": "C:\\Users\\icwjs\\AppData\\Roaming\\npm\\node_modules\\npm\\node_modules\\node-gyp\\bin\\node-gyp.js",
+    "npm_config_noproxy": "",
+    "npm_config_prefix": "C:\\Users\\icwjs\\AppData\\Roaming\\npm",
+    "npm_config_userconfig": "C:\\Users\\icwjs\\.npmrc",
+    "npm_config_user_agent": "npm/7.10.0 node/v12.16.1 win32 x64",
+    "npm_execpath": "C:\\Users\\icwjs\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js",
+    "npm_lifecycle_event": "dev",
+    "npm_lifecycle_script": "nextron",
+    "npm_node_execpath": "C:\\Program Files\\nodejs\\node.exe",
+    "npm_package_json": "I:\\software\\program(server)\\xampp2\\htdocs\\my_repo\\music_player_for_analysis\\custom-media-player\\package.json",
+    "npm_package_name": "Lace",
+    "npm_package_version": "0.1.0",
+    "NPM_PREFIX_NPM_CLI_JS": "C:\\Users\\icwjs\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js",
+    "NUMBER_OF_PROCESSORS": "16",
+    "NVM_HOME": "C:\\Users\\icwjs\\AppData\\Roaming\\nvm",
+    "NVM_SYMLINK": "C:\\Program Files\\nodejs",
+    "NVTOOLSEXT_PATH": "C:\\Program Files\\NVIDIA Corporation\\NvToolsExt\\",
+    "OneDrive": "C:\\Users\\icwjs\\OneDrive",
+    "OneDriveConsumer": "C:\\Users\\icwjs\\OneDrive",
+    "ORIGINAL_XDG_CURRENT_DESKTOP": "undefined",
+    "OS": "Windows_NT",
+    "Path": "I:\\software\\program(server)\\xampp2\\htdocs\\my_repo\\music_player_for_analysis\\custom-media-player\\node_modules\\.bin;I:\\software\\program(server)\\xampp2\\htdocs\\my_repo\\music_player_for_analysis\\node_modules\\.bin;I:\\software\\program(server)\\xampp2\\htdocs\\my_repo\\node_modules\\.bin;I:\\software\\program(server)\\xampp2\\htdocs\\node_modules\\.bin;I:\\software\\program(server)\\xampp2\\node_modules\\.bin;I:\\software\\program(server)\\node_modules\\.bin;I:\\software\\node_modules\\.bin;I:\\node_modules\\.bin;C:\\Users\\icwjs\\AppData\\Roaming\\npm\\node_modules\\npm\\node_modules\\@npmcli\\run-script\\lib\\node-gyp-bin;C:\\Program Files\\AdoptOpenJDK\\jdk-15.0.2.7-hotspot\\bin;C:\\Users\\icwjs\\AppData\\Roaming\\nvm;C:\\Program Files\\nodejs;C:\\WINDOWS;C:\\WINDOWS\\system32;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Windows;C:\\Windows\\system32;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\OpenSSH\\;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319;C:\\Program Files\\Redis\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\CMake\\bin;C:\\Program Files\\PowerShell\\7\\;C:\\Program Files\\Java\\jdk-9.0.1\\bin;C:\\Program Files\\MongoDB\\Server\\4.2\\bin;C:\\Program Files\\Common Files\\Autodesk Shared\\;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.1\\bin;C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.1\\include;C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.1\\libnvvp;C:\\Program Files (x86)\\sbt\\bin;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Program Files (x86)\\Common Files\\Intel\\Shared Libraries\\redist\\ia32\\compiler;C:\\Program Files (x86)\\Common Files\\Intel\\Shared Libraries\\redist\\intel64\\compiler;C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.1\\extras\\CUPTI\\lib64;C:\\ProgramData\\chocolatey\\bin;C:\\ProgramData\\ComposerSetup\\bin;C:\\HashiCorp\\Vagrant\\bin;I:\\tools\\softwares\\portable\\program\\nodejs;C:\\Program Files\\NVIDIA Corporation\\Nsight Compute 2020.1.1\\;C:\\Program Files (x86)\\Yarn\\bin\\;C:\\Program Files\\PuTTY\\;I:\\software\\program(server)\\xampp2-php7.4\\mysql\\bin;C:\\Program Files\\dotnet\\;I:\\software\\program(db)\\postgresql13.1\\bin;C:\\Users\\icwjs\\.cargo\\bin;I:\\software\\program(server)\\xampp2-php7.4\\php;C:\\Program Files\\heroku\\bin;C:\\Program Files\\Go\\bin;I:\\software\\program(general)\\apache-maven-3.6.3\\bin;C:\\Gradle\\gradle-6.8.3\\bin;I:\\software\\program(general)\\spring-2.4.4\\bin;C:\\flutter\\bin;;C:\\Program Files\\Docker\\Docker\\resources\\bin;C:\\ProgramData\\DockerDesktop\\version-bin;C:\\Users\\icwjs\\AppData\\Local\\Programs\\Python\\Python39\\Scripts\\;C:\\Users\\icwjs\\AppData\\Local\\Programs\\Python\\Python39\\;C:\\Program Files (x86)\\Google\\Chrome\\Application;I:\\tools\\softwares\\portable\\program\\BCC101\\bin;I:\\tools\\softwares\\portable\\program\\postgresql9.6\\bin;I:\\tools\\softwares\\portable\\program\\Ruby24;I:\\tools\\softwares\\portable\\program\\sqlite3;I:\\tools\\softwares\\portable\\program\\Go\\bin;I:\\tools\\softwares\\portable\\program\\Python36-32\\;C:\\Users\\icwjs\\AppData\\Roaming\\Composer\\vendor\\bin;C:\\Users\\icwjs\\.dotnet\\tools;C:\\Users\\icwjs\\AppData\\Local\\Google\\Cloud SDK\\google-cloud-sdk\\bin;C:\\Users\\icwjs\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\icwjs\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\icwjs\\go\\bin;I:\\software\\program(general)\\flutter\\bin",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.RB;.RBW",
+    "POWERSHELL_DISTRIBUTION_CHANNEL": "MSI:Windows 10 Home",
+    "PROCESSOR_ARCHITECTURE": "AMD64",
+    "PROCESSOR_IDENTIFIER": "Intel64 Family 6 Model 85 Stepping 4, GenuineIntel",
+    "PROCESSOR_LEVEL": "6",
+    "PROCESSOR_REVISION": "5504",
+    "ProgramData": "C:\\ProgramData",
+    "ProgramFiles": "C:\\Program Files",
+    "ProgramFiles(x86)": "C:\\Program Files (x86)",
+    "ProgramW6432": "C:\\Program Files",
+    "PROMPT": "$P$G",
+    "PSModulePath": "%HomeDrive%%HomePath%\\Documents\\WindowsPowerShell\\Modules;C:\\Users\\icwjs\\AppData\\Local\\Google\\Cloud SDK\\google-cloud-sdk\\platform\\PowerShell",
+    "PUBLIC": "C:\\Users\\Public",
+    "SBT_HOME": "C:\\Program Files (x86)\\sbt\\",
+    "SystemDrive": "C:",
+    "SystemRoot": "C:\\WINDOWS",
+    "TEMP": "C:\\Users\\icwjs\\AppData\\Local\\Temp",
+    "TERM_PROGRAM": "vscode",
+    "TERM_PROGRAM_VERSION": "1.56.2",
+    "TMP": "C:\\Users\\icwjs\\AppData\\Local\\Temp",
+    "TRACE_ID": "8ce970772ac374fb",
+    "USERDOMAIN": "SHEDDY",
+    "USERDOMAIN_ROAMINGPROFILE": "SHEDDY",
+    "USERNAME": "sheddy",
+    "USERPROFILE": "C:\\Users\\icwjs",
+    "VS150COMCOMNTOOLS": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\",
+    "VSCODE_GIT_ASKPASS_MAIN": "c:\\Users\\icwjs\\AppData\\Local\\Programs\\Microsoft VS Code\\resources\\app\\extensions\\git\\dist\\askpass-main.js",
+    "VSCODE_GIT_ASKPASS_NODE": "C:\\Users\\icwjs\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+    "VSCODE_GIT_IPC_HANDLE": "\\\\.\\pipe\\vscode-git-8506e308ac-sock",
+    "windir": "C:\\WINDOWS",
+    "__COMPAT_LAYER": "DetectorsShimLog"
+  },
+  "sharedObjects": [
+    "C:\\Program Files\\nodejs\\node.exe",
+    "C:\\WINDOWS\\SYSTEM32\\ntdll.dll",
+    "C:\\WINDOWS\\System32\\KERNEL32.DLL",
+    "C:\\WINDOWS\\System32\\KERNELBASE.dll",
+    "C:\\WINDOWS\\SYSTEM32\\apphelp.dll",
+    "C:\\WINDOWS\\System32\\WS2_32.dll",
+    "C:\\WINDOWS\\System32\\RPCRT4.dll",
+    "C:\\WINDOWS\\SYSTEM32\\dbghelp.dll",
+    "C:\\WINDOWS\\System32\\PSAPI.DLL",
+    "C:\\WINDOWS\\System32\\ucrtbase.dll",
+    "C:\\WINDOWS\\System32\\ADVAPI32.dll",
+    "C:\\WINDOWS\\System32\\msvcrt.dll",
+    "C:\\WINDOWS\\SYSTEM32\\IPHLPAPI.DLL",
+    "C:\\WINDOWS\\System32\\sechost.dll",
+    "C:\\WINDOWS\\SYSTEM32\\USERENV.dll",
+    "C:\\WINDOWS\\System32\\USER32.dll",
+    "C:\\WINDOWS\\System32\\win32u.dll",
+    "C:\\WINDOWS\\System32\\GDI32.dll",
+    "C:\\WINDOWS\\System32\\gdi32full.dll",
+    "C:\\WINDOWS\\System32\\msvcp_win.dll",
+    "C:\\WINDOWS\\System32\\CRYPT32.dll",
+    "C:\\WINDOWS\\SYSTEM32\\WINMM.dll",
+    "C:\\WINDOWS\\SYSTEM32\\bcrypt.dll",
+    "C:\\WINDOWS\\System32\\IMM32.DLL",
+    "C:\\WINDOWS\\SYSTEM32\\powrprof.dll",
+    "C:\\WINDOWS\\SYSTEM32\\UMPDC.dll",
+    "C:\\WINDOWS\\SYSTEM32\\CRYPTBASE.DLL",
+    "C:\\WINDOWS\\system32\\uxtheme.dll",
+    "C:\\WINDOWS\\System32\\combase.dll",
+    "C:\\WINDOWS\\system32\\mswsock.dll",
+    "C:\\WINDOWS\\SYSTEM32\\kernel.appcore.dll",
+    "C:\\WINDOWS\\System32\\bcryptprimitives.dll",
+    "C:\\WINDOWS\\System32\\NSI.dll",
+    "C:\\WINDOWS\\SYSTEM32\\dhcpcsvc6.DLL",
+    "C:\\WINDOWS\\SYSTEM32\\dhcpcsvc.DLL",
+    "C:\\WINDOWS\\SYSTEM32\\DNSAPI.dll",
+    "C:\\WINDOWS\\system32\\napinsp.dll",
+    "C:\\WINDOWS\\system32\\pnrpnsp.dll",
+    "C:\\WINDOWS\\System32\\winrnr.dll",
+    "C:\\WINDOWS\\system32\\wshbth.dll",
+    "C:\\WINDOWS\\system32\\nlansp_c.dll",
+    "C:\\Windows\\System32\\rasadhlp.dll",
+    "C:\\WINDOWS\\System32\\fwpuclnt.dll"
+  ]
+}

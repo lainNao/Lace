@@ -4,7 +4,7 @@ import { ErrorMessage, Field, FieldArray, Form, Formik } from 'formik';
 import yup from '../../../modules/yup';
 import { CustomSelect } from '../../../components/CustomSelect';
 import { Column } from '../../../models/ColumnSpaces';
-import { CellPreview, cellDataTypeSelectOptionText, CellDataType } from '../../../resources/CellDataType';
+import { cellDataTypeSelectOptionText } from '../../../resources/CellDataType';
 import { CheckboxContainer, CheckboxControl } from "formik-chakra-ui";
 import { RelatedCells } from '../../../models/RelatedCells';
 import { cloneDeep } from "lodash"

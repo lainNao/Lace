@@ -29,6 +29,11 @@ export class RelatedCells {
     return this._data;
   }
 
+  // fromからtoへリレーションしているならtrue
+  isRelated(columnSpaceId: string, from: RelatedCellInfo, to: RelatedCellInfo) {
+    return this._data[columnSpaceId]?.[from.columnId]?.[from.cellId]?.[to.columnId]?.includes(to.cellId) ;
+  }
+
   // そのカラムスペース配下のリレーションを削除
   removeRelationOfColumnSpace(columnSpaceId: string): RelatedCells {
     delete this._data[columnSpaceId];
