@@ -10,6 +10,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
 
   const controller = useColumnSpaceDisplayerController();
 
+  // まだ初期化されてない時
   if (!controller.hasInitialized) {
     //TODO ここどうにかする
     return (
@@ -27,7 +28,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
           </TagLeftIcon>
           表示対象のカラムスペースを作成、選択してください
         </Tag>
-        <div className="mt-10 px-10" text-xs>
+        <div className="mt-10 px-10">
           <div className="text-center text-sm ">
             <Tag size="md" colorScheme="teal">
               <TagLabel>流れ</TagLabel>
@@ -53,7 +54,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
           </TagLeftIcon>
           対象カラムスペースの表示形式がありません
         </Tag>
-        <div className="mt-10 px-10" text-xs>
+        <div className="mt-10 px-10">
           <div className="text-center text-sm ">
             <Tag size="md" colorScheme="teal">
               <TagLabel>作成の流れ</TagLabel>

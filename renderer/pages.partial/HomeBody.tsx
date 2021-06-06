@@ -8,7 +8,7 @@ const HomeBody: React.FC = () => {
     <>
       {/* エクスプローラ */}
       <ColumnSpaceExplorer
-        classeName="min-w-300px w-300px whitespace-pre overflow-y-auto p-3"
+        classeName="w-300px whitespace-pre overflow-y-auto p-3"
       />
 
       {/* メイン表示 */}
@@ -19,7 +19,7 @@ const HomeBody: React.FC = () => {
       </div>
 
       {/* セル関連情報 */}
-      <div className=" min-w-300px w-1/2 overflow-y-auto p-3">
+      <div className=" min-w-300px w-1/2 bg-gray-900 overflow-y-auto p-3">
         関連セル表示
       </div>
     </>
