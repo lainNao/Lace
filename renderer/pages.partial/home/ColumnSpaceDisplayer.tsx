@@ -60,7 +60,8 @@ export const ColumnSpaceDisplayer = (props: Props) => {
             </Tag>
           </div>
           <ol className="list-decimal mt-3 text-xs">
-            <li>カラムスペースを右クリックし「表示形式の管理」を選択</li>
+            <li>対象カラムスペースに、カラムを2つ以上作成</li>
+            <li className="mt-3">対象カラムスペースを右クリックし「表示形式の管理」を選択</li>
             <li className="mt-3">開いたモーダルウィンドウで表示設定を入力し、追加</li>
           </ol>
         </div>
