@@ -3,7 +3,6 @@ import { Tag, TagLabel, TagLeftIcon, TagRightIcon, TagCloseButton } from "@chakr
 import { ExclamationCircleIcon } from "../../components/icons/ExclamationCircleIcon";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
 import { FilterPane, MainPane, SubPane } from "./ColumnSpaceDisplayer.partial";
-import { ColumnSpace } from "../../models/ColumnSpaces";
 
 type Props = {
   className?: string;
@@ -94,15 +93,14 @@ export const ColumnSpaceDisplayer = (props: Props) => {
         {/* タブボディ */}
         {/* TODO なぜか25pxじゃなく30px引いてちょうどいいので後でどうにかするここらへん */}
         <TabPanels className="h-full text-sm" style={{height: "calc(100% - 30px)"}}>
-          {/* TODO 表示設定の配列を回し、mapでTabPanelをレンダリング */}
           {controller.displaySettings.children[controller.selectedColumnSpaceId].map(displaySetting => {
             return (
               <TabPanel key={displaySetting.id} className="h-full">
                 <div className="w-full flex h-full overflow-y-scroll">
                   <FilterPane className="w-1/5 overflow-y-auto mr-2 h-full" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} onFilterUpdate={controller.handleFilterUpdate} />
                   {/* TODO MainPaneはフィルター条件とかも流し込む必要がある。後々 */}
-                  <MainPane className="w-2/5 overflow-y-auto mr-2 h-full pb-10" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} onMouseMainCell={controller.handleOnMouseMainCell} />
-                  <SubPane className="w-2/5 overflow-y-auto ml-2 h-full" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} targetCellId={controller.targetCellId} />
+                  <MainPane className="w-2/5 overflow-y-auto mr-2 h-full pb-10" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} onMouseMainCell={controller.handleOnMouseMainCell} onToggleSoundCell={controller.handleSoundCellToggle} onSoundCellPlay={controller.handleSoundPlay} onSoundCellPause={controller.handleSoundPause}/>
+                  <SubPane className="w-2/5 overflow-y-auto ml-2 h-full" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} targetCellId={controller.targetCellId}  onToggleSoundCell={controller.handleSoundCellToggle} onSoundCellPlay={controller.handleSoundPlay} onSoundCellPause={controller.handleSoundPause}/>
                 </div>
               </TabPanel>
             )
