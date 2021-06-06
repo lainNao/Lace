@@ -21,6 +21,9 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
     enabled: (args.targetColumnSpaceDataset.hasColumns === "true"),
   }));
   contextMenu.append(new MenuItem({
+    type: 'separator'
+  }));
+  contextMenu.append(new MenuItem({
     label: "追加",
     submenu: [
       {

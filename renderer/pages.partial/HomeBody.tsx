@@ -20,7 +20,7 @@ const HomeBody: React.FC = () => {
 
       {/* セル関連情報 */}
       <div className=" min-w-300px w-1/2 overflow-y-auto p-3">
-        セルの詳細の表示
+        関連セル表示
       </div>
     </>
 

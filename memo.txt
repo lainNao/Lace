@@ -207,159 +207,159 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                 ・なんと面倒な…
         ・だからまあ今の所放置で
 
-    ＜データ構造について＞
-        ■カラムスペース集約（カラムスペースやその配下のセルやカラムなどを保持）
-            [
+データ構造ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+    ＜カラムスペース集約＞（カラムスペースやその配下のセルやカラムなどを保持）
+        [
+            {
+                id: UUID,                   //カラムスペースのUUID
+                name: text,                    //カラムスペース名
+                columns: {},
+                childColumnSpaces: [           //子カラムスペース達
+                    {
+                        id: UUID,                      //id
+                        name: text,                    //カラムスペース名
+                        columns: [                     //カラムの全データ
+                            {
+                                id: UUID,                //カラムのUUID
+                                name: string,            //カラム名
+                                type: enum,              //カラムのタイプ
+                                cells: [                 //自カラムが持つデータ達
+                                    各種データ             //自カラムデータのUUIDとデータ本体（実データの形式は、typeのenumによって変わる）
+                                    ...
+
+                                    /*file類（Sound、Video、Image）の場合*/（音楽はアーティスト名もいるかと思ったけど、崩れるから辞めた。自分は不要。その代わり随所で楽に試聴できるようにしたいところではある）
+                                    {
+                                        name: text,              //メディアのファイル名
+                                        dispname: text,          //表示用の別名
+                                        basename: text,          //ファイル名（拡張子あり）
+                                        extname: text,           //拡張子
+                                        path: text,              //メディアへのpath
+                                    }
+
+                                    /*Textの場合*/
+                                    {
+                                        text: string,
+                                    }
+
+                                    /*Markdownの場合*/
+                                    {
+                                        title: string,
+                                        text: string,
+                                    }
+                                ],
+                            },
+                            ...
+                        ]
+                        childColumnSpaces: [],      //columnsにデータがある場合、ここが空である必要がある（ちょっと汚い設計な雰囲気感じてるけどもう無理、。実装的には不整合は防げる気はしてるから）
+                    },
+                    ...
+                ]
+            },
+            ...
+        ]
+
+    ＜関連セル集約＞（ルートだけモデル化し、その他はしてない…。がんばって）
+        // RelatedCells
+        {
+            // RelatedCellsColumnSpaceIndicator
+            カラムスペースのUUID: {
+
+                // RelatedCellsColumnIndicator
+                カラムのUUID: {
+
+                    // RelatedCellsCellIndicator
+                    //このセルの関連セル達を保存　（留意：関連元セルには「カラムID」の情報は持たない。なぜならカラムスペース直下にキーを作ればカラムからたどる不要だから）
+                    セルのUUID: {
+
+                        // RelatedCellsTargetColumnIndicator
+                        // そのセルはこのカラムIDのこのセル達と関連している
+                        カラムID: [セルID, セルID,...],
+                        ...
+                    },
+                    ..
+
+                }
+                ...
+
+            },
+            ...
+        }
+
+    ＜表示形式集約＞（ソート形式や右ペインの表示形式を保持する）
+
+        // DisplaySettings
+        {
+            DisplaySettings.children
+            // カラムスペースごとの表示形式の保存
+            カラムスペースのUUID: [
+
+                // DisplaySetting
                 {
-                    id: UUID,                   //カラムスペースのUUID
-                    name: text,                    //カラムスペース名
-                    columns: {},
-                    childColumnSpaces: [           //子カラムスペース達
-                        {
-                            id: UUID,                      //id
-                            name: text,                    //カラムスペース名
-                            columns: [                     //カラムの全データ
+                    // 表示形式ID
+                    id: UUID,
+
+                    // 表示設定名
+                    name: "フレーズ別要素、とかの名前",
+
+                    //ソートに使うカラム（降順昇順とかのサブパターンもあるだろうけどどうする…？後で…）
+                    sortColumns: [カラムID, カラムID, ... ],
+
+                    // メイン表示する中央カラム
+                    mainColumn: カラムID,
+
+                    // 関連セルの表示形式
+                    relatedCellsDisplaySetting: {
+                        // 表示形式
+                        type: RelatedCellsDisplayType,      //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
+                                                            //CustomList（任意の表示。詳しくは、自分の創作技法集の表示に合わせる感じなのでそっち参照。簡単）
+
+                        // DisplayDetail.CustomList | DisplayDetail.HListSeparator
+                        // type別の詳細設定。現状CustomListの場合とHListSeparatorの場合だけで、それ以外の場合はnull
+                        typeDetails: {
+
+                            /* HListSeparatorの場合 */
+                            separator: "、とかのセパレータ文字"
+
+
+
+                            /* CustomListの場合 */
+
+                            // タイトル（CustomListじゃない場合、カラム名がタイトルとして使われる）
+                            title: "曲例、とか",
+
+                            // カラム達の設定
+                            columns: [
                                 {
-                                    id: UUID,                //カラムのUUID
-                                    name: string,            //カラム名
-                                    type: enum,              //カラムのタイプ
-                                    cells: [                 //自カラムが持つデータ達
-                                        各種データ             //自カラムデータのUUIDとデータ本体（実データの形式は、typeのenumによって変わる）
-                                        ...
+                                    columnId: カラムID,
 
-                                        /*file類（Sound、Video、Image）の場合*/（音楽はアーティスト名もいるかと思ったけど、崩れるから辞めた。自分は不要。その代わり随所で楽に試聴できるようにしたいところではある）
-                                        {
-                                            name: text,              //メディアのファイル名
-                                            dispname: text,          //表示用の別名
-                                            basename: text,          //ファイル名（拡張子あり）
-                                            extname: text,           //拡張子
-                                            path: text,              //メディアへのpath
-                                        }
+                                    prefix: "つけたい前置文字。nullable",
 
-                                        /*Textの場合*/
-                                        {
-                                            text: string,
-                                        }
+                                    suffix: "つけたい後置文字。nullable",
 
-                                        /*Markdownの場合*/
-                                        {
-                                            title: string,
-                                            text: string,
-                                        }
-                                    ],
+                                    // このカラムの前に改行かつインデントを入れるか（何言ってるかわからない場合自分の創作技法集の表示参照）
+                                    needBreakLine: 真偽値,
+
                                 },
                                 ...
                             ]
-                            childColumnSpaces: [],      //columnsにデータがある場合、ここが空である必要がある（ちょっと汚い設計な雰囲気感じてるけどもう無理、。実装的には不整合は防げる気はしてるから）
-                        },
-                        ...
-                    ]
-                },
-                ...
-            ]
 
-        ■関連セル集約（ルートだけモデル化し、その他はしてない…。がんばって）
-            // RelatedCells
-            {
-                // RelatedCellsColumnSpaceIndicator
-                カラムスペースのUUID: {
-
-                    // RelatedCellsColumnIndicator
-                    カラムのUUID: {
-
-                        // RelatedCellsCellIndicator
-                        //このセルの関連セル達を保存　（留意：関連元セルには「カラムID」の情報は持たない。なぜならカラムスペース直下にキーを作ればカラムからたどる不要だから）
-                        セルのUUID: {
-
-                            // RelatedCellsTargetColumnIndicator
-                            // そのセルはこのカラムIDのこのセル達と関連している
-                            カラムID: [セルID, セルID,...],
-                            ...
-                        },
-                        ..
-
-                    }
-                    ...
-
-                },
-                ...
-            }
-
-        ■表示形式集約（ソート形式や右ペインの表示形式を保持する）
-
-            // DisplaySettings
-            {
-                DisplaySettings.children
-                // カラムスペースごとの表示形式の保存
-                カラムスペースのUUID: [
-
-                    // DisplaySetting
-                    {
-                        // 表示形式ID
-                        id: UUID,
-
-                        // 表示設定名
-                        name: "フレーズ別要素、とかの名前",
-
-                        //ソートに使うカラム（降順昇順とかのサブパターンもあるだろうけどどうする…？後で…）
-                        sortColumns: [カラムID, カラムID, ... ],
-
-                        // メイン表示する中央カラム
-                        mainColumn: カラムID,
-
-                        // 関連セルの表示形式
-                        relatedCellsDisplaySetting: {
-                            // 表示形式
-                            type: RelatedCellsDisplayType,      //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
-                                                                //CustomList（任意の表示。詳しくは、自分の創作技法集の表示に合わせる感じなのでそっち参照。簡単）
-
-                            // DisplayDetail.CustomList | DisplayDetail.HListSeparator
-                            // type別の詳細設定。現状CustomListの場合とHListSeparatorの場合だけで、それ以外の場合はnull
-                            typeDetails: {
-
-                                /* HListSeparatorの場合 */
-                                separator: "、とかのセパレータ文字"
-
-
-
-                                /* CustomListの場合 */
-
-                                // タイトル（CustomListじゃない場合、カラム名がタイトルとして使われる）
-                                title: "曲例、とか",
-
-                                // カラム達の設定
-                                columns: [
-                                    {
-                                        columnId: カラムID,
-
-                                        prefix: "つけたい前置文字。nullable",
-
-                                        suffix: "つけたい後置文字。nullable",
-
-                                        // このカラムの前に改行かつインデントを入れるか（何言ってるかわからない場合自分の創作技法集の表示参照）
-                                        needBreakLine: 真偽値,
-
-                                    },
-                                    ...
-                                ]
-
-                            }
-                        },
-
+                        }
                     },
-                    ...
 
-                ],
+                },
                 ...
-            }
 
-        ■グローバル設定集約
-            {
-                // 初めての起動などで、まだ初期設定をしてないか（各種DBの自動作成など行う。いやDBの自動作成はファイルのあるなしで判定したほうがよさそう）
-                "hasInitialized": 真偽値,
+            ],
+            ...
+        }
 
-                //
-            }
+    ＜グローバル設定集約＞
+        {
+            // 初めての起動などで、まだ初期設定をしてないか（各種DBの自動作成など行う。いやDBの自動作成はファイルのあるなしで判定したほうがよさそう）
+            "hasInitialized": 真偽値,
+
+            //
+        }
 
 
 ■サンプルデータ
