@@ -11,17 +11,11 @@ const HomeBody: React.FC = () => {
         classeName="w-300px whitespace-pre overflow-y-auto p-3"
       />
 
-      {/* メイン表示 */}
-      <div className="min-w-300px w-2/3 bg-gray-900 overflow-y-auto p-3">
-        <ColumnSpaceDisplayer
-          className=""
-        />
-      </div>
+      {/* データ表示 */}
+      <ColumnSpaceDisplayer
+        className="bg-gray-900 px-3 pt-1 w-full"
+      />
 
-      {/* セル関連情報 */}
-      <div className=" min-w-300px w-1/2 bg-gray-900 overflow-y-auto p-3">
-        関連セル表示
-      </div>
     </>
 
   )

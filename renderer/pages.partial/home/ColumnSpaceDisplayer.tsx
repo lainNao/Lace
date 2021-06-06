@@ -1,6 +1,8 @@
 import { useColumnSpaceDisplayerController } from "../../controllers/home/useColumnSpaceDisplayerController";
 import { Tag, TagLabel, TagLeftIcon, TagRightIcon, TagCloseButton } from "@chakra-ui/react"
 import { ExclamationCircleIcon } from "../../components/icons/ExclamationCircleIcon";
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
+import { FilterPane, MainPane, SubPane } from "./ColumnSpaceDisplayer.partial";
 
 type Props = {
   className: string;
@@ -70,13 +72,39 @@ export const ColumnSpaceDisplayer = (props: Props) => {
     )
   }
 
-  return (
-    <div className="text-sm">
+  /*
+    controller.selectedColumnSpaceId    //選択中カラムスペースID
+    controller.tabIndex                 //選択中の表示設定インデックス
+    controller.displaySettings.children[controller.selectedColumnSpaceId][controller.tabIndex]  //表示対象のDisplaySettingモデル
+  */
 
-      <div>表示対象として選択中のカラムスペースID： {controller.selectedColumnSpaceId}</div>
-      <div>選択中の表示設定ID：</div>
-      <div>　</div>
-      セレクトボックスかタブみたいなのをここらへんに表示し、それで選択した表示設定に従った表示を出す。
+  return (
+    <div className={`${props.className}`}>
+      <Tabs index={controller.tabIndex} onChange={controller.handleDisplaySettingChange}>
+
+        {/* タブ */}
+        <TabList>
+          {controller.displaySettings.children[controller.selectedColumnSpaceId].map(displaySetting => {
+            return <Tab key={displaySetting.id} style={{outline:"none"}}>{displaySetting.name}</Tab>
+          })}
+        </TabList>
+
+        {/* タブボディ */}
+        <TabPanels>
+          {/* TODO 表示設定の配列を回し、mapでTabPanelをレンダリング */}
+          {controller.displaySettings.children[controller.selectedColumnSpaceId].map(displaySetting => {
+            return (
+              <TabPanel>
+                <div className="w-full flex">
+                  <FilterPane className="w-1/5 overflow-y-auto mr-2" displaySetting={displaySetting} onFilterUpdate={controller.handleFilterUpdate} />
+                  <MainPane className="w-2/5 overflow-y-auto mr-2" displaySetting={displaySetting} onMouseMainCell={controller.handleOnMouseMainCell} />
+                  <SubPane className="w-2/5 overflow-y-auto ml-2" displaySetting={displaySetting} targetCellId={controller.targetCellId} />
+                </div>
+              </TabPanel>
+            )
+          })}
+        </TabPanels>
+      </Tabs>
     </div>
   )
 }
