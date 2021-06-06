@@ -23,6 +23,12 @@ button {
   -webkit-app-region: drag;
 }
 
+.custom-li-prefix::before {
+  content: "・";
+  margin-left: -1em;
+  /* text-indent: -1em; */
+}
+
 /* Your own custom utilities */
 @import url("./_scrollbar.css");
 

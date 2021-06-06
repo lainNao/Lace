@@ -20,7 +20,6 @@ export const MainPane = (props: Props) => {
   //TODO 無限スクロールにする（画像とかの問題で無理ならひとまずいい）
   //TODO 後でフィルタリングペインの情報もfilterに宛がうことになる
   //TODO 必要ならuseMemoで結果をメモ化すること。左のツリーも。できなければ不要。
-  //TODO 折りたたみとかできるようにする
   //TODO onmouseとかで右カラムへの伝達をする
   const generateMainPaneElementTree = (
     indentIndex: number,
@@ -35,7 +34,7 @@ export const MainPane = (props: Props) => {
     if (!targetColumnId) {
       const mainColumn = props.columnSpace.findDescendantColumn(props.displaySetting.mainColumn);
       return (
-        <div className="ml-5">
+        <div className="ml-6">
           {mainColumn.cells.children
             // ソートの祖先達と関連づいているものだけフィルタリング
             .filter(cell =>
@@ -47,9 +46,7 @@ export const MainPane = (props: Props) => {
             )
             .map(cell => {
               return (
-                <div key={cell.id}>
-                  <SortColumnCell cell={cell} />
-                </div>
+                <SortColumnCell key={cell.id} className="mb-2" cell={cell} withLiPrefix/>
               )
             })
           }
@@ -60,12 +57,12 @@ export const MainPane = (props: Props) => {
     // まだ最後の段でない場合（ソートカラムのレンダリング）
     const currentSortColumn = props.columnSpace.findDescendantColumn(targetColumnId);
     return (
-      <div className={`${indentIndex !== 0 ? "ml-5" : ""}`}>
+      <div className={`${indentIndex ? "ml-5" : ""}`}>
         {currentSortColumn.mapCells(cell => {
           return (
             <div key={cell.id} className="mb-3">
               {/* 今の段の今のセル */}
-              <div>
+              <div className="mb-3 font-bold">
                 <SortColumnCell cell={cell} />
               </div>
 
@@ -123,14 +120,12 @@ export const MainPane = (props: Props) => {
       if (currentIndent === props.displaySetting.sortColumns.length) {
         const mainColumn = props.columnSpace.findDescendantColumn(props.displaySetting.mainColumn);
         return (
-          <div>
+          <div className="ml-1">
             {mainColumn.cells.children
               .filter(cell => !alreadyRenderedCellIds.includes(cell.id))
               .map(cell => {
                 return (
-                  <div key={cell.id}>
-                    <SortColumnCell cell={cell} />
-                  </div>
+                  <SortColumnCell key={cell.id} className="mb-2" cell={cell} withLiPrefix />
                 )
               })
             }
@@ -151,17 +146,18 @@ export const MainPane = (props: Props) => {
         {makeView(0)}
       </div>
     )
-
-    // return generateMainPaneUnrenderedElementTree(0, [], alreadyRenderedCellIds, 0);
   };
 
   return (
     <div className={`${props.className}`}>
       {/* 指定ソートカラム達に関連づいているもの */}
+      <div className="mb-3"><Tag colorScheme="cyan">分類済</Tag></div>
       {generateMainPaneElementTree(0, [])}
 
+      <div className="bg-gray-800 h-1 mr-3 mt-12 mb-4 rounded-full"/>
+
       {/* 関連づいてないもの */}
-      <div className=""><Tag>未分類</Tag></div>
+      <div className="mb-3"><Tag colorScheme="cyan">未分類</Tag></div>
       {generateMainPaneUnrelatedElementTree()}
     </div>
   )
@@ -169,24 +165,31 @@ export const MainPane = (props: Props) => {
 
 type SortColumnCellProps = {
   cell: Cell;
+  className?: string;
+  withLiPrefix?: boolean;
 }
 
 //TODO マシにする
-const SortColumnCell = (props: SortColumnCellProps) => {
-  if (props.cell.type === CellDataType.Text) {
-    return <div>text {(props.cell.data as TextCellData).text}</div>
+const SortColumnCell = ({
+  cell,
+  className,
+  withLiPrefix = false,
+}: SortColumnCellProps) => {
+  if (cell.type === CellDataType.Text) {
+    return <div className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>text {(cell.data as TextCellData).text}</div>
   }
-  if (props.cell.type === CellDataType.Markdown) {
-    return <div>Markdown {(props.cell.data as MarkdownCellData).text}</div>
+  if (cell.type === CellDataType.Markdown) {
+    // TODO 右クリックでプレビューできるようにする
+    return <div className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>Markdown {(cell.data as MarkdownCellData).text}</div>
   }
-  if (props.cell.type === CellDataType.Sound) {
-    return <div>Sound {(props.cell.data as SoundCellData).alias}</div>
+  if (cell.type === CellDataType.Sound) {
+    return <div className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>Sound {(cell.data as SoundCellData).alias}</div>
   }
-  if (props.cell.type === CellDataType.Image) {
-    return <div>Image {(props.cell.data as ImageCellData).alias}</div>
+  if (cell.type === CellDataType.Image) {
+    return <div className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>Image {(cell.data as ImageCellData).alias}</div>
   }
-  if (props.cell.type === CellDataType.Video) {
-    return <div>Video {(props.cell.data as VideoCellData).alias}</div>
+  if (cell.type === CellDataType.Video) {
+    return <div className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>Video {(cell.data as VideoCellData).alias}</div>
   }
 
 }
