@@ -11,6 +11,7 @@ import { isSubDir } from "../../modules/string";
 import * as packageJson from "../../../package.json"
 import path from "path";
 import fs from "fs";
+import columnSpacesState from "../../recoils/atoms/columnSpacesState";
 
 export const useSettingsPanelController = () => {
   const [globalSettings, setGlobalSettings] = useRecoilState(globalSettingsState);
@@ -42,7 +43,7 @@ export const useSettingsPanelController = () => {
       return;
     }
     // Laceディレクトリが選択したディレクトリ直下にあったらかぶるのでreturn
-    if (fs.lstatSync(newCustomSaveDirPath).isDirectory) {
+    if (fs.existsSync(newCustomSaveDirPath)) {
       toast({ title: `選択したディレクトリ直下に既に${packageJson.name}ディレクトリが存在します`, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
       return;
     }
@@ -51,10 +52,9 @@ export const useSettingsPanelController = () => {
     try {
       //2, 設定の変更を適用し、 既存のDBをコピーする
       //NOTE: 移動はしてないので留意。不要なら自前で消す形を取ってもらいたい
-      const newGlobalSettings = await updateGlobalSettingUsecase(GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH, newCustomSaveDirPath);
-      console.log(newGlobalSettings)
-      await updateDbPathUsecase(oldUserDirectory, newCustomSaveDirPath);
+      const [newColumnSpaces, newGlobalSettings] = await updateDbPathUsecase(GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH, oldUserDirectory, newCustomSaveDirPath);
       set(globalSettingsState, newGlobalSettings);
+      set(columnSpacesState, newColumnSpaces);
       toast({ title: `データベースをコピーしました。元のデータベースディレクトリ（${oldUserDirectory}）はもう不要ですが一応自動削除はしなかったので、気になる場合手動で削除してください`, status: "success", position: "bottom-right", isClosable: true, duration: 30000,})
     } catch (e) {
       console.log(e.stack);

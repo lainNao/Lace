@@ -26,12 +26,13 @@ export const SubPane = (props: Props) => {
     return <div className="text-sm">中央ペインのセルにマウスを乗せてください</div>
   }
 
-  // メインカラムにもソートカラムにも使ってないカラムを取得
+  // 表示設定で選択されたカラムを取得
   const subColumns = props.columnSpace.columns.children.filter(column => {
-    return (
-      column.id !== props.displaySetting.mainColumn
-      && !props.displaySetting.sortColumns.includes(column.id)
-    )
+    const selectedColumnIds = props.displaySetting.relatedCellsDisplaySettings.map(relatedCellsDisplaySetting => {
+      return relatedCellsDisplaySetting.columnId;
+    });
+
+    return selectedColumnIds.includes(column.id);
   });
 
   return (

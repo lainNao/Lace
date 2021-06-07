@@ -101,6 +101,15 @@ export class ColumnSpaces {
     return this;
   }
 
+  updateFileDirectory(oldUserDirectory: string, newUserDirectory: string): ColumnSpaces {
+    const json = JSON.stringify(this);
+    const reJson = JSON.parse(json.replaceAll(
+      JSON.stringify(oldUserDirectory).slice(1,-1),
+      JSON.stringify(newUserDirectory).slice(1,-1),
+    ));
+    return ColumnSpaces.fromJSON(reJson);
+  }
+
   // 子孫のカラムスペースを上書き（同じIDのものを探して上書き）
   updateDescendantColumnSpace(columnSpace: ColumnSpace): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {

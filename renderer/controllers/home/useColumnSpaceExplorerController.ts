@@ -345,7 +345,7 @@ export const useColumnSpaceExplorerController = () => {
   }, []);
 
   const handleClickNewColmnFormClose = useCallback((event) => {
-    console.debug("カラム新規作成モーダルのキャンセル");
+    console.debug("カラム新規作成モーダルのclose");
     closeNewColumnForm();
   }, []);
 
@@ -366,12 +366,12 @@ export const useColumnSpaceExplorerController = () => {
   }, []);
 
   const handleNewCellFormClose = useCallback((event) => {
-    console.debug("カラム新規作成モーダルのキャンセル");
+    console.debug("カラム新規作成モーダルのclose");
     closeNewCellForm();
   }, []);
 
   const handleNewCellFormCloseButtonClick = useCallback((event) => {
-    console.debug("カラム新規作成モーダルのキャンセル");
+    console.debug("カラム新規作成モーダルのclose");
     closeNewCellForm();
   }, []);
 
