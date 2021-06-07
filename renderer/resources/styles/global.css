@@ -32,3 +32,6 @@ button {
 /* Your own custom utilities */
 @import url("./_scrollbar.css");
 
+.opaque {
+  opacity: 1 !important;
+}

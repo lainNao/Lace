@@ -3,8 +3,11 @@ import { DisplaySetting } from "../../../models/DisplaySettings"
 import { Tag } from "@chakra-ui/react"
 import { CellDataType, cellDataTypeIcons } from "../../../resources/CellDataType"
 import { CellViewer } from "../../../components/CellViewer"
+import { CellViewerHorizontal } from "../../../components/CellViewerHorizontal"
 import { useRecoilState } from "recoil"
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState"
+import { RelatedCellDisplayDirectionType } from "../../../models/DisplaySettings/RelatedCellsDisplaySetting"
+import React from "react"
 
 type Props = {
   className: string;
@@ -71,6 +74,8 @@ export const SubPane = (props: Props) => {
               )
             );
 
+          const currentColumnDisplaySetting = props.displaySetting.relatedCellsDisplaySettings.find(displaySetting => displaySetting.columnId === subColumn.id)
+
           return (
             <div key={subColumn.id} className="mb-4">
 
@@ -80,35 +85,56 @@ export const SubPane = (props: Props) => {
                 <span className="font-sans text-blue-400 text-sm">{subColumn.name}</span>
               </div>
 
-              {/* 関連セル */}
-              <div className="ml-8">
-
-                {/* 無い場合 */}
-                {currentRelatedCells.length === 0 &&
+              {/* 関連セルが無い場合 */}
+              {currentRelatedCells.length === 0 && (
+                <div className="ml-8">
                   <div className="select-none">-</div>
-                }
+                </div>
+              )}
 
-                {/* ある場合 */}
-                {currentRelatedCells.length !== 0 &&
-                  currentRelatedCells.map(cell => {
-                    // TODO ここらへん、表示設定をポリモーフィズムチックに反映する。CellViewerをいじるんじゃなくSubCellViewerを作って、その中でデータタイプかつ表示タイプによって分岐する（掛け算の分岐になるのでコンポネント作りが労働になる見込み）
+              {/* 関連セルがあり、Verticalの場合 */}
+              {(currentRelatedCells.length !== 0 && currentColumnDisplaySetting.direction === RelatedCellDisplayDirectionType.Vertical) && (
+                <div className="ml-8 mt-1">
+                  {currentRelatedCells.map(cell => {
                     return (
-                      <div key={cell.id}>
-                        <CellViewer
+                      <CellViewer
+                        key={cell.id}
+                        className="mb-2"
+                        cell={cell}
+                        withLiPrefix={cell.type === CellDataType.Text}
+                        onSoundCellToggle={props.onSoundCellToggle}
+                        onSoundCellPlay={props.onSoundCellPlay}
+                        onSoundCellPause={props.onSoundCellPause}
+                        onVideoCellToggle={props.onVideoCellToggle}
+                      />
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* 関連セルがあり、Horizontalの場合 */}
+              {(currentRelatedCells.length !== 0 && currentColumnDisplaySetting.direction === RelatedCellDisplayDirectionType.Horizontal) && (
+                <div className="ml-8 mt-1">
+                  {currentRelatedCells.map((cell, index) => {
+                    return (
+                      <React.Fragment key={cell.id}>
+                        <CellViewerHorizontal
+                          tooltipId={index + "-" + subColumn.id + "-"+ cell.id}   //TODO ここもう少しどうにかする　本当はindexの代わりに表示設定IDとかほしいところ
+                          displayType={currentColumnDisplaySetting.hListDisplayType}
                           key={cell.id}
                           className="mb-2"
                           cell={cell}
-                          withLiPrefix={cell.type === CellDataType.Text}
-                          onSoundCellToggle={props.onSoundCellToggle}
-                          onSoundCellPlay={props.onSoundCellPlay}
-                          onSoundCellPause={props.onSoundCellPause}
-                          onVideoCellToggle={props.onVideoCellToggle}
+                          withBackgroundHoveredColor={true}
                         />
-                      </div>
+                        {index !== currentRelatedCells.length-1 &&
+                          <span className="mx-1">{currentColumnDisplaySetting.hListSeparator}</span>
+                        }
+                      </React.Fragment>
                     )
-                  })
-                }
-              </div>
+                  })}
+                </div>
+              )}
+
             </div>
           )
         })}

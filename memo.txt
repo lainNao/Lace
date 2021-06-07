@@ -343,14 +343,11 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                     mainColumn: カラムID,
 
                     // 関連セル達の表示形式
-                    relatedCellsDisplaySettings: [          //まずここに「s」をつけて配列にしてしまう
+                    relatedCellsDisplaySettings: [
                         //この層を「relatedCellsDisplaySetting」とする。
                         {
                             columnId: カラムID,
-                            direction: RelatedCellDisplayDirection,  //縦、横のみのEnumを新規で作る。（RelatedCellsDisplayTypeは廃止）（ちなみに横だとdetailsタグが使えないはず（改行されてしまう）のでクリックでモーダルで詳細開くか、onmouseでツールチップ的に表示するしかないかな）
-
-                            //以下はVListのみ
-                            vListPrefix: VListPrefixType,        //「なし」「・」「数値」の3種
+                            direction: RelatedCellDisplayDirection,  //縦、横のみのEnumを新規で作る。（ちなみに横だとdetailsタグが使えないはず（改行されてしまう）のでクリックでモーダルで詳細開くか、onmouseでツールチップ的に表示するしかないかな）
 
                             //以下はHListのみ
                             hListDisplayType: HListDisplayType,  //「タグ」「プレーン」の二種。新しくEnum作る。

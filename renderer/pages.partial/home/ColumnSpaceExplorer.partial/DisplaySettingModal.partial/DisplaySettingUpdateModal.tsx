@@ -10,7 +10,7 @@ import { Field, FieldArray, Form, Formik } from 'formik';
 import yup from '../../../../modules/yup';
 import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
 import { updateDisplaySettingUsecase } from '../../../../usecases/updateDisplaySettingUsecase';
-import { HListDisplayType, RelatedCellDisplayDirectionType, VListPrefixType } from '../../../../models/DisplaySettings/RelatedCellsDisplaySetting';
+import { HListDisplayType, RelatedCellDisplayDirectionType } from '../../../../models/DisplaySettings/RelatedCellsDisplaySetting';
 
 
 const notNullableStringRule = yup.string().min(1).required("必須です").filled("必須です");
@@ -32,7 +32,6 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
     relatedCellsDisplaySettings: [{
       columnId: string,
       direction: RelatedCellDisplayDirectionType,
-      vListPrefix: VListPrefixType | string,
     }]
   }>({
     name: "",
@@ -41,7 +40,6 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
     relatedCellsDisplaySettings: [{
       columnId: "",
       direction: RelatedCellDisplayDirectionType.Vertical,
-      vListPrefix: "",
     }]
   });
 
@@ -115,12 +113,6 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
                   yup.object({
                     columnId: notNullableStringRule,
                     direction: notNullableStringRule,
-                    vListPrefix: yup.string().when("direction", direction => {
-                      if (direction === RelatedCellDisplayDirectionType.Vertical) {
-                        return notNullableStringRule;
-                      }
-                      return yup.string().nullable();
-                    }),
                     hListDisplayType: yup.string().when("direction", direction => {
                       if (direction === RelatedCellDisplayDirectionType.Horizontal) {
                         return notNullableStringRule;
@@ -299,34 +291,6 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
                                     </div>
                                   </div>
 
-                                  {/* 縦表示の場合 */}
-                                  {formState.values.relatedCellsDisplaySettings?.[index]?.direction === RelatedCellDisplayDirectionType.Vertical && (
-                                    <div className="flex flex-row mt-3">
-                                      <div className="w-1/3">リストのプレフィクス</div>
-                                      <div className="w-2/3">
-                                        <Field name={`relatedCellsDisplaySettings.${index}.vListPrefix`}>
-                                          {({field, form, ...props}) => (
-                                            <Select
-                                              {...field} {...props}
-                                              placeholder="選択してください"
-                                              isInvalid={(formState.touched.relatedCellsDisplaySettings?.[index] as any)?.vListPrefix && (formState.errors.relatedCellsDisplaySettings?.[index] as any)?.vListPrefix}
-                                            >
-                                              {Object.entries(VListPrefixType).map(([key, value]) =>
-                                                <option
-                                                  key={key}
-                                                  value={value}
-                                                >
-                                                  {value}
-                                                </option>
-                                              )}
-                                            </Select>
-                                          )}
-                                        </Field>
-                                      </div>
-                                    </div>
-                                  )}
-
-
                                   {/* 横表示の場合 */}
                                   {formState.values.relatedCellsDisplaySettings?.[index]?.direction === RelatedCellDisplayDirectionType.Horizontal && (
                                     <>
@@ -387,7 +351,6 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
                                 <IconButton disabled={formState.values.relatedCellsDisplaySettings.length === DisplaySetting.MAX_RELATED_CELLS_DISPLAY_SETTINGS_LENGTH} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push({
                                   columnId:"",
                                   direction: "Vertical",
-                                  vListPrefix: "",
                                 })} />
                               </div>
                             </div>
