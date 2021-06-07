@@ -18,26 +18,26 @@ import { CellDataType } from "../../../../resources/CellDataType";
 import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
 import { Cell } from '../../../../models/ColumnSpaces';
 import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
+import { CellViewer } from '../../../../components/CellViewer';
 
 //TODO 同階層のTextと同じような感じに変更する
 export const CellManagerModalBodySound: React.FC<CellManagerModalBodyProps> = (props) => {
 
   const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
   const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);
-
   const [paths, setPaths] = useState([]);
   const toast = useToast()
   const windowHeight = useWindowHeight()
   const [updateTargetCellData, setUpdateTargetCellData] = useState<FileCellBaseInfo>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
   const rightClickedCellRef = useRef(null);
-  const playingAudioElement = useRef<HTMLAudioElement>(null);
   const [relationTargetCell, setRelationTargetCell] = useState<Cell>(null);
   const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
+  const [targetCell, setTargetCell] = useState(null);
+  const lastPlayedAudioDetails = useRef(null);
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
     const target = event.target as HTMLElement;
-    const targetDataset = target.parentElement.dataset; //NOTE: ここで確実にdatasetを取得するため、ビューで複数の階層に同じdatasetをつけて対処している
 
     rightClickedCellRef.current = target.parentElement;
     rightClickedCellRef.current.classList.add("bg-gray-800");
@@ -47,17 +47,17 @@ export const CellManagerModalBodySound: React.FC<CellManagerModalBodyProps> = (p
         setUpdateTargetCellData({
           columnSpaceId: currentColumnSpace.id,
           columnId: currentColumn.id,
-          cellId: targetDataset.cellId,
+          cellId: targetCell.id,
           type: CellDataType.Sound,
           data: {
-            path: targetDataset.path,
-            alias: targetDataset.name,
+            path: targetCell.data.path,
+            alias: targetCell.data.alias ?? targetCell.data.name,
           }
         });
         openUpdateModal();
       },
       handleClickUpdateRelation: async() => {
-        const cell = currentColumn.findCell(targetDataset.cellId);
+        const cell = currentColumn.findCell(targetCell.id);
         setRelationTargetCell(cell);
         openParticularCellRelationModal();
       },
@@ -67,15 +67,15 @@ export const CellManagerModalBodySound: React.FC<CellManagerModalBodyProps> = (p
           type: 'question',
           buttons: ["いいえ", 'はい'],
           message: '削除',
-          detail: `以下を削除しますか？\n\n${targetDataset.name}`,
+          detail: `以下を削除しますか？\n\n${targetCell.data.name}`,
           noLink: true,
         }).then(async (res) => {
           if (res.response === 1) { //「はい」を選択した時
-            const croppedValue = (targetDataset.name.length > 15) ? targetDataset.name.substring(0, 15)+"..." : targetDataset.name;
+            const croppedValue = (targetCell.data.name.length > 15) ? targetCell.data.name.substring(0, 15)+"..." : targetCell.data.name;
             try {
               // セルの削除
               // TODO 一個も削除に成功してないときでも例外起きず、成功したことになっているので、そこらへんやっぱどうにかしたほうが良いと思う。例えばtargetCellIdをundefined送っても失敗がわからない
-              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetDataset.cellId);
+              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetCell.id);
               set(columnSpacesState, newColumnSpaces);
               set(relatedCellsState, newRelatedCells);
               toast({ title: `"${croppedValue}"を削除しました`, status: "success", position: "bottom-right", isClosable: true, duration: 1500,})
@@ -94,7 +94,7 @@ export const CellManagerModalBodySound: React.FC<CellManagerModalBodyProps> = (p
       }
     });
 
-  }, [currentColumnSpace, currentColumn])
+  }, [currentColumnSpace, currentColumn, targetCell])
 
   const onDrop = useCallback(acceptedFiles => {
     // 対応する拡張子
@@ -128,14 +128,56 @@ export const CellManagerModalBodySound: React.FC<CellManagerModalBodyProps> = (p
     setPaths([]);
   }, [paths, currentColumnSpace, currentColumn]);
 
-  const onPlayAudio = useCallback(e => {
-    const isOtherAudioPlaying = playingAudioElement.current && e.target.dataset.cellId !== playingAudioElement.current.dataset.cellId;
-    if (isOtherAudioPlaying) {
-      playingAudioElement.current.pause();
+  const handleOnMouseCell = (event, cell: Cell) => {
+    console.debug("セルにonmouse");
+    setTargetCell(cell);
+  }
+
+  const handleSoundPlay = (event) => {
+    console.debug("Soundセルをplay");
+    // 既に再生しているものがあったら、自分じゃないなら停止
+    if (lastPlayedAudioDetails.current && (lastPlayedAudioDetails.current.querySelector("audio").dataset.cellId !== event.target.dataset.cellId)) {
+      lastPlayedAudioDetails.current.querySelector("audio").pause();
     }
 
-    playingAudioElement.current = e.target;
-  }, []);
+    // 自分を再生中にする
+    lastPlayedAudioDetails.current = event.target.parentElement.parentElement;
+  }
+
+  const handleSoundPause = (event) => {
+    console.debug("Soundセルをpause");
+
+    //NOTE: 切り替える時に 新しいのをplay -> 古いのをpauseの順番に入ってしまい再生してても直後に必ずnullが入ってしまうので、以下は行わない
+    // lastPlayedAudioDetails.current = null;
+  }
+
+  const handleSoundCellToggle = (event) => {
+    const target = event.target;
+
+    /// 閉じた場合
+    if (target.dataset.isOpening == "true") {
+      console.debug("Soundセルをトグルでclose");
+      target.dataset.isOpening = "false";
+
+      // 既に再生しているものがあったら、自分なら停止
+      if (lastPlayedAudioDetails.current && (lastPlayedAudioDetails.current.querySelector("audio").dataset.cellId === target.querySelector("audio").dataset.cellId)) {
+        lastPlayedAudioDetails.current.querySelector("audio").pause();
+      }
+      return;
+    }
+
+    /// 開いた場合場合
+    console.debug("Soundセルをトグルでopen");
+    target.dataset.isOpening = "true";
+
+    // 既に再生しているものがあったら、自分じゃないなら停止
+    if (lastPlayedAudioDetails.current && (lastPlayedAudioDetails.current.querySelector("audio").dataset.cellId !== target.querySelector("audio").dataset.cellId)) {
+      lastPlayedAudioDetails.current.querySelector("audio").pause();
+    }
+
+    // 再生開始
+    target.querySelector("audio").play();
+  }
 
   //TODO アップロードしようとしたけどやめたファイルを「☓」ボタンで消せるようにする
   //TODO やっぱり音声データはアーティスト名とかで並び替えとかしたいよね…他のセル管理モーダルの一覧部分も、任意のリレーションしてるカラムのリレーションで並び替えできるようにしたいな（リレーションしてないのは「他」みたいに最後に表示するとして）
@@ -196,9 +238,15 @@ export const CellManagerModalBodySound: React.FC<CellManagerModalBodyProps> = (p
                     <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-path={(cell.data as SoundCellData).path} data-name={displayName}>
                       <hr/>
                       <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as SoundCellData).path} data-cell-id={cell.id} data-name={displayName}>
-                        {/* TODO ここ、折りたたみも可能にしたほうがいいかも */}
-                        <div>{displayName}</div>
-                        <audio src={(cell.data as SoundCellData).path} controls className="h-7 outline-none" onPlay={onPlayAudio} data-cell-id={cell.id} />
+                        <CellViewer
+                          key={cell.id}
+                          cell={cell}
+                          withLiPrefix={false}
+                          onMouseMainCell={(e) => handleOnMouseCell(e, cell)}
+                          onSoundCellToggle={handleSoundCellToggle}
+                          onSoundCellPlay={handleSoundPlay}
+                          onSoundCellPause={handleSoundPause}
+                        />
                       </div>
                     </div>
                   )

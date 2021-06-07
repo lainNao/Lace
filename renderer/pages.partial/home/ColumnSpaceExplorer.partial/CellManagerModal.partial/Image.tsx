@@ -18,12 +18,12 @@ import { CellDataType } from "../../../../resources/CellDataType";
 import { ParticularCellRelationModal } from "../CellManagerModal.partial/ParticularCellRelationModal";
 import { Cell } from '../../../../models/ColumnSpaces';
 import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
+import { CellViewer } from '../../../../components/CellViewer';
 
 export const CellManagerModalBodyImage: React.FC<CellManagerModalBodyProps> = (props) => {
 
   const currentColumnSpace = useRecoilValue(specificColumnSpaceState(props.columnSpaceId));
   const currentColumn = currentColumnSpace.findDescendantColumn(props.columnId);
-
   const windowHeight = useWindowHeight()
   const rightClickedCellRef = useRef(null);
   const [updateTargetCellData, setUpdateTargetCellData] = useState<FileCellBaseInfo>(null);
@@ -32,43 +32,45 @@ export const CellManagerModalBodyImage: React.FC<CellManagerModalBodyProps> = (p
   const toast = useToast();
   const [relationTargetCell, setRelationTargetCell] = useState<Cell>(null);
   const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
+  const [targetCell, setTargetCell] = useState(null);
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
     const target = event.target as HTMLElement;
-    const targetDataset = target.parentElement.parentElement.dataset; //NOTE: ここで確実にdatasetを取得するため、ビューで複数の階層に同じdatasetをつけて対処している
-
     rightClickedCellRef.current = target.parentElement;
     rightClickedCellRef.current.classList.add("bg-gray-800");
 
     showCellContextMenu(event, {
+      // リネーム
       handleClickRenameCell: async () => {
+        //TODO ここもっときれいになるはず。columnSpaceId、columnId、cellだけで十分
         setUpdateTargetCellData({
           columnSpaceId: currentColumnSpace.id,
           columnId: currentColumn.id,
-          cellId: targetDataset.cellId,
+          cellId: targetCell.id,
           type: CellDataType.Image,
           data: {
-            path: targetDataset.path,
-            alias: targetDataset.name,
+            path: targetCell.data.path,
+            alias: targetCell.data.alias ?? targetCell.data.name,
           }
         });
         openUpdateModal();
       },
+      // 削除
       handleClickDeleteCell: async () => {
         rightClickedCellRef.current.classList.add("bg-gray-800");
         remote.dialog.showMessageBox({
           type: 'question',
           buttons: ["いいえ", 'はい'],
           message: '削除',
-          detail: `以下を削除しますか？\n\n${targetDataset.name}`,
+          detail: `以下を削除しますか？\n\n${targetCell.data.name}`,
           noLink: true,
         }).then(async (res) => {
           if (res.response === 1) { //「はい」を選択した時
-            const croppedValue = (targetDataset.name.length > 15) ? targetDataset.name.substring(0, 15)+"..." : targetDataset.name;
+            const croppedValue = (targetCell.data.name.length > 15) ? targetCell.data.name.substring(0, 15)+"..." : targetCell.data.name;
             try {
               // セルの削除
               // TODO 一個も削除に成功してないときでも例外起きず、成功したことになっているので、そこらへんやっぱどうにかしたほうが良いと思う。例えばtargetCellIdをundefined送っても失敗がわからない
-              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetDataset.cellId);
+              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetCell.id);
               set(columnSpacesState, newColumnSpaces);
               set(relatedCellsState, newRelatedCells);
               toast({ title: `"${croppedValue}"を削除しました`, status: "success", position: "bottom-right", isClosable: true, duration: 1500,})
@@ -82,8 +84,9 @@ export const CellManagerModalBodyImage: React.FC<CellManagerModalBodyProps> = (p
           }
         });
       },
+      // リレーション管理
       handleClickUpdateRelation: async() => {
-        const cell = currentColumn.findCell(targetDataset.cellId);
+        const cell = currentColumn.findCell(targetCell.id);
         setRelationTargetCell(cell);
         openParticularCellRelationModal();
       },
@@ -92,7 +95,7 @@ export const CellManagerModalBodyImage: React.FC<CellManagerModalBodyProps> = (p
       }
     });
 
-  }, [currentColumnSpace, currentColumn])
+  }, [currentColumnSpace, currentColumn, targetCell])
 
   const onDrop = useCallback(acceptedFiles => {
     // 対応する拡張子のみ受け入れる
@@ -127,6 +130,11 @@ export const CellManagerModalBodyImage: React.FC<CellManagerModalBodyProps> = (p
     //TODO 以下、成功したときのみ行いたい
     setPaths([]);
   }, [paths, currentColumnSpace, currentColumn]);
+
+  const handleOnMouseCell = (event, cell: Cell) => {
+    console.debug("セルにonmouse");
+    setTargetCell(cell);
+  }
 
   //TODO アップロードしようとしたけどやめたファイルを「☓」ボタンで消せるようにする
 
@@ -168,7 +176,7 @@ export const CellManagerModalBodyImage: React.FC<CellManagerModalBodyProps> = (p
                 loader={<h4>Loading...</h4>}
                 next={null}
                 hasMore={false}
-                height={windowHeight-260}
+                height={windowHeight-260} //TODO ここ謎の調整数値入ってるからどうにかしたい。他のも
               >
                 {currentColumn.cells.mapChildren((cell, index) => {
                   const displayName = (cell.data as ImageCellData).alias;
@@ -176,10 +184,13 @@ export const CellManagerModalBodyImage: React.FC<CellManagerModalBodyProps> = (p
                     <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-path={(cell.data as ImageCellData).path} data-name={displayName}>
                       <hr/>
                       <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}} data-path={(cell.data as ImageCellData).path} data-cell-id={cell.id} data-name={displayName}>
-                        {/* TODO ここ、折りたたみも可能にしたほうがいいかも */}
                         {/* TODO 画像はクリックで拡大表示したいところ… */}
-                        <div>{displayName}</div>
-                        <img src={(cell.data as ImageCellData).path} />
+                        <CellViewer
+                          key={cell.id}
+                          cell={cell}
+                          withLiPrefix={false}
+                          onMouseMainCell={(e) => handleOnMouseCell(e, cell)}
+                        />
                       </div>
                     </div>
                   )

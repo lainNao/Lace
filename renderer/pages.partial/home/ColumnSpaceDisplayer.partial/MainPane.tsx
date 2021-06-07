@@ -4,7 +4,7 @@ import { DisplaySetting } from "../../../models/DisplaySettings"
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState"
 import { CellDataType } from "../../../resources/CellDataType"
 import { Tag } from "@chakra-ui/react"
-import { CellViewer } from "./CellViewer"
+import { CellViewer } from "../../../components/CellViewer"
 
 type Props = {
   className: string;

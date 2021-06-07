@@ -34,7 +34,7 @@ export const CellManagerModal: React.FC<Props> = props => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{props.title}</ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton style={{outline: 'none'}} />
         <ModalBody>
           <CellManagerModalBody
             onClickCreateNewCell={props.handleNewCellFormCreateButtonClick}

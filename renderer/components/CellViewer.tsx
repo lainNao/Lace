@@ -1,6 +1,6 @@
-import { CellDataType } from "../../../resources/CellDataType"
-import { Cell } from "../../../models/ColumnSpaces"
-import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../../../models/ColumnSpaces/CellData.implemented"
+import { CellDataType } from "../resources/CellDataType"
+import { Cell } from "../models/ColumnSpaces"
+import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../models/ColumnSpaces/CellData.implemented"
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import "@uiw/react-markdown-preview/dist/markdown.css";
 
@@ -26,7 +26,7 @@ export const CellViewer = ({
   onVideoCellToggle = () => {},
 }: CellViewerProps) => {
   if (cell.type === CellDataType.Text) {
-    return <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} hover:bg-gray-700`}>{(cell.data as TextCellData).text}</div>
+    return <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} hover:bg-gray-800`}>{(cell.data as TextCellData).text}</div>
   }
   if (cell.type === CellDataType.Markdown) {
     return (
