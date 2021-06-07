@@ -37,7 +37,7 @@ export const FileRenameModal = (props: Props) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>リネーム</ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton style={{outline: "none"}} />
         <ModalBody>
           <div>
             <Formik

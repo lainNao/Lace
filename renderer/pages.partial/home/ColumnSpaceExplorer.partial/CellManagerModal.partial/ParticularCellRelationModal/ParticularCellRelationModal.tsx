@@ -23,7 +23,7 @@ export const ParticularCellRelationModal = (props: Props) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>セルのリレーション</ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton style={{outline: "none"}} />
         <ModalBody>
           <div className="flex flex-row">
 

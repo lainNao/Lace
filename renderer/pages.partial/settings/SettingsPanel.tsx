@@ -67,7 +67,7 @@ export const SettingsPanel = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>DBのコピー中（元ファイルは一応残しますので不要なら自分で消してください）</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton style={{outline: "none"}}/>
           <ModalBody>
             <Progress size="xs" isIndeterminate />
           </ModalBody>

@@ -37,7 +37,7 @@ export const TextCellUpdateModal = (props: Props) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>編集</ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton style={{outline: "none"}} />
         <ModalBody>
           <div>
             <Formik

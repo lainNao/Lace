@@ -174,7 +174,7 @@ export const CellRerationModal: React.FC<Props> = props => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{currentSelectedColumnSpace.name}のリレーション</ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton style={{outline: "none"}}/>
         <ModalBody>
           <Formik
             enableReinitialize={true}

@@ -177,7 +177,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>カラムの新規作成</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton style={{outline: "none"}} />
           <ModalBody>
             <form ref={controller.newColumnFormRef} onSubmit={(e) => e.preventDefault()} className="mb-3">
               <div>カラム名</div>

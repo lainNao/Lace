@@ -105,7 +105,7 @@ export const DisplaySettingModal: React.FC<Props> = props => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>表示設定</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton style={{outline: "none"}} />
           <ModalBody>
             <div className="flex flex-row pb-3">
 

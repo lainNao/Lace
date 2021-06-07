@@ -100,7 +100,7 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>表示設定編集 / {props.displaySetting.name}</ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton style={{outline: "none"}} />
         <ModalBody>
           <Formik
             enableReinitialize={true}
