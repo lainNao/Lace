@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { Cell } from '../../models/ColumnSpaces';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
@@ -12,7 +13,7 @@ export const useColumnSpaceDisplayerController = () => {
   const [displaySettings, setDisplaySettings] = useRecoilState(displaySettingsState);
   const [selectedColumnSpaceId, setSelectedColumnSpaceId] = useRecoilState(selectedColumnSpaceIdState)
   const [tabIndex, setTabIndex] = useState(0);
-  const [targetCellId, setTargetCellId] = useState(null);
+  const [targetCell, setTargetCell] = useState(null);
   const lastPlayedAudioDetails = useRef(null);
   const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(selectedColumnSpaceId));
 
@@ -21,9 +22,9 @@ export const useColumnSpaceDisplayerController = () => {
     setTabIndex(tabIndex)
   }, []);
 
-  const handleOnMouseMainCell = (event, cellId: string) => {
+  const handleOnMouseMainCell = (event, cell: Cell) => {
     console.debug("中央paneセルにonmouse");
-    setTargetCellId(cellId);
+    setTargetCell(cell);
   }
 
   const handleSoundPlay = (event) => {
@@ -106,7 +107,7 @@ export const useColumnSpaceDisplayerController = () => {
     currentSelectedColumnSpace,
     hasInitialized: columnSpaces && relatedCells && displaySettings,
     tabIndex,
-    targetCellId,
+    targetCell,
     // イベントハンドラ
     handleDisplaySettingChange,
     handleFilterUpdate,

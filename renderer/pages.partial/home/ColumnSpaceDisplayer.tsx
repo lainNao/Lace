@@ -112,7 +112,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
                     className="w-2/5 overflow-y-auto ml-2 h-full"
                     displaySetting={displaySetting}
                     columnSpace={controller.currentSelectedColumnSpace}
-                    targetCellId={controller.targetCellId}
+                    targetCell={controller.targetCell}
                     onSoundCellToggle={controller.handleSoundCellToggle}
                     onSoundCellPlay={controller.handleSoundPlay}
                     onSoundCellPause={controller.handleSoundPause}

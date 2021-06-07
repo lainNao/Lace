@@ -124,7 +124,8 @@ export const MainPane = (props: Props) => {
             sortDescendants.every(sortDescendant =>
               relatedCells.isRelated(props.columnSpace.id,
                 { columnId: sortDescendant.columnId, cellId: sortDescendant.cellId },
-                { columnId: mainColumn.id, cellId: cell.id })
+                { columnId: mainColumn.id, cellId: cell.id }
+              )
             )
           )
           .map(cell => cell.id)

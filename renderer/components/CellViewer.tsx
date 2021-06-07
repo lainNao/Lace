@@ -28,7 +28,7 @@ export const CellViewer = ({
   if (cell.type === CellDataType.Text) {
     return (
       <div
-        onMouseEnter={(e) => onMouseMainCell(e,cell.id)}
+        onMouseEnter={(e) => onMouseMainCell(e, cell)}
         className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} hover:bg-gray-800`}
       >
         {(cell.data as TextCellData).text}
@@ -37,7 +37,7 @@ export const CellViewer = ({
   }
   if (cell.type === CellDataType.Markdown) {
     return (
-      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
+      <div onMouseEnter={(e) => onMouseMainCell(e, cell)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
         <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg">
           <summary className="outline-none cursor-pointer">{(cell.data as MarkdownCellData).title}</summary>
           <div className="pb-3 pt-1 px-3 rounded-lg">
@@ -49,7 +49,7 @@ export const CellViewer = ({
   }
   if (cell.type === CellDataType.Sound) {
     return (
-      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
+      <div onMouseEnter={(e) => onMouseMainCell(e, cell)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
         <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" onToggle={onSoundCellToggle} data-is-opening={false}>
           <summary className="outline-none cursor-pointer">{(cell.data as SoundCellData).alias}</summary>
           <div className="mt-3 mb-2 ml-2 pb-2">
@@ -61,7 +61,7 @@ export const CellViewer = ({
   }
   if (cell.type === CellDataType.Image) {
     return (
-      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
+      <div onMouseEnter={(e) => onMouseMainCell(e, cell)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
         <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" data-is-opening={false}>
           <summary className="outline-none cursor-pointer">{(cell.data as ImageCellData).alias}</summary>
           <div className="mt-3 mb-2 mx-3 pb-2">
@@ -73,7 +73,7 @@ export const CellViewer = ({
   }
   if (cell.type === CellDataType.Video) {
     return (
-      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
+      <div onMouseEnter={(e) => onMouseMainCell(e, cell)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
         <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" onToggle={onVideoCellToggle} data-is-opening={false}>
           <summary className="outline-none cursor-pointer">{(cell.data as VideoCellData).alias}</summary>
           <div className="mt-3 mb-2 mx-3 pb-2">
