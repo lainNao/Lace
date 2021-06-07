@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Select, IconButton, Button, RadioGroup, Radio, Stack, useToast } from "@chakra-ui/react"
-import {  DisplayDetailCustomList, DisplaySetting, DisplaySettings } from '../../../../models/DisplaySettings';
+import { DisplaySetting, DisplaySettings } from '../../../../models/DisplaySettings';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import selectedColumnSpaceIdState from '../../../../recoils/atoms/selectedColumnSpaceIdState';
@@ -86,30 +86,6 @@ export const DisplaySettingAddForm = () => {
                 return yup.object({
                   separator: yup.string().required("必須です"),
                 });
-              }
-              if (type === "CustomList") {
-                return yup.object({
-                  title: notNullableStringRule,
-                  columns: yup.array(yup.object({
-                    columnId: notNullableStringRule,
-                    prefix: yup.string().nullable(),
-                    suffix: yup.string().nullable(),
-                    needBreakLine: yup.bool().required("必須です"),
-                  })).min(1).max(DisplaySetting.MAX_SORT_COLUMN_LENGTH).required().test("is-column-unique", "第nカラムは同時に同じものを指定できません", (value, context) => {
-                    if (!value) {
-                      return false;
-                    }
-
-                    let columnIds = [];
-                    return value.every(column => {
-                      if (columnIds.includes(column.columnId)) {
-                        return false;
-                      }
-                      columnIds.push(column.columnId);
-                      return true;
-                    })
-                  })
-                })
               }
               return yup.object().nullable();
             })
@@ -245,138 +221,6 @@ export const DisplaySettingAddForm = () => {
                       }}
                     </Field>
                   </div>
-                </div>
-              }
-
-              {/* CustomListの場合 */}
-              {formState.values.relatedCellsDisplaySetting.type === "CustomList" &&
-                <div>
-                  {/* タイトル */}
-                  <div className="flex flex-row mt-3">
-                    <div className="w-1/3">タイトル</div>
-                    <div className="w-2/3">
-                      <Field name="relatedCellsDisplaySetting.typeDetails.title">
-                        {({field, form, ...props}) => <Input {...field} {...props} spellCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.title && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.title}/>}
-                      </Field>
-                    </div>
-                  </div>
-
-                  <div className="w-1/3 mt-3">表示に含める情報</div>
-                  <div className=" ml-5 py-1 mt-2">
-                    <FieldArray name="relatedCellsDisplaySetting.typeDetails.columns">
-                      {({remove, push}) => {
-
-                        // １つ目の入力フォームを出すため、空の初期データを用意してあげる
-                        if (!formState.values.relatedCellsDisplaySetting?.typeDetails?.columns?.length) {
-                          push({
-                            columnId:"",
-                            prefix: "",
-                            suffix: "",
-                            needBreakLine: false,
-                          })
-                          return null;
-                        }
-
-                        return (
-                          <div>
-                            {formState.values.relatedCellsDisplaySetting?.typeDetails?.columns?.length
-                             && formState.values.relatedCellsDisplaySetting.typeDetails.columns.map((column, index) => {
-                              return (
-                                <div key={index} className={`${index !== 0 && "mt-2"}  bg-gray-900 rounded-xl px-4 py-4 pb-5`}>
-
-                                  {/* 第nカラム */}
-                                  <div className={`flex flex-row mt-3 `}>
-                                    <div className="w-1/3">第{index+1}カラム</div>
-                                    <div className="w-2/3">
-                                      <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.columnId`}>
-                                        {({field, form, ...props}) => (
-                                          <Select
-                                            {...field} {...props}
-                                            placeholder="選択してください"
-                                            isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.columnId && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.columnId}
-                                          >
-                                            {currentSelectedColumnSpace.columns.children
-                                              .filter(column => column.id !== formState.values.mainColumn)
-                                              .filter(column => {
-                                                if (!formState.values.sortColumns) {
-                                                  return true;
-                                                }
-                                                return !formState.values.sortColumns.includes(column.id);
-                                              })
-                                              .map(column => <option key={column.id} value={column.id}>{column.name}</option>)
-                                            }
-                                          </Select>
-                                      )}
-                                      </Field>
-                                    </div>
-                                  </div>
-
-                                  {/* プレフィクス */}
-                                  <div className="flex flex-row mt-3">
-                                    <div className="w-1/3">プレフィクス</div>
-                                    <div className="w-2/3">
-                                      <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.prefix`}>
-                                        {({field, form, ...props}) => <Input {...field} {...props} spellCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.prefix && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.prefix}/>}
-                                      </Field>
-                                    </div>
-                                  </div>
-
-                                  {/* サフィックス */}
-                                  <div className="flex flex-row mt-3">
-                                    <div className="w-1/3">サフィックス</div>
-                                    <div className="w-2/3">
-                                      <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.suffix`}>
-                                        {({field, form, ...props}) => <Input {...field} {...props} spellCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.suffix && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.suffix}/>}
-                                      </Field>
-                                    </div>
-                                  </div>
-
-                                  {/* 改行＆インデント */}
-                                  <div className="flex flex-row mt-3">
-                                    <div className="w-1/3">改行＆インデント</div>
-                                    <div className="w-2/3">
-                                      <RadioGroup defaultValue="false">
-                                        <Stack direction="row">
-                                          <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.needBreakLine`}>{({ field, form, ...props }) => <Radio isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.needBreakLine && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.needBreakLine} {...field} {...props} value="true">あり</Radio>}</Field>
-                                          <Field name={`relatedCellsDisplaySetting.typeDetails.columns.${index}.needBreakLine`}>{({ field, form, ...props }) => <Radio isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.needBreakLine && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns?.[index]?.needBreakLine} {...field} {...props} value="false">なし</Radio>}</Field>
-                                        </Stack>
-                                      </RadioGroup>
-                                    </div>
-                                  </div>
-                                </div>
-                              )
-                            })}
-
-                            {/* 表示に含める情報配列のエラー */}
-                            <div className="flex justify-center">
-                              {((formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns &&
-                                typeof (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.columns === "string") &&
-                                <div className="text-red-600">{(formState.errors.relatedCellsDisplaySetting.typeDetails as any).columns}</div>
-                              }
-                            </div>
-
-                            {/* 追加ボタン */}
-                            <div className="flex flex-row mt-3 justify-center">
-                              <div>
-                                <IconButton disabled={formState.values.relatedCellsDisplaySetting.typeDetails.columns.length <= DisplayDetailCustomList.MIN_COLUMN_LENGTH} aria-label="remove" icon={<MinusIcon />} onClick={() => {
-                                  if (formState.values.relatedCellsDisplaySetting.typeDetails.columns <= DisplayDetailCustomList.MIN_COLUMN_LENGTH) return;
-                                  remove(formState.values.relatedCellsDisplaySetting.typeDetails.columns -1)
-                                }} />
-                                <IconButton disabled={!DisplayDetailCustomList.isValidColumnLength(formState.values.relatedCellsDisplaySetting.typeDetails.columns.length)} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push({
-                                  columnId:"",
-                                  prefix: "",
-                                  suffix: "",
-                                  needBreakLine: false,
-                                })} />
-                              </div>
-                            </div>
-
-                          </div>
-                        )
-                      }}
-                    </FieldArray>
-                  </div>
-
                 </div>
               }
 

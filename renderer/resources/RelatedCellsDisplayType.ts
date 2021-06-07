@@ -4,7 +4,6 @@ export enum RelatedCellsDisplayType {
   VListNum = "VListNum",
   HListSeparator = "HListSeparator",
   HListTag = "HListTag",
-  CustomList = "CustomList",
 }
 
 export const RelatedCellsDisplayTypeStrings = {    //TODO 多言語で返すようにしといて。できるのか知らんけど
@@ -22,8 +21,5 @@ export const RelatedCellsDisplayTypeStrings = {    //TODO 多言語で返すよ�
   },
   get [RelatedCellsDisplayType.HListTag]() {
     return "横リスト（タグ）";
-  },
-  get [RelatedCellsDisplayType.CustomList]() {
-    return "カスタムリスト";
   },
 }

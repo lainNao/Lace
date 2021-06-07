@@ -100,7 +100,6 @@ export class DisplaySettings {
    *  同じカラムスペース内の全設定を走査して以下を探して消す
    *  ・mainColumnと指定のカラムIDかぶるものは、表示設定ごと消す
    *  ・sortColumnsで消すIDあるものはそこから消す
-   *  ・relatedCellsDisplaySetting.typeDetails.columns[n].columnIdが消したやつと同じものがあればその配列から消す（relatedCellsDisplaySetting.typeがCustomListの場合のみ）
    */
   //TODO テストちゃんとする
   removeSpecificColumnAssociatedItem(columnSpaceId: string, columnId: string): DisplaySettings {

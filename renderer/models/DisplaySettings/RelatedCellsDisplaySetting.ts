@@ -1,17 +1,17 @@
 import { assert } from "console";
-import { DisplayDetailCustomList, DisplayDetailHListSeparator } from ".";
+import { DisplayDetailHListSeparator } from ".";
 import { DisplayTypeDetailsFactory } from "../../factories/DisplayTypeDetailsFactory";
 import { RelatedCellsDisplayType } from "../../resources/RelatedCellsDisplayType";
 
 interface ConstructorArgs {
   type: RelatedCellsDisplayType,
-  typeDetails: DisplayDetailCustomList | DisplayDetailHListSeparator,
+  typeDetails: DisplayDetailHListSeparator,
 }
 
 export class RelatedCellsDisplaySetting {
 
   private _type: RelatedCellsDisplayType;
-  private _typeDetails: DisplayDetailCustomList | DisplayDetailHListSeparator;
+  private _typeDetails: DisplayDetailHListSeparator;
 
   get type() { return this._type; }
   get private() { return this._typeDetails; }
@@ -35,18 +35,6 @@ export class RelatedCellsDisplaySetting {
       type: this._type,
       typeDetails: this._typeDetails,
     }
-  }
-
-  removeSpecificColumnAssociatedItem(columnId: string): RelatedCellsDisplaySetting {
-
-    if (this._type === RelatedCellsDisplayType.CustomList) {
-      this._typeDetails = (this._typeDetails as DisplayDetailCustomList).removeSpecificColumnAssociatedItem(columnId);
-    }
-
-    return new RelatedCellsDisplaySetting({
-      type: this._type,
-      typeDetails: this._typeDetails,
-    });
   }
 
 }

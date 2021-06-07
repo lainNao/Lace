@@ -40,8 +40,6 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                     HListTag                    //メインカラムとソートカラムに使ってないカラム達とそのセル達を回して、メインカラムのセルに関連してるものを横並べ（タグコンポネントで表示するだけ）
                 HListSeparatorの場合
                     基本的にはHListTagと同じで、セパレータに指定の文字を使う感じ（「、」とか「|」とか。最後の要素はつけない）
-                CustomListの場合
-                    後で思い出す
         ■他
             ・保存フォルダパスを移動した時、ファイル達のパスもreplaceかけていく必要ある。これは後でモデル内のそのメソッドの中に処理を追加するぞ。あとで、。
             ・ソース内のTODOを基本的に片付ける
@@ -348,37 +346,13 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                     relatedCellsDisplaySetting: {
                         // 表示形式
                         type: RelatedCellsDisplayType,      //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
-                                                            //CustomList（任意の表示。詳しくは、自分の創作技法集の表示に合わせる感じなのでそっち参照。簡単）
 
-                        // DisplayDetail.CustomList | DisplayDetail.HListSeparator
-                        // type別の詳細設定。現状CustomListの場合とHListSeparatorの場合だけで、それ以外の場合はnull
+                        //  DisplayDetail.HListSeparator
+                        // type別の詳細設定。現状HListSeparatorの場合だけで、それ以外の場合はnull
                         typeDetails: {
 
                             /* HListSeparatorの場合 */
                             separator: "、とかのセパレータ文字"
-
-
-
-                            /* CustomListの場合 */
-
-                            // タイトル（CustomListじゃない場合、カラム名がタイトルとして使われる）
-                            title: "曲例、とか",
-
-                            // カラム達の設定
-                            columns: [
-                                {
-                                    columnId: カラムID,
-
-                                    prefix: "つけたい前置文字。nullable",
-
-                                    suffix: "つけたい後置文字。nullable",
-
-                                    // このカラムの前に改行かつインデントを入れるか（何言ってるかわからない場合自分の創作技法集の表示参照）
-                                    needBreakLine: 真偽値,
-
-                                },
-                                ...
-                            ]
 
                         }
                     },
