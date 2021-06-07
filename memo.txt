@@ -149,7 +149,8 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
         ・よってCustomListは廃止。似たことやりたいならマークダウンで似たことできるはずだからそっちでやってほしい。
         ・消したときのコミット履歴です。いつか困ったら以下参照。
             https://github.com/lainNao/Lace/commit/4c45132ad6ae6411bba5ab03c8dc50e15455a0cf
-
+        ・で以下が新しくしたときのコミット履歴
+            https://github.com/lainNao/Lace/commit/63e76cf2a00dc512ee8abec6b0a221ebb53035bc
     ＜設定画面＞
         ・global_settings.jsonをいじるとする。設定画面は単純にラベルとinputのテーブルにしてCRUDするだけの見た目でとりあえずいいかな
             ■いじらせないけど存在するキー
