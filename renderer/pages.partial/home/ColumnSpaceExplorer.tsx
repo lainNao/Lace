@@ -109,7 +109,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                         </span>
                         {/* 編集フォーム */}
                         <form
-                          className="hidden"
+                          className="hidden mb-1"
                           data-id={column.id}
                           onSubmit={event => controller.handleSubmitNewColumnName(event, column.id)}
                           ref={elem => controller.newColumnNameInputRefs.current[column.id] = elem}
