@@ -12,9 +12,9 @@ const HomeBody: React.FC = () => {
       />
 
       {/* データ表示 */}
-      <ColumnSpaceDisplayer
+      {/* <ColumnSpaceDisplayer
         className="bg-gray-900 px-3 pt-1 w-full h-full"
-      />
+      /> */}
 
     </>
 

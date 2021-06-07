@@ -94,7 +94,7 @@ export const Home = () => {
                       <div>（データはOSのユーザ用ディレクトリの中の「Lace」ディレクトリか、または過去に変更したディレクトリパスにあります）</div>
                       <div>次にFAQを探して解決してください（後で用意するつもりです…）</div>
                       <div>または無料なので諦め、以下のボタンを押して新しく初期化してください（既存データは消えます）</div>
-                      <div className="mt-3">
+                      <div className="mt-6 text-center">
                         <Button colorScheme="gray" size="sm" onClick={controller.handleClickSetup}>データの初期化</Button>
                       </div>
                     </div>

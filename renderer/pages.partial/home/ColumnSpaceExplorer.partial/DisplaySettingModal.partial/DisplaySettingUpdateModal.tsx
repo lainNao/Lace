@@ -8,9 +8,9 @@ import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { Field, FieldArray, Form, Formik } from 'formik';
 import yup from '../../../../modules/yup';
-import { RelatedCellsDisplayType } from '../../../../resources/RelatedCellsDisplayType';
 import specificColumnSpaceState from '../../../../recoils/selectors/specificColumnSpaceState';
 import { updateDisplaySettingUsecase } from '../../../../usecases/updateDisplaySettingUsecase';
+import { HListDisplayType, RelatedCellDisplayDirectionType, VListPrefixType } from '../../../../models/DisplaySettings/RelatedCellsDisplaySetting';
 
 
 const notNullableStringRule = yup.string().min(1).required("必須です").filled("必須です");
@@ -29,18 +29,20 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
     name: string,
     mainColumn: string,
     sortColumns: string[],
-    relatedCellsDisplaySetting: {
-      type: string,
-      typeDetails: any,
-    }
+    relatedCellsDisplaySettings: [{
+      columnId: string,
+      direction: RelatedCellDisplayDirectionType,
+      vListPrefix: VListPrefixType | string,
+    }]
   }>({
     name: "",
     mainColumn: "",
     sortColumns: [],
-    relatedCellsDisplaySetting: {
-      type: "",
-      typeDetails: undefined,
-    }
+    relatedCellsDisplaySettings: [{
+      columnId: "",
+      direction: RelatedCellDisplayDirectionType.Vertical,
+      vListPrefix: "",
+    }]
   });
 
   // initialValuesの設定
@@ -50,21 +52,23 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
     setInitialValues(displaySettingJson as any);
   }, [props.displaySetting])
 
-  const handleOnChangeMainColumn = (event, setFieldValue, currentTypeDetailsColumnLength?: number) => {  //TODO 型
+  const handleOnChangeMainColumn = (event, setFieldValue, relatedCellsDisplaySettings?: number) => {  //TODO 型
+    console.debug("メインカラムonchange")
     setFieldValue("mainColumn", event.target.value);
     setFieldValue("sortColumns", [""]);
-    if (currentTypeDetailsColumnLength) {
-      for (let i=0; i<currentTypeDetailsColumnLength; i++) {
-        setFieldValue(`relatedCellsDisplaySetting.typeDetails.columns.${i}.columnId`, "");
+    if (relatedCellsDisplaySettings) {
+      for (let i=0; i<relatedCellsDisplaySettings; i++) {
+        setFieldValue(`relatedCellsDisplaySettings.${i}.columnId`, "");
       }
     }
   }
 
-  const handleOnChangeSortColumn = (event, index: number, setFieldValue, currentTypeDetailsColumnLength?: number) => {  //TODO 型
+  const handleOnChangeSortColumn = (event, index: number, setFieldValue, relatedCellsDisplaySettings?: number) => {  //TODO 型
+    console.debug("ソートカラムonchange")
     setFieldValue(`sortColumns.${index}`, event.target.value);
-    if (currentTypeDetailsColumnLength) {
-      for (let i=0; i<currentTypeDetailsColumnLength; i++) {
-        setFieldValue(`relatedCellsDisplaySetting.typeDetails.columns.${i}.columnId`, "");
+    if (relatedCellsDisplaySettings) {
+      for (let i=0; i<relatedCellsDisplaySettings; i++) {
+        setFieldValue(`relatedCellsDisplaySettings.${i}.columnId`, "");
       }
     }
   }
@@ -106,18 +110,42 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
               yup.object({
                 name: notNullableStringRule,
                 mainColumn: notNullableStringRule,
-                sortColumns: yup.array(notNullableStringRule).required("必須です").unique("同時に同じものを指定できません"),
-                relatedCellsDisplaySetting: yup.object({
-                  type: notNullableStringRule,
-                  typeDetails: yup.object().when("type", type => {
-                    if (type === "HListSeparator") {
-                      return yup.object({
-                        separator: yup.string().required("必須です"),
-                      });
-                    }
-                    return yup.object().nullable();
+                sortColumns: yup.array(notNullableStringRule).required("必須です").unique("同時に同じものを指定できません").min(DisplaySetting.MIN_SORT_COLUMN_LENGTH).max(DisplaySetting.MAX_SORT_COLUMN_LENGTH),
+                relatedCellsDisplaySettings: yup.array(
+                  yup.object({
+                    columnId: notNullableStringRule,
+                    direction: notNullableStringRule,
+                    vListPrefix: yup.string().when("direction", direction => {
+                      if (direction === RelatedCellDisplayDirectionType.Vertical) {
+                        return notNullableStringRule;
+                      }
+                      return yup.string().nullable();
+                    }),
+                    hListDisplayType: yup.string().when("direction", direction => {
+                      if (direction === RelatedCellDisplayDirectionType.Horizontal) {
+                        return notNullableStringRule;
+                      }
+                      return yup.string().nullable();
+                    }),
+                    hListSeparator: yup.string().nullable(),
                   })
-                })
+                ).min(DisplaySetting.MIN_RELATED_CELLS_DISPLAY_SETTINGS_LENGTH)
+                  .max(DisplaySetting.MAX_RELATED_CELLS_DISPLAY_SETTINGS_LENGTH)
+                  .required()
+                  .test("is-column-unique", "第nカラムは同時に同じものを指定できません", (value, context) => {
+                    if (!value) {
+                      return false;
+                    }
+
+                    let columnIds = [];
+                    return value.every(column => {
+                      if (columnIds.includes(column.columnId)) {
+                        return false;
+                      }
+                      columnIds.push(column.columnId);
+                      return true;
+                    })
+                  })
               })
             }
           >
@@ -125,7 +153,7 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
               return (
                 <Form>
                   {/* 中央 */}
-                  <div className="font-bold">中央</div>
+                  <div className="font-bold">中央ペイン</div>
                   <div className="pl-4 mt-3">
 
                     {/* 表示名 */}
@@ -148,7 +176,7 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
                               {...field} {...props}
                               placeholder="選択してください"
                               isInvalid={formState.touched.mainColumn && formState.errors.mainColumn}
-                              onChange={e => handleOnChangeMainColumn(e, formState.setFieldValue, formState.values.relatedCellsDisplaySetting.typeDetails?.columns?.length)}
+                              onChange={e => handleOnChangeMainColumn(e, formState.setFieldValue, formState.values.relatedCellsDisplaySettings.length)}
                             >
                               {currentSelectedColumnSpace.columns.mapChildren(column => {
                                 return <option key={column.id} value={column.id}>{column.name}</option>
@@ -175,7 +203,7 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
                                           {...field} {...props}
                                           placeholder="選択してください"
                                           isInvalid={formState.touched.sortColumns?.[index] && formState.errors.sortColumns?.[index]}
-                                          onChange={e => handleOnChangeSortColumn(e, index, formState.setFieldValue, formState.values.relatedCellsDisplaySetting.typeDetails?.columns?.length)}
+                                          onChange={e => handleOnChangeSortColumn(e, index, formState.setFieldValue, formState.values.relatedCellsDisplaySettings.length)}
                                         >
                                           {currentSelectedColumnSpace.columns.children
                                             .filter(column => column.id !== formState.values.mainColumn)
@@ -213,47 +241,164 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
                   </div>
 
                   {/* 右サイド */}
-                  <div className="font-bold">右サイド</div>
+                  <div className="font-bold">関連セルペイン</div>
                   <div className="pl-4 mt-3">
 
-                    {/* 関連セル表示形式 */}
-                    <div className="flex flex-row mt-3">
-                      <div className="w-1/3">関連セル表示形式</div>
-                      <div className="w-2/3">
-                        <Field name={`relatedCellsDisplaySetting.type`}>
-                          {({field, form, ...props}) => (
-                            <Select
-                              {...field} {...props}
-                              placeholder="選択してください"
-                              isInvalid={formState.touched.relatedCellsDisplaySetting?.type && formState.errors.relatedCellsDisplaySetting?.type}
-                            >
-                              {Object.entries(RelatedCellsDisplayType).map(([key, value]) => <option key={key} value={value}>{value}</option>)}
-                            </Select>
-                          )}
-                        </Field>
-                      </div>
-                    </div>
-
-                    {/* HListSeparatorの場合 */}
-                    {formState.values.relatedCellsDisplaySetting.type === "HListSeparator" &&
-
-                      // セパレータ
-                      <div className="flex flex-row mt-3">
-                        <div className="w-1/3">セパレータ</div>
-                        <div className="w-2/3">
-                          <Field name={`relatedCellsDisplaySetting.typeDetails.separator`}>
-                            {({field, form, ...props}) => {
+                    <FieldArray name="relatedCellsDisplaySettings">
+                      {({remove, push}) => {
+                        return (
+                          <div>
+                            {formState.values.relatedCellsDisplaySettings.map((relatedCellsDisplaySetting, index) => {
                               return (
-                                <Input {...field} {...props} spellCheck={false} isInvalid={(formState.touched.relatedCellsDisplaySetting?.typeDetails as any)?.separator && (formState.errors.relatedCellsDisplaySetting?.typeDetails as any)?.separator}/>
+                                <div key={relatedCellsDisplaySetting.columnId + index} className={`${index !== 0 && "mt-2"} bg-gray-900 rounded-xl px-4 py-4 pb-5`}>
+
+                                  {/* カラム */}
+                                  <div className="flex flex-row mt-3">
+                                    <div className="w-1/3">第{index+1}カラム</div>
+                                    <div className="w-2/3">
+                                      <Field name={`relatedCellsDisplaySettings.${index}.columnId`}>
+                                        {({field, form, ...props}) => (
+                                          <Select
+                                            {...field} {...props}
+                                            placeholder="選択してください"
+                                            isInvalid={formState.touched.relatedCellsDisplaySettings?.[index]?.columnId && (formState.errors.relatedCellsDisplaySettings?.[index] as any)?.columnId}
+                                          >
+                                            {currentSelectedColumnSpace.columns.children
+                                              // メインカラムに含まれない
+                                              .filter(column => column.id !== formState.values.mainColumn)
+                                              // ソートカラムに含まれない
+                                              .filter(column => {
+                                                if (!formState.values.sortColumns) {
+                                                  return true;
+                                                }
+                                                return !formState.values.sortColumns.includes(column.id);
+                                              })
+                                              .map(column => <option key={column.id} value={column.id}>{column.name}</option>)
+                                            }
+                                          </Select>
+                                        )}
+                                      </Field>
+                                    </div>
+                                  </div>
+
+                                  {/* リスト表示時の方向 */}
+                                  <div className="flex flex-row mt-3">
+                                    <div className="w-1/3">リスト表示時の方向</div>
+                                    <div className="w-2/3">
+                                      <Field name={`relatedCellsDisplaySettings.${index}.direction`}>
+                                        {({field, form, ...props}) => (
+                                          <Select
+                                            {...field} {...props}
+                                            placeholder="選択してください"
+                                            isInvalid={formState.touched.relatedCellsDisplaySettings?.[index]?.direction && (formState.errors.relatedCellsDisplaySettings?.[index] as any)?.direction}
+                                          >
+                                            {Object.entries(RelatedCellDisplayDirectionType).map(([key, value]) => <option key={key} value={value}>{value}</option>)}
+                                          </Select>
+                                        )}
+                                      </Field>
+                                    </div>
+                                  </div>
+
+                                  {/* 縦表示の場合 */}
+                                  {formState.values.relatedCellsDisplaySettings?.[index]?.direction === RelatedCellDisplayDirectionType.Vertical && (
+                                    <div className="flex flex-row mt-3">
+                                      <div className="w-1/3">リストのプレフィクス</div>
+                                      <div className="w-2/3">
+                                        <Field name={`relatedCellsDisplaySettings.${index}.vListPrefix`}>
+                                          {({field, form, ...props}) => (
+                                            <Select
+                                              {...field} {...props}
+                                              placeholder="選択してください"
+                                              isInvalid={(formState.touched.relatedCellsDisplaySettings?.[index] as any)?.vListPrefix && (formState.errors.relatedCellsDisplaySettings?.[index] as any)?.vListPrefix}
+                                            >
+                                              {Object.entries(VListPrefixType).map(([key, value]) =>
+                                                <option
+                                                  key={key}
+                                                  value={value}
+                                                >
+                                                  {value}
+                                                </option>
+                                              )}
+                                            </Select>
+                                          )}
+                                        </Field>
+                                      </div>
+                                    </div>
+                                  )}
+
+
+                                  {/* 横表示の場合 */}
+                                  {formState.values.relatedCellsDisplaySettings?.[index]?.direction === RelatedCellDisplayDirectionType.Horizontal && (
+                                    <>
+                                      <div className="flex flex-row mt-3">
+                                        <div className="w-1/3">表示タイプ</div>
+                                        <div className="w-2/3">
+                                          <Field name={`relatedCellsDisplaySettings.${index}.hListDisplayType`}>
+                                            {({field, form, ...props}) => (
+                                              <Select
+                                                {...field} {...props}
+                                                placeholder="選択してください"
+                                                isInvalid={(formState.touched.relatedCellsDisplaySettings?.[index] as any)?.hListDisplayType && (formState.errors.relatedCellsDisplaySettings?.[index] as any)?.hListDisplayType}
+                                              >
+                                                {Object.entries(HListDisplayType).map(([key, value]) =>
+                                                  <option
+                                                    key={key}
+                                                    value={value}
+                                                  >
+                                                    {value}
+                                                  </option>)
+                                                }
+                                              </Select>
+                                            )}
+                                          </Field>
+                                        </div>
+                                      </div>
+
+                                      <div className="flex flex-row mt-3">
+                                        <div className="w-1/3">セパレータ</div>
+                                        <div className="w-2/3">
+                                          <Field name={`relatedCellsDisplaySettings.${index}.hListSeparator`}>
+                                            {({field, form, ...props}) =>
+                                              <Input {...field} {...props}
+                                                spellCheck={false}
+                                                isInvalid={(formState.touched.relatedCellsDisplaySettings?.[index] as any)?.hListSeparator && (formState.errors.relatedCellsDisplaySettings?.[index] as any)?.hListSeparator}
+                                              />
+                                            }
+                                          </Field>
+                                        </div>
+                                      </div>
+
+                                    </>
+
+                                  )}
+
+                                </div>
                               )
-                            }}
-                          </Field>
-                        </div>
-                      </div>
-                    }
+                            })
+                            }
+
+                            {/* - + ボタン */}
+                            <div className="flex flex-row mt-3 justify-center">
+                              <div>
+                                <IconButton disabled={formState.values.relatedCellsDisplaySettings.length <= DisplaySetting.MIN_RELATED_CELLS_DISPLAY_SETTINGS_LENGTH} aria-label="remove" icon={<MinusIcon />} onClick={() => {
+                                  if (formState.values.relatedCellsDisplaySettings.length <= DisplaySetting.MIN_RELATED_CELLS_DISPLAY_SETTINGS_LENGTH) return;
+                                  remove(formState.values.relatedCellsDisplaySettings.length -1)
+                                }} />
+                                <IconButton disabled={formState.values.relatedCellsDisplaySettings.length === DisplaySetting.MAX_RELATED_CELLS_DISPLAY_SETTINGS_LENGTH} className="ml-3" aria-label="add" icon={<AddIcon />} onClick={() => push({
+                                  columnId:"",
+                                  direction: "Vertical",
+                                  vListPrefix: "",
+                                })} />
+                              </div>
+                            </div>
+
+                          </div>
+                        )
+                      }}
+                    </FieldArray>
 
                     <div className="text-right mt-6">
-                      <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}>確定</Button>
+                      <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}>編集確定</Button>
                     </div>
 
                   </div>

@@ -8,7 +8,7 @@ interface ConstructorArgs {
   name: TrimedFilledString,
   sortColumns: string[],
   mainColumn: string,
-  relatedCellsDisplaySetting: RelatedCellsDisplaySetting,
+  relatedCellsDisplaySettings: RelatedCellsDisplaySetting[],
 }
 
 export class DisplaySetting {
@@ -16,16 +16,18 @@ export class DisplaySetting {
   private _name: TrimedFilledString;
   private _sortColumns: string[];
   private _mainColumn: string;
-  private _relatedCellsDisplaySetting: RelatedCellsDisplaySetting;
+  private _relatedCellsDisplaySettings: RelatedCellsDisplaySetting[];
 
   get id() { return this._id; }
   get name() { return this._name.toString(); }
   get sortColumns() { return this._sortColumns; }
   get mainColumn() { return this._mainColumn; }
-  get relatedCellsDisplaySetting() { return this._relatedCellsDisplaySetting; }
+  get relatedCellsDisplaySettings() { return this._relatedCellsDisplaySettings; }
 
   static get MIN_SORT_COLUMN_LENGTH() { return 1; }
   static get MAX_SORT_COLUMN_LENGTH() { return 5; }
+  static get MIN_RELATED_CELLS_DISPLAY_SETTINGS_LENGTH() { return 1; }
+  static get MAX_RELATED_CELLS_DISPLAY_SETTINGS_LENGTH() { return 99; }
 
   constructor(args: ConstructorArgs) {
     const id = args.id ?? uuidv4();
@@ -35,7 +37,7 @@ export class DisplaySetting {
     assert.ok(args.name !== null && args.name !== undefined, "表示名が空です");
     assert.ok(args.sortColumns !== null && args.sortColumns !== undefined, "ソートカラムが空です");
     assert.ok(args.mainColumn !== null && args.mainColumn !== undefined, "メインカラムが空です");
-    assert.ok(args.relatedCellsDisplaySetting !== null && args.relatedCellsDisplaySetting !== undefined, "関連セル表示形式が空です");
+    assert.ok(args.relatedCellsDisplaySettings !== null && args.relatedCellsDisplaySettings !== undefined, "関連セル表示形式が空です");
 
     // sortColumnsがかぶってはいけないこと
     // TODO ここらへん、staticメソッドに切り出して例のフォームでも使えるようにしたほうがいいのでは
@@ -52,7 +54,7 @@ export class DisplaySetting {
     this._name = args.name;
     this._sortColumns = args.sortColumns;
     this._mainColumn = args.mainColumn;
-    this._relatedCellsDisplaySetting = args.relatedCellsDisplaySetting;
+    this._relatedCellsDisplaySettings = args.relatedCellsDisplaySettings;
   }
 
   static isValidSortColumnLength(length: number): boolean {
@@ -70,7 +72,9 @@ export class DisplaySetting {
       name: new TrimedFilledString(json.name),
       sortColumns: json.sortColumns,
       mainColumn: json.mainColumn,
-      relatedCellsDisplaySetting: RelatedCellsDisplaySetting.fromJSON(json.relatedCellsDisplaySetting),
+      relatedCellsDisplaySettings: json.relatedCellsDisplaySettings.map(relatedCellsDisplaySetting => {
+        return RelatedCellsDisplaySetting.fromJSON(relatedCellsDisplaySetting)
+      }),
     })
   }
 
@@ -80,21 +84,22 @@ export class DisplaySetting {
       name: this._name.toString(),
       sortColumns: this._sortColumns,
       mainColumn: this._mainColumn,
-      relatedCellsDisplaySetting: this._relatedCellsDisplaySetting,
+      relatedCellsDisplaySettings: this._relatedCellsDisplaySettings,
     }
   }
 
-  removeSpecificColumnAssociatedItem(columnId: string): DisplaySetting {
-
-    // ソートカラムから対象カラムを削除
-    this._sortColumns = this._sortColumns.filter(sortColumn => sortColumn !== columnId);
+  removeSpecificColumnAssociatedItem(removedColumnId: string): DisplaySetting {
 
     return new DisplaySetting({
       id: this._id,
       name: this._name,
-      sortColumns: this._sortColumns,
+      // ソートカラムから対象カラムを削除
+      sortColumns: this._sortColumns.filter(sortColumn => sortColumn !== removedColumnId),
       mainColumn: this._mainColumn,
-      relatedCellsDisplaySetting: this._relatedCellsDisplaySetting,
+      // 関連セルペインで使うカラムからも対象カラムを削除
+      relatedCellsDisplaySettings: this._relatedCellsDisplaySettings.filter(relatedCellsDisplaySetting => {
+        return relatedCellsDisplaySetting.columnId !== removedColumnId
+      }),
     });
   }
 

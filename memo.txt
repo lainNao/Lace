@@ -34,19 +34,13 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
             ・タスクバーとかに出るアイコンまだ設定されてないっぽい
             ・ライセンスを明記したい。何にするのかも決める。オープンソースには一応する。
         ■見た目
-            ・補足表示のレイアウトはどうなるんだっけ　たぶん基本的には再帰とか不要（CustomListは知らんけど）
-                普通の場合（以下、テキスト以外のこと考えてない気がするので注意…）
-                    VList, VListDot, VListNum,  //メインカラムとソートカラムに使ってないカラム達とそのセル達を回して、メインカラムのセルに関連してるものを縦並べ（それぞれ前置する記号が違うだけ）
-                    HListTag                    //メインカラムとソートカラムに使ってないカラム達とそのセル達を回して、メインカラムのセルに関連してるものを横並べ（タグコンポネントで表示するだけ）
-                HListSeparatorの場合
-                    基本的にはHListTagと同じで、セパレータに指定の文字を使う感じ（「、」とか「|」とか。最後の要素はつけない）
+            ・補足表示とフィルター部分
+            ・ちょっとフォーム関係の文字サイズだけ異様にでかくない？
         ■他
             ・保存フォルダパスを移動した時、ファイル達のパスもreplaceかけていく必要ある。これは後でモデル内のそのメソッドの中に処理を追加するぞ。あとで、。
             ・ソース内のTODOを基本的に片付ける
-        ■仕様バグ
-            ・VListとかのやつ、設計ミスでは？カラムごとに設定できるべきだと思う。全カラムがこうなっちゃうようにしか使えないな今の所。
-                ・うーんこれは難しい。またそのフォームを書き換えるの怠いし…。でも元々やろうとしてた構想は今でも分かるしそっちのほうが良いとは思う…うーんこれもTODO行きかな…？
-                    ・でもこれデータ構造自体変わるから、データ移行がいきなり必要になるな…今やってしまうかどうか…
+            ・selectedColumnSpaceIdもlocalStorageに保存して再起動時に再生できるようにするか、
+            ・初期化時にDBの場所がlocalStorageにあるものから変わらないな。別にいいんだけど、もしその場所ごと消え去ってるならエラー出るだろうから、フォルダ無いなら作るような処理になってるか確認したほうがいい。なってるならいい。
 
     ＜他（おいおい）＞
         ■UI/UX
@@ -87,6 +81,7 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
             ・カラムスペース追加時に一瞬ガクっとなる（高さが限界を超える場合）のをいつか直す
             ・表示設定の順番変更できるようにしたように、セルとかも順番変更できるようにしたらどうか
         ■機能
+            ・設定画面に開閉で開けるdangerゾーン作る。（DB初期化とか。）
             ・中央ペインとか無限スクロール入れる
                 ・ただこれ、dataLength的な項目を埋めないといけないならちょっときつみが出てくるな…それの値を出せる別の手を考えるか、無限スクロールの代償として事前にその値を出す計算を事前に挟むかのどちらかかな
                 ・補足ペインなら可能かな…？
@@ -342,20 +337,22 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                     // メイン表示する中央カラム
                     mainColumn: カラムID,
 
-                    // 関連セルの表示形式
-                    relatedCellsDisplaySetting: {
-                        // 表示形式
-                        type: RelatedCellsDisplayType,      //VList（普通の箇条書き）、VListDot（●を頭につける箇条書き）、VListNum（数字を頭につける箇条書き）、HListSeparator（「、」とかで区切る横書き）、HListTag（タグ風の角丸マークで横書き）
+                    // 関連セル達の表示形式
+                    relatedCellsDisplaySettings: [          //まずここに「s」をつけて配列にしてしまう
+                        //この層を「relatedCellsDisplaySetting」とする。
+                        {
+                            columnId: カラムID,
+                            direction: RelatedCellDisplayDirection,  //縦、横のみのEnumを新規で作る。（RelatedCellsDisplayTypeは廃止）（ちなみに横だとdetailsタグが使えないはず（改行されてしまう）のでクリックでモーダルで詳細開くか、onmouseでツールチップ的に表示するしかないかな）
 
-                        //  DisplayDetail.HListSeparator
-                        // type別の詳細設定。現状HListSeparatorの場合だけで、それ以外の場合はnull
-                        typeDetails: {
+                            //以下はVListのみ
+                            vListPrefix: VListPrefixType,        //「なし」「・」「数値」の3種
 
-                            /* HListSeparatorの場合 */
-                            separator: "、とかのセパレータ文字"
-
-                        }
-                    },
+                            //以下はHListのみ
+                            hListDisplayType: HListDisplayType,  //「タグ」「プレーン」の二種。新しくEnum作る。
+                            hListSeparator: 任意の文字列,         //セパレータ（タグの場合は基本的には空欄にしてもらえればいいイメージでいいやいろいろ制御分岐するの面倒なので。）
+                        },
+                        ... // これを残りカラム（ソートカラムやメインカラム以外のもの）で「+」で追加させる。カラム増やした時に新たに追加できるように。
+                    ]
 
                 },
                 ...
@@ -378,29 +375,27 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
     ＜＞
     ＜display_settings.json＞
         {
-            "カラムスペースのUUID": [
+            "asdf": [
                 {
-                "id": "UUID",
-                "name": "フレーズ別要素、とかの名前",
-                "sortColumns": [111,222],
-                "mainColumn": "3333",
+                    "id": "UUID",
+                    "name": "フレーズ別要素、とかの名前",
+                    "sortColumns": [111,222],
+                    "mainColumn": "3333",
 
-                "relatedCellsDisplaySetting": [
-                    {
-                    "type": "CustomList",
-                    "typeDetails": {
-                        "title": "曲例、とか",
-                        "columns": [
+                    "relatedCellsDisplaySettings": [
                         {
-                            "columnId": "カラムID",
-                            "prefix": "つけたい前置文字。nullable",
-                            "suffix": "つけたい後置文字。nullable",
-                            "needBreakLine": false
+                            "columnId": 123123,
+                            "direction": "Vertical",
+                            "vListPrefix": "Empty"
+                        },
+                        {
+                            "columnId": 234234,
+                            "direction": "Horizontal",
+                            "hListDisplayType": "Tag",
+                            "hListSeparator": ""
                         }
-                        ]
-                    }
-                    }
-                ]
+
+                    ]
                 }
             ]
         }

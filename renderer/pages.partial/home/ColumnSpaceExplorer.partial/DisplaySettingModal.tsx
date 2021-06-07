@@ -38,6 +38,7 @@ export const DisplaySettingModal: React.FC<Props> = props => {
     showDisplaySettingContextMenu({
       targetIndex: Number(targetDataset.index),
       lastListIndex: props.displaySettings.children[currentSelectedColumnSpaceId].length -1,
+      // 一つ上に移動
       handleClickUp: async () => {
         try{
           const newDisplaySettings = await updateDisplaySettingOrderUsecase(currentSelectedColumnSpaceId, Number(targetDataset.index), Number(targetDataset.index)-1);
@@ -47,6 +48,7 @@ export const DisplaySettingModal: React.FC<Props> = props => {
           console.log(e.stack)
         }
       },
+      // 1つ下に移動
       handleClickDown: async () => {
         try{
           const newDisplaySettings = await updateDisplaySettingOrderUsecase(currentSelectedColumnSpaceId, Number(targetDataset.index), Number(targetDataset.index)+1);
@@ -56,12 +58,14 @@ export const DisplaySettingModal: React.FC<Props> = props => {
           console.log(e.stack)
         }
       },
+      // 編集
       handleClickUpdateDisplaySetting: async () => {
         const displaySettings = await snapshot.getPromise(displaySettingsState);
         const targetDisplaySetting = displaySettings.children[currentSelectedColumnSpaceId].find(ds => ds.id === targetDataset.displaySettingId);
         setUpdateTargetDisplaySetting(targetDisplaySetting);
         openUpdateModal();
       },
+      // 削除
       handleClickDeleteDisplaySetting: async () => {
         rightClickedCellRef.current.classList.add("bg-gray-800");
         remote.dialog.showMessageBox({
