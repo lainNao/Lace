@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "Lace Explorer",
+  "name": "lace_explorer",
   "description": "Lace Explorer - A relational cell explorer for personal information analysis",
   "version": "0.1.0",
   "author": "lainNao",
