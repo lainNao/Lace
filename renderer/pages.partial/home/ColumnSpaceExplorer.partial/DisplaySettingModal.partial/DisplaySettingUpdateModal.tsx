@@ -397,8 +397,8 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
                       }}
                     </FieldArray>
 
-                    <div className="text-right mt-6">
-                      <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}>編集確定</Button>
+                    <div className="text-right my-3">
+                      <Button type="submit" colorScheme="blue" mr={3} isDisabled={!formState.dirty || !formState.isValid || formState.isSubmitting}>確定</Button>
                     </div>
 
                   </div>

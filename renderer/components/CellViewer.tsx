@@ -53,7 +53,7 @@ export const CellViewer = ({
         <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" onToggle={onSoundCellToggle} data-is-opening={false}>
           <summary className="outline-none cursor-pointer">{(cell.data as SoundCellData).alias}</summary>
           <div className="mt-3 mb-2 ml-2 pb-2">
-            <audio src={(cell.data as SoundCellData).path} controls className="outline-none h-7" onPlay={onSoundCellPlay} onPause={onSoundCellPause} data-cell-id={cell.id} />
+            <audio src={(cell.data as SoundCellData).path} controls className="outline-none h-7 max-w-full" onPlay={onSoundCellPlay} onPause={onSoundCellPause} data-cell-id={cell.id} />
           </div>
         </details>
       </div>
@@ -65,7 +65,7 @@ export const CellViewer = ({
         <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" data-is-opening={false}>
           <summary className="outline-none cursor-pointer">{(cell.data as ImageCellData).alias}</summary>
           <div className="mt-3 mb-2 mx-3 pb-2">
-            <img loading="lazy" src={(cell.data as ImageCellData).path} className="outline-none" data-cell-id={cell.id} />
+            <img loading="lazy" src={(cell.data as ImageCellData).path} className="outline-none max-w-full" data-cell-id={cell.id} />
           </div>
         </details>
       </div>
@@ -77,7 +77,7 @@ export const CellViewer = ({
         <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" onToggle={onVideoCellToggle} data-is-opening={false}>
           <summary className="outline-none cursor-pointer">{(cell.data as VideoCellData).alias}</summary>
           <div className="mt-3 mb-2 mx-3 pb-2">
-            <video controls src={(cell.data as VideoCellData).path} className="outline-none" data-cell-id={cell.id} />
+            <video controls src={(cell.data as VideoCellData).path} className="outline-none max-w-full" data-cell-id={cell.id} />
           </div>
         </details>
       </div>
