@@ -1,7 +1,7 @@
 {
   "private": true,
-  "name": "Lace",
-  "description": "Lace - A Relational Cell Explorer",
+  "name": "Lace Explorer",
+  "description": "Lace Explorer - A relational cell explorer for personal information analysis",
   "version": "0.1.0",
   "author": "lainNao",
   "main": "app/background.js",
