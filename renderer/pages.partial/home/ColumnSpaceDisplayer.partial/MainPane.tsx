@@ -54,6 +54,7 @@ export const MainPane = (props: Props) => {
                   className="mb-2"
                   cell={cell}
                   withLiPrefix={cell.type === CellDataType.Text}
+                  withBackgroundHoveredColor={true}
                   onMouseMainCell={props.onMouseMainCell}
                   onSoundCellToggle={props.onSoundCellToggle}
                   onSoundCellPlay={props.onSoundCellPlay}
@@ -149,6 +150,7 @@ export const MainPane = (props: Props) => {
                     className="mb-2"
                     cell={cell}
                     withLiPrefix={cell.type === CellDataType.Text}
+                    withBackgroundHoveredColor={true}
                     onMouseMainCell={props.onMouseMainCell}
                     onSoundCellToggle={props.onSoundCellToggle}
                     onSoundCellPlay={props.onSoundCellPlay}
