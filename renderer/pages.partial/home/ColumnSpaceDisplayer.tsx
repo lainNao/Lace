@@ -91,7 +91,12 @@ export const ColumnSpaceDisplayer = (props: Props) => {
             return (
               <TabPanel key={displaySetting.id} className="h-full">
                 <div className="w-full flex h-full overflow-y-scroll">
-                  <FilterPane className="w-1/5 overflow-y-auto mr-2 h-full" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} onFilterUpdate={controller.handleFilterUpdate} />
+                  <FilterPane
+                    className="w-1/5 overflow-y-auto mr-2 h-full"
+                    displaySetting={displaySetting}
+                    columnSpace={controller.currentSelectedColumnSpace}
+                    onFilterUpdate={controller.handleFilterUpdate}
+                  />
                   {/* TODO MainPaneはフィルター条件とかも流し込む必要がある。後々 */}
                   <MainPane
                     className="w-2/5 overflow-y-auto mr-2 h-full pb-10"

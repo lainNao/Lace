@@ -26,15 +26,22 @@ export const CellViewer = ({
   onVideoCellToggle = () => {},
 }: CellViewerProps) => {
   if (cell.type === CellDataType.Text) {
-    return <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} hover:bg-gray-800`}>{(cell.data as TextCellData).text}</div>
+    return (
+      <div
+        onMouseEnter={(e) => onMouseMainCell(e,cell.id)}
+        className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} hover:bg-gray-800`}
+      >
+        {(cell.data as TextCellData).text}
+      </div>
+    )
   }
   if (cell.type === CellDataType.Markdown) {
     return (
       <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
         <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg">
           <summary className="outline-none cursor-pointer">{(cell.data as MarkdownCellData).title}</summary>
-          <div className="bg-gray-700 mx-3 my-1 pb-3 pt-1 px-3 rounded-lg">
-            <MarkdownPreview source={(cell.data as MarkdownCellData).text} />
+          <div className="pb-3 pt-1 px-3 rounded-lg">
+            <MarkdownPreview className="bg-gray-700 rounded-lg p-3 pt-2" source={(cell.data as MarkdownCellData).text} />
           </div>
         </details>
       </div>
