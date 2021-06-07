@@ -40,7 +40,7 @@ export const SubPane = (props: Props) => {
       <div className="mb-3">
         <Tag colorScheme="cyan">対象セル</Tag>
       </div>
-      <div className={`mb-9 ${props.targetCell.type === CellDataType.Text ? "ml-8" : ""}`}>
+      <div className={`mb-9 ${props.targetCell.type === CellDataType.Text ? "ml-4" : ""}`}>
         <CellViewer
           className="mb-2"
           cell={props.targetCell}
@@ -58,7 +58,7 @@ export const SubPane = (props: Props) => {
       </div>
 
       {/* カラムとセル達 */}
-      <div className="ml-4">
+      <div className="">
         {subColumns.map(subColumn => {
 
           // 中央ペインでonmouseしているセルIDと関連しているセルだけフィルタリング
