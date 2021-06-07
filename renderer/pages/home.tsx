@@ -113,7 +113,7 @@ export const Home = () => {
         {/* エラーが特に無い場合 */}
         {(!controller.hasError && controller.hasLoaded) &&
           <>
-            {/* 一番左の部分 */}
+            {/* 左メニュー */}
             <div className="flex flex-col items-center p-2 space-y-2.5 bg-gray-900">
               <IconButton aria-label="home" style={{outline:"none"}} onClick={() => controller.setSelectedLeftMenu(LeftMenus.HOME)} icon={
                 <HomeIcon className={`${controller.selectedLeftMenu === LeftMenus.HOME && "text-blue-400"}`} />
