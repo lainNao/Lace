@@ -1,22 +1,20 @@
-import { useMemo } from "react"
-import { useRecoilState, useRecoilValue } from "recoil"
-import { Cell, ColumnSpace } from "../../../models/ColumnSpaces"
-import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../../../models/ColumnSpaces/CellData.implemented"
+import { useRecoilState } from "recoil"
+import { ColumnSpace } from "../../../models/ColumnSpaces"
 import { DisplaySetting } from "../../../models/DisplaySettings"
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState"
 import { CellDataType } from "../../../resources/CellDataType"
-import { Tag, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
-import MarkdownPreview from '@uiw/react-markdown-preview';
-import "@uiw/react-markdown-preview/dist/markdown.css";
+import { Tag } from "@chakra-ui/react"
+import { CellViewer } from "./CellViewer"
 
 type Props = {
   className: string;
   displaySetting: DisplaySetting;
   columnSpace: ColumnSpace;
   onMouseMainCell: (event, cellId) => void;
-  onToggleSoundCell: (event) => void;
+  onSoundCellToggle: (event) => void;
   onSoundCellPlay: (event) => void;
   onSoundCellPause: (event) => void;
+  onVideoCellToggle: (event) => void;
 }
 
 export const MainPane = (props: Props) => {
@@ -51,15 +49,16 @@ export const MainPane = (props: Props) => {
             )
             .map(cell => {
               return (
-                <SortColumnCell
+                <CellViewer
                   key={cell.id}
                   className="mb-2"
                   cell={cell}
                   withLiPrefix={cell.type === CellDataType.Text}
                   onMouseMainCell={props.onMouseMainCell}
-                  onToggleSoundCell={props.onToggleSoundCell}
+                  onSoundCellToggle={props.onSoundCellToggle}
                   onSoundCellPlay={props.onSoundCellPlay}
                   onSoundCellPause={props.onSoundCellPause}
+                  onVideoCellToggle={props.onVideoCellToggle}
                 />
               )
             })
@@ -77,10 +76,11 @@ export const MainPane = (props: Props) => {
             <div key={cell.id} className="mb-3">
               {/* 今の段の今のセル */}
               <div className="mb-3 font-bold">
-                <SortColumnCell cell={cell}
-                  onToggleSoundCell={props.onToggleSoundCell}
+                <CellViewer cell={cell}
+                  onSoundCellToggle={props.onSoundCellToggle}
                   onSoundCellPlay={props.onSoundCellPlay}
                   onSoundCellPause={props.onSoundCellPause}
+                  onVideoCellToggle={props.onVideoCellToggle}
                 />
               </div>
 
@@ -143,15 +143,16 @@ export const MainPane = (props: Props) => {
               .filter(cell => !alreadyRenderedCellIds.includes(cell.id))
               .map(cell => {
                 return (
-                  <SortColumnCell
+                  <CellViewer
                     key={cell.id}
                     className="mb-2"
                     cell={cell}
                     withLiPrefix={cell.type === CellDataType.Text}
                     onMouseMainCell={props.onMouseMainCell}
-                    onToggleSoundCell={props.onToggleSoundCell}
+                    onSoundCellToggle={props.onSoundCellToggle}
                     onSoundCellPlay={props.onSoundCellPlay}
                     onSoundCellPause={props.onSoundCellPause}
+                    onVideoCellToggle={props.onVideoCellToggle}
                   />
                 )
               })
@@ -186,61 +187,4 @@ export const MainPane = (props: Props) => {
       {generateMainPaneUnrelatedElementTree()}
     </div>
   )
-}
-
-type SortColumnCellProps = {
-  cell: Cell;
-  className?: string;
-  withLiPrefix?: boolean;
-  onMouseMainCell?: (event, cellId) => void;
-  onToggleSoundCell?: (event) => void;
-  onSoundCellPlay?: (event) => void;
-  onSoundCellPause?: (event) => void;
-}
-
-//TODO マシにする
-const SortColumnCell = ({
-  cell,
-  className,
-  withLiPrefix = false,
-  onMouseMainCell = () => {},
-  onToggleSoundCell = () => {},
-  onSoundCellPlay = () => {},
-  onSoundCellPause = () => {},
-}: SortColumnCellProps) => {
-  if (cell.type === CellDataType.Text) {
-    return <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>{(cell.data as TextCellData).text}</div>
-  }
-  if (cell.type === CellDataType.Markdown) {
-    return (
-      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
-        <details>
-          <summary className="outline-none cursor-pointer">{(cell.data as MarkdownCellData).title}</summary>
-          <div className="bg-gray-800 ml-2 mr-3 my-1 pb-3 pt-1 px-3 rounded-lg">
-            <MarkdownPreview source={(cell.data as MarkdownCellData).text} />
-          </div>
-        </details>
-      </div>
-    )
-  }
-  if (cell.type === CellDataType.Sound) {
-    //TODO 開閉で音の再生非再生もしちゃいたい　detailsタグにonToggleイベントがあるっぽいからそこでなど　※他のを再生してたらそっち止めたいのでそこらへんも制御時に考慮したいところ
-    return (
-      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
-        <details onToggle={onToggleSoundCell} data-is-opening={false}>
-          <summary className="outline-none cursor-pointer">{(cell.data as SoundCellData).alias}</summary>
-          <div className="mt-3 mb-4 ml-2">
-            <audio src={(cell.data as SoundCellData).path} controls className="outline-none h-7" onPlay={onSoundCellPlay} onPause={onSoundCellPause} data-cell-id={cell.id} />
-          </div>
-        </details>
-      </div>
-    )
-  }
-  if (cell.type === CellDataType.Image) {
-    return <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>Image {(cell.data as ImageCellData).alias}</div>
-  }
-  if (cell.type === CellDataType.Video) {
-    return <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>Video {(cell.data as VideoCellData).alias}</div>
-  }
-
 }

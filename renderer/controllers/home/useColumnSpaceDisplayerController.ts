@@ -72,6 +72,24 @@ export const useColumnSpaceDisplayerController = () => {
     target.querySelector("audio").play();
   }
 
+  const handleVideoCellToggle = (event) => {
+    const target = event.target;
+
+    /// 閉じた場合
+    if (target.dataset.isOpening == "true") {
+      console.debug("Videoセルをトグルでclose");
+      target.dataset.isOpening = "false";
+
+      // 停止
+      target.querySelector("video").pause();
+      return;
+    }
+
+    /// 開いた場合場合
+    console.debug("Videoセルをトグルでopen");
+    target.dataset.isOpening = "true";
+  }
+
   const handleFilterUpdate = (checkedCellIds: {
     [columnId: string] : string[]
   }) => {
@@ -96,5 +114,6 @@ export const useColumnSpaceDisplayerController = () => {
     handleSoundCellToggle,
     handleSoundPlay,
     handleSoundPause,
+    handleVideoCellToggle,
   }
 }

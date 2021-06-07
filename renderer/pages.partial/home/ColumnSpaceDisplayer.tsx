@@ -73,12 +73,6 @@ export const ColumnSpaceDisplayer = (props: Props) => {
     )
   }
 
-  /*
-    controller.selectedColumnSpaceId    //選択中カラムスペースID
-    controller.tabIndex                 //選択中の表示設定インデックス
-    controller.displaySettings.children[controller.selectedColumnSpaceId][controller.tabIndex]  //表示対象のDisplaySettingモデル
-  */
-
   return (
     <div className={`${props.className}`} style={props.style}>
       <Tabs index={controller.tabIndex} onChange={controller.handleDisplaySettingChange} className="h-full">
@@ -99,8 +93,26 @@ export const ColumnSpaceDisplayer = (props: Props) => {
                 <div className="w-full flex h-full overflow-y-scroll">
                   <FilterPane className="w-1/5 overflow-y-auto mr-2 h-full" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} onFilterUpdate={controller.handleFilterUpdate} />
                   {/* TODO MainPaneはフィルター条件とかも流し込む必要がある。後々 */}
-                  <MainPane className="w-2/5 overflow-y-auto mr-2 h-full pb-10" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} onMouseMainCell={controller.handleOnMouseMainCell} onToggleSoundCell={controller.handleSoundCellToggle} onSoundCellPlay={controller.handleSoundPlay} onSoundCellPause={controller.handleSoundPause}/>
-                  <SubPane className="w-2/5 overflow-y-auto ml-2 h-full" displaySetting={displaySetting} columnSpace={controller.currentSelectedColumnSpace} targetCellId={controller.targetCellId}  onToggleSoundCell={controller.handleSoundCellToggle} onSoundCellPlay={controller.handleSoundPlay} onSoundCellPause={controller.handleSoundPause}/>
+                  <MainPane
+                    className="w-2/5 overflow-y-auto mr-2 h-full pb-10"
+                    displaySetting={displaySetting}
+                    columnSpace={controller.currentSelectedColumnSpace}
+                    onMouseMainCell={controller.handleOnMouseMainCell}
+                    onSoundCellToggle={controller.handleSoundCellToggle}
+                    onSoundCellPlay={controller.handleSoundPlay}
+                    onSoundCellPause={controller.handleSoundPause}
+                    onVideoCellToggle={controller.handleVideoCellToggle}
+                  />
+                  <SubPane
+                    className="w-2/5 overflow-y-auto ml-2 h-full"
+                    displaySetting={displaySetting}
+                    columnSpace={controller.currentSelectedColumnSpace}
+                    targetCellId={controller.targetCellId}
+                    onSoundCellToggle={controller.handleSoundCellToggle}
+                    onSoundCellPlay={controller.handleSoundPlay}
+                    onSoundCellPause={controller.handleSoundPause}
+                    onVideoCellToggle={controller.handleVideoCellToggle}
+                  />
                 </div>
               </TabPanel>
             )

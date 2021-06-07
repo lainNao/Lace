@@ -6,9 +6,10 @@ type Props = {
   columnSpace: ColumnSpace;
   displaySetting: DisplaySetting;
   targetCellId: string;
-  onToggleSoundCell: (event) => void;
+  onSoundCellToggle: (event) => void;
   onSoundCellPlay: (event) => void;
   onSoundCellPause: (event) => void;
+  onVideoCellToggle: (event) => void;
 }
 
 export const SubPane = (props: Props) => {

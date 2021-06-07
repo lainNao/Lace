@@ -23,6 +23,7 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
             ・ぐぐったらなんかやっぱり公式がいろいろかんたんにやれるよう用意してくれてるっぽい
                 https://www.google.com/search?q=electron+check+for+updates&oq=electron+check+for+updates&aqs=chrome..69i57.3909j0j4&sourceid=chrome&ie=UTF-8
             ・ついでにメニューバーのcheck for updatesも作って
+            ・というか再インストールした時にデータが残るのかも確認したい
     ＜他（リリース前には必ず）＞
         ■最後の最後再の確認したり決めたりしたらいいや
             ・スクロールバーとか出たら崩れないか

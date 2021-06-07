@@ -1,0 +1,80 @@
+import { CellDataType } from "../../../resources/CellDataType"
+import { Cell } from "../../../models/ColumnSpaces"
+import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../../../models/ColumnSpaces/CellData.implemented"
+import MarkdownPreview from '@uiw/react-markdown-preview';
+import "@uiw/react-markdown-preview/dist/markdown.css";
+
+type CellViewerProps = {
+  cell: Cell;
+  className?: string;
+  withLiPrefix?: boolean;
+  onMouseMainCell?: (event, cellId) => void;
+  onSoundCellToggle?: (event) => void;
+  onSoundCellPlay?: (event) => void;
+  onSoundCellPause?: (event) => void;
+  onVideoCellToggle?: (event) => void;
+}
+
+export const CellViewer = ({
+  cell,
+  className,
+  withLiPrefix = false,
+  onMouseMainCell = () => {},
+  onSoundCellToggle = () => {},
+  onSoundCellPlay = () => {},
+  onSoundCellPause = () => {},
+  onVideoCellToggle = () => {},
+}: CellViewerProps) => {
+  if (cell.type === CellDataType.Text) {
+    return <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} hover:bg-gray-700`}>{(cell.data as TextCellData).text}</div>
+  }
+  if (cell.type === CellDataType.Markdown) {
+    return (
+      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
+        <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg">
+          <summary className="outline-none cursor-pointer">{(cell.data as MarkdownCellData).title}</summary>
+          <div className="bg-gray-700 mx-3 my-1 pb-3 pt-1 px-3 rounded-lg">
+            <MarkdownPreview source={(cell.data as MarkdownCellData).text} />
+          </div>
+        </details>
+      </div>
+    )
+  }
+  if (cell.type === CellDataType.Sound) {
+    return (
+      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
+        <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" onToggle={onSoundCellToggle} data-is-opening={false}>
+          <summary className="outline-none cursor-pointer">{(cell.data as SoundCellData).alias}</summary>
+          <div className="mt-3 mb-2 ml-2 pb-2">
+            <audio src={(cell.data as SoundCellData).path} controls className="outline-none h-7" onPlay={onSoundCellPlay} onPause={onSoundCellPause} data-cell-id={cell.id} />
+          </div>
+        </details>
+      </div>
+    )
+  }
+  if (cell.type === CellDataType.Image) {
+    return (
+      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
+        <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" data-is-opening={false}>
+          <summary className="outline-none cursor-pointer">{(cell.data as ImageCellData).alias}</summary>
+          <div className="mt-3 mb-2 mx-3 pb-2">
+            <img loading="lazy" src={(cell.data as ImageCellData).path} className="outline-none" data-cell-id={cell.id} />
+          </div>
+        </details>
+      </div>
+    )
+  }
+  if (cell.type === CellDataType.Video) {
+    return (
+      <div onMouseEnter={(e) => onMouseMainCell(e,cell.id)} className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} `}>
+        <details className="hover:bg-gray-800 rounded-b-lg rounded-tr-lg" onToggle={onVideoCellToggle} data-is-opening={false}>
+          <summary className="outline-none cursor-pointer">{(cell.data as VideoCellData).alias}</summary>
+          <div className="mt-3 mb-2 mx-3 pb-2">
+            <video controls src={(cell.data as VideoCellData).path} className="outline-none" data-cell-id={cell.id} />
+          </div>
+        </details>
+      </div>
+    )
+  }
+
+}
