@@ -22,7 +22,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
   }
 
   // 表示対象のカラムスペースを未選択の場合、選択を促す
-  if (!controller.selectedColumnSpaceId) {
+  if (!controller.displayTargetColumnSpaceId) {
     return (
       <div className="flex flex-col items-center h-full justify-center bg-gray-900">
         <Tag size="lg" colorScheme="teal" className="py-2" style={{lineHeight: "inherit"}}>
@@ -48,7 +48,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
   }
 
   // 対象カラムスペースの表示設定が空な無い場合、作成を促す
-  if (!controller.displaySettings.children[controller.selectedColumnSpaceId]?.length) {
+  if (!controller.displaySettings.children[controller.displayTargetColumnSpaceId]?.length) {
     return (
       <div className="flex flex-col items-center h-full justify-center">
         <Tag size="lg" colorScheme="teal" className="py-2" style={{lineHeight: "inherit"}}>
@@ -79,15 +79,15 @@ export const ColumnSpaceDisplayer = (props: Props) => {
 
         {/* タブ */}
         <TabList>
-          {controller.displaySettings.children[controller.selectedColumnSpaceId].map(displaySetting => {
+          {controller.displaySettings.children[controller.displayTargetColumnSpaceId].map(displaySetting => {
             return <Tab key={displaySetting.id} style={{outline:"none"}}>{displaySetting.name}</Tab>
           })}
         </TabList>
 
-        {/* タブボディ */}
-        {/* TODO なぜか25pxじゃなく30px引いてちょうどいいので後でどうにかするここらへん */}
+        {/* タブパネル達 */}
+        {/* TODO なぜか高さが25px（元々のcssで愚直にレイアウトしてる値…）じゃなく30px引いてちょうどいいので後でどうにかするここらへん */}
         <TabPanels className="h-full text-sm" style={{height: "calc(100% - 30px)"}}>
-          {controller.displaySettings.children[controller.selectedColumnSpaceId].map(displaySetting => {
+          {controller.displaySettings.children[controller.displayTargetColumnSpaceId].map(displaySetting => {
             return (
               <TabPanel key={displaySetting.id} className="h-full">
                 <div className="w-full flex h-full overflow-y-scroll">

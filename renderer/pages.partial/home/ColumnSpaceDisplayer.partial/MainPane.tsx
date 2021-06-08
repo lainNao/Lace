@@ -5,6 +5,7 @@ import relatedCellsState from "../../../recoils/atoms/relatedCellsState"
 import { CellDataType } from "../../../resources/CellDataType"
 import { Tag } from "@chakra-ui/react"
 import { CellViewer } from "../../../components/CellViewer"
+import { useEffect } from "react"
 
 type Props = {
   className: string;

@@ -7,7 +7,7 @@ import { CellViewerHorizontal } from "../../../components/CellViewerHorizontal"
 import { useRecoilState } from "recoil"
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState"
 import { RelatedCellDisplayDirectionType } from "../../../models/DisplaySettings/RelatedCellsDisplaySetting"
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo } from "react"
 
 type Props = {
   className: string;
@@ -37,6 +37,11 @@ export const SubPane = (props: Props) => {
 
     return selectedColumnIds.includes(column.id);
   });
+
+  // TODO なぜか以下やるとエラーになる（Rendered more hooks than during the previous render）
+  // useEffect(() => {
+  //   console.log(Date.now().toString)
+  // }, [])
 
   return (
     <div className={`${props.className}`}>

@@ -4,18 +4,18 @@ import { Cell } from '../../models/ColumnSpaces';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
-import selectedColumnSpaceIdState from '../../recoils/atoms/selectedColumnSpaceIdState';
+import displayTargetColumnSpaceIdState from '../../recoils/atoms/displayTargetColumnSpaceIdState';
 import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
 
 export const useColumnSpaceDisplayerController = () => {
   const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
   const [relatedCells, setRelatedCells] = useRecoilState(relatedCellsState);
   const [displaySettings, setDisplaySettings] = useRecoilState(displaySettingsState);
-  const [selectedColumnSpaceId, setSelectedColumnSpaceId] = useRecoilState(selectedColumnSpaceIdState)
+  const [displayTargetColumnSpaceId, setDisplayTargetColumnSpaceId] = useRecoilState(displayTargetColumnSpaceIdState)
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [targetCell, setTargetCell] = useState<Cell>(null);
   const lastPlayedAudioDetails = useRef(null);
-  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(selectedColumnSpaceId));
+  const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(displayTargetColumnSpaceId));
 
   const handleDisplaySettingChange = useRecoilCallback(({snapshot, set}) => async (tabIndex: number) => {
     console.debug("表示設定のタブ選択変更");
@@ -104,7 +104,7 @@ export const useColumnSpaceDisplayerController = () => {
     columnSpaces,
     relatedCells,
     displaySettings,
-    selectedColumnSpaceId,
+    displayTargetColumnSpaceId,
     currentSelectedColumnSpace,
     hasInitialized: columnSpaces && relatedCells && displaySettings,
     tabIndex,

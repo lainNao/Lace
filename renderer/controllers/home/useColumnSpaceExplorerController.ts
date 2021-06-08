@@ -28,6 +28,7 @@ import { dispatchCellRelationModalSubmit } from '../../usecases/dispatchCellRela
 import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import { CellManagerModalDataType } from '../../pages.partial/home/ColumnSpaceExplorer.partial/CellManagerModal';
 import useExpandedColumnSpaces from '../../hooks/useExpandedColumnSpaces';
+import displayTargetColumnSpaceIdState from '../../recoils/atoms/displayTargetColumnSpaceIdState';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -98,7 +99,7 @@ export const useColumnSpaceExplorerController = () => {
 
     showColumnSpaceContextMenu(event, {
       handleClickSetDisplayTarget: async () => {
-        set(selectedColumnSpaceIdState, targetDataset.id);
+        set(displayTargetColumnSpaceIdState, targetDataset.id);
       },
       handleClickAddChildColumnSpace: async () => {
         newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
@@ -106,16 +107,19 @@ export const useColumnSpaceExplorerController = () => {
       },
       handleClickDisplaySettings: async () => {
         set(selectedColumnSpaceIdState, targetDataset.id);
+        console.debug("表示設定モーダルopen");
         openDisplaySettingModal();
       },
       handleClickAddChildColumn: async () => {
         set(selectedColumnSpaceIdState, targetDataset.id);
         setNewColumnFormParentId(targetDataset.id);
+        console.debug("新規カラム作成モーダルopen");
         openNewColumnForm();
         newColumnFormRef.current.elements.namedItem("column-name").focus();
       },
       handleClickRelateCells: async () => {
         set(selectedColumnSpaceIdState, targetDataset.id);
+        console.debug("リレーション管理モーダルopen");
         openCellRelationFormOpen();
       },
       handleClickDeleteColumnSpace: async () => {
