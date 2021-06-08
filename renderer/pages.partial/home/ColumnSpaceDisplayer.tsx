@@ -24,7 +24,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
   // 表示対象のカラムスペースを未選択の場合、選択を促す
   if (!controller.displayTargetColumnSpaceId) {
     return (
-      <div className="flex flex-col items-center h-full justify-center bg-gray-900">
+      <div className="flex flex-col items-center w-full h-full justify-center bg-gray-900">
         <Tag size="lg" colorScheme="teal" className="py-2" style={{lineHeight: "inherit"}}>
           <TagLeftIcon>
             <ExclamationCircleIcon className="h-7 w-7" />
@@ -50,7 +50,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
   // 対象カラムスペースの表示設定が空な無い場合、作成を促す
   if (!controller.displaySettings.children[controller.displayTargetColumnSpaceId]?.length) {
     return (
-      <div className="flex flex-col items-center h-full justify-center">
+      <div className="flex flex-col items-center w-full h-full justify-center bg-gray-900">
         <Tag size="lg" colorScheme="teal" className="py-2" style={{lineHeight: "inherit"}}>
           <TagLeftIcon>
             <ExclamationCircleIcon className="h-7 w-7" />
