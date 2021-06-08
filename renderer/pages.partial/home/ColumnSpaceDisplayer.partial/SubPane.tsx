@@ -48,7 +48,6 @@ export const SubPane = (props: Props) => {
         <CellViewer
           className="mb-2"
           cell={props.targetCell}
-          withLiPrefix={props.targetCell.type === CellDataType.Text}
           onSoundCellToggle={props.onSoundCellToggle}
           onSoundCellPlay={props.onSoundCellPlay}
           onSoundCellPause={props.onSoundCellPause}
