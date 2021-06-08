@@ -7,7 +7,7 @@ import { CellViewerHorizontal } from "../../../components/CellViewerHorizontal"
 import { useRecoilState } from "recoil"
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState"
 import { RelatedCellDisplayDirectionType } from "../../../models/DisplaySettings/RelatedCellsDisplaySetting"
-import React from "react"
+import React, { useMemo } from "react"
 
 type Props = {
   className: string;
@@ -62,8 +62,8 @@ export const SubPane = (props: Props) => {
       </div>
       <div className="">
         {subColumns.map(subColumn => {
-
-          // 中央ペインでonmouseしているセルIDと関連しているセルだけフィルタリング
+          // TODO メモ化とかも考えたけどpropsが多すぎて再レンダリング必要かどうかの比較するのも計算コストかかりそうだったので一旦略してる
+          // 中央ペインでonmouseしているセルIDと関連しているセルだけフィルタリング。これがそれなりにたぶんコスト高い
           const currentRelatedCells = subColumn.cells.children
             .filter(cell =>
               relatedCells.isRelated(props.columnSpace.id,

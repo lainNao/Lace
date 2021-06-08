@@ -36,7 +36,7 @@ export const CellViewerHorizontal = ({
 
     if (displayType === HListDisplayType.Tag) {
       return (
-        <Tag className={`${className} select-none break-all whitespace-pre-wrap`} size="sm" colorScheme="blue">
+        <Tag className={`${className} select-none break-all whitespace-pre-wrap`} size="sm" >
           {(cell.data as TextCellData).text}
         </Tag>
       )
@@ -62,7 +62,7 @@ export const CellViewerHorizontal = ({
     if (displayType === HListDisplayType.Tag) {
       return (
         <>
-          <Tag className={`${className} ${withBackgroundHoveredColor && "hover:bg-gray-800"} cursor-pointer break-all whitespace-pre-wrap`} size="sm" variant="solid" colorScheme="blue" data-tip="dummy" data-for={tooltipId} data-event='click'>
+          <Tag className={`${className} ${withBackgroundHoveredColor && "hover:bg-gray-800"} cursor-pointer break-all whitespace-pre-wrap`} size="sm" variant="solid"  data-tip="dummy" data-for={tooltipId} data-event='click'>
             {(cell.data as MarkdownCellData).title}
           </Tag>
           <ReactTooltip id={tooltipId} place='left' effect='solid' clickable={true} backgroundColor="transparent" className="opaque">
@@ -94,7 +94,7 @@ export const CellViewerHorizontal = ({
     if (displayType === HListDisplayType.Tag) {
       return (
         <>
-          <Tag className={`${className} ${withBackgroundHoveredColor && "hover:bg-gray-800"} cursor-pointer break-all whitespace-pre-wrap`} size="sm" variant="solid" colorScheme="blue" data-tip="dummy" data-for={tooltipId} data-event='click'>
+          <Tag className={`${className} ${withBackgroundHoveredColor && "hover:bg-gray-800"} cursor-pointer break-all whitespace-pre-wrap`} size="sm" variant="solid"  data-tip="dummy" data-for={tooltipId} data-event='click'>
             {(cell.data as SoundCellData).alias}
           </Tag>
           <ReactTooltip id={tooltipId} place='top' effect='solid' clickable={true} backgroundColor="transparent" className="opaque">
@@ -125,7 +125,7 @@ export const CellViewerHorizontal = ({
     if (displayType === HListDisplayType.Tag) {
       return (
         <>
-          <Tag className={`${className} ${withBackgroundHoveredColor && "hover:bg-gray-800"} cursor-pointer break-all whitespace-pre-wrap`} size="sm" variant="solid" colorScheme="blue" data-tip="dummy" data-for={tooltipId} data-event='click'>
+          <Tag className={`${className} ${withBackgroundHoveredColor && "hover:bg-gray-800"} cursor-pointer break-all whitespace-pre-wrap`} size="sm" variant="solid"  data-tip="dummy" data-for={tooltipId} data-event='click'>
             {(cell.data as ImageCellData).alias}
           </Tag>
           <ReactTooltip id={tooltipId} place='left' effect='solid' clickable={true} backgroundColor="transparent" className="opaque">
@@ -154,7 +154,7 @@ export const CellViewerHorizontal = ({
     if (displayType === HListDisplayType.Tag) {
       return (
         <>
-          <Tag className={`${className} ${withBackgroundHoveredColor && "hover:bg-gray-800"} cursor-pointer break-all whitespace-pre-wrap`} size="sm" variant="solid" colorScheme="blue" data-tip="dummy" data-for={tooltipId} data-event='click'>
+          <Tag className={`${className} ${withBackgroundHoveredColor && "hover:bg-gray-800"} cursor-pointer break-all whitespace-pre-wrap`} size="sm" variant="solid"  data-tip="dummy" data-for={tooltipId} data-event='click'>
             {(cell.data as VideoCellData).alias}
           </Tag>
           <ReactTooltip id={tooltipId} place='left' effect='solid' clickable={true} backgroundColor="transparent" className="opaque">
