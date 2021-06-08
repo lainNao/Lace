@@ -119,7 +119,7 @@ export const SubPane = (props: Props) => {
                     return (
                       <React.Fragment key={cell.id}>
                         <CellViewerHorizontal
-                          tooltipId={index + "-" + subColumn.id + "-"+ cell.id}   //TODO ここもう少しどうにかする　本当はindexの代わりに表示設定IDとかほしいところ
+                          tooltipId={index + "-" + subColumn.id + "-"+ cell.id}   //TODO ここもう少しどうにかする　本当はindexの代わりに表示設定IDとかほしいところ　いずれキャッシュ制御で生成するようにするなら表示設定IDも必要になるだろうし
                           displayType={currentColumnDisplaySetting.hListDisplayType}
                           key={cell.id}
                           className="mb-2"

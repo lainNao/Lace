@@ -349,7 +349,7 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
                             columnId: カラムID,
                             direction: RelatedCellDisplayDirection,  //縦、横のみのEnumを新規で作る。（ちなみに横だとdetailsタグが使えないはず（改行されてしまう）のでクリックでモーダルで詳細開くか、onmouseでツールチップ的に表示するしかないかな）
 
-                            //以下はHListのみ
+                            //以下はHorizontalの場合のみ
                             hListDisplayType: HListDisplayType,  //「タグ」「プレーン」の二種。新しくEnum作る。
                             hListSeparator: 任意の文字列,         //セパレータ（タグの場合は基本的には空欄にしてもらえればいいイメージでいいやいろいろ制御分岐するの面倒なので。）
                         },
