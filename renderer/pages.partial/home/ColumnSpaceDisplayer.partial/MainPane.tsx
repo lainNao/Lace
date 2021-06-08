@@ -1,5 +1,5 @@
 import { useRecoilState } from "recoil"
-import { ColumnSpace } from "../../../models/ColumnSpaces"
+import { Cell, ColumnSpace } from "../../../models/ColumnSpaces"
 import { DisplaySetting } from "../../../models/DisplaySettings"
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState"
 import { CellDataType } from "../../../resources/CellDataType"
@@ -10,7 +10,8 @@ type Props = {
   className: string;
   displaySetting: DisplaySetting;
   columnSpace: ColumnSpace;
-  onMouseMainCell: (event, cellId) => void;
+  targetCell: Cell;
+  onClickMainCell: (event, cellId) => void;
   onSoundCellToggle: (event) => void;
   onSoundCellPlay: (event) => void;
   onSoundCellPause: (event) => void;
@@ -53,7 +54,9 @@ export const MainPane = (props: Props) => {
                   cell={cell}
                   withLiPrefix={true}
                   withBackgroundHoveredColor={true}
-                  onMouseMainCell={props.onMouseMainCell}
+                  pointer={true}
+                  highLighted={(props.targetCell && props.targetCell.id === cell.id)}
+                  onClickMainCell={props.onClickMainCell}
                   onSoundCellToggle={props.onSoundCellToggle}
                   onSoundCellPlay={props.onSoundCellPlay}
                   onSoundCellPause={props.onSoundCellPause}
@@ -149,7 +152,9 @@ export const MainPane = (props: Props) => {
                     cell={cell}
                     withLiPrefix={true}
                     withBackgroundHoveredColor={true}
-                    onMouseMainCell={props.onMouseMainCell}
+                    pointer={true}
+                    highLighted={(props.targetCell && props.targetCell.id === cell.id)}
+                    onClickMainCell={props.onClickMainCell}
                     onSoundCellToggle={props.onSoundCellToggle}
                     onSoundCellPlay={props.onSoundCellPlay}
                     onSoundCellPause={props.onSoundCellPause}

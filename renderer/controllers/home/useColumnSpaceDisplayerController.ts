@@ -12,18 +12,19 @@ export const useColumnSpaceDisplayerController = () => {
   const [relatedCells, setRelatedCells] = useRecoilState(relatedCellsState);
   const [displaySettings, setDisplaySettings] = useRecoilState(displaySettingsState);
   const [selectedColumnSpaceId, setSelectedColumnSpaceId] = useRecoilState(selectedColumnSpaceIdState)
-  const [tabIndex, setTabIndex] = useState(0);
-  const [targetCell, setTargetCell] = useState(null);
+  const [tabIndex, setTabIndex] = useState<number>(0);
+  const [targetCell, setTargetCell] = useState<Cell>(null);
   const lastPlayedAudioDetails = useRef(null);
   const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(selectedColumnSpaceId));
 
   const handleDisplaySettingChange = useRecoilCallback(({snapshot, set}) => async (tabIndex: number) => {
     console.debug("表示設定のタブ選択変更");
+    setTargetCell(null);
     setTabIndex(tabIndex)
   }, []);
 
-  const handleOnMouseMainCell = (event, cell: Cell) => {
-    console.debug("中央paneセルにonmouse");
+  const handleClickMainCell = (event, cell: Cell) => {
+    console.debug("中央paneセルをclick");
     setTargetCell(cell);
   }
 
@@ -111,7 +112,7 @@ export const useColumnSpaceDisplayerController = () => {
     // イベントハンドラ
     handleDisplaySettingChange,
     handleFilterUpdate,
-    handleOnMouseMainCell,
+    handleClickMainCell,
     handleSoundCellToggle,
     handleSoundPlay,
     handleSoundPause,

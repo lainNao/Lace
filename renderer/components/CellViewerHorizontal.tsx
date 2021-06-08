@@ -25,6 +25,7 @@ export const CellViewerHorizontal = ({
   displayType,
 }: CellViewerHorizontalProps) => {
 
+  // テキストの場合
   if (cell.type === CellDataType.Text) {
     if (displayType === HListDisplayType.Plain) {
       return (
@@ -45,6 +46,7 @@ export const CellViewerHorizontal = ({
 
 
 
+  // マークダウンの場合
   if (cell.type === CellDataType.Markdown) {
     if (displayType === HListDisplayType.Plain) {
       return (
@@ -76,6 +78,7 @@ export const CellViewerHorizontal = ({
 
 
 
+  // サウンドの場合
   if (cell.type === CellDataType.Sound) {
 
     if (displayType === HListDisplayType.Plain) {
@@ -107,6 +110,7 @@ export const CellViewerHorizontal = ({
 
 
 
+  // イメージの場合
   if (cell.type === CellDataType.Image) {
 
     if (displayType === HListDisplayType.Plain) {
@@ -137,6 +141,7 @@ export const CellViewerHorizontal = ({
   }
 
 
+  // ビデオの場合
   if (cell.type === CellDataType.Video) {
     if (displayType === HListDisplayType.Plain) {
       return (
