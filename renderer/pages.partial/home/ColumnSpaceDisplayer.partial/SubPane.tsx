@@ -41,6 +41,7 @@ export const SubPane = (props: Props) => {
   return (
     <div className={`${props.className}`}>
 
+      {/* 対象セル */}
       <div className="mb-3">
         <Tag colorScheme="cyan">対象セル</Tag>
       </div>
@@ -55,12 +56,10 @@ export const SubPane = (props: Props) => {
         />
       </div>
 
-
+      {/* 関連セル */}
       <div className="mb-3">
         <Tag colorScheme="cyan">関連セル</Tag>
       </div>
-
-      {/* カラムとセル達 */}
       <div className="">
         {subColumns.map(subColumn => {
 
@@ -126,7 +125,7 @@ export const SubPane = (props: Props) => {
                           withBackgroundHoveredColor={true}
                         />
                         {index !== currentRelatedCells.length-1 &&
-                          <span className="mx-1">{currentColumnDisplaySetting.hListSeparator}</span>
+                          <span className="mx-1 select-none">{currentColumnDisplaySetting.hListSeparator}</span>
                         }
                       </React.Fragment>
                     )

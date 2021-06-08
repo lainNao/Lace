@@ -37,7 +37,7 @@ export const MainPane = (props: Props) => {
     if (!targetColumnId) {
       const mainColumn = props.columnSpace.findDescendantColumn(props.displaySetting.mainColumn);
       return (
-        <div className="ml-6">
+        <div className="ml-8">
           {mainColumn.cells.children
             // ソートの祖先達と関連づいているものだけフィルタリング
             .filter(cell =>
@@ -53,7 +53,7 @@ export const MainPane = (props: Props) => {
                   key={cell.id}
                   className="mb-2"
                   cell={cell}
-                  withLiPrefix={cell.type === CellDataType.Text}
+                  withLiPrefix={true}
                   withBackgroundHoveredColor={true}
                   onMouseMainCell={props.onMouseMainCell}
                   onSoundCellToggle={props.onSoundCellToggle}
@@ -71,7 +71,7 @@ export const MainPane = (props: Props) => {
     // まだ最後の段でない場合（ソートカラムのレンダリング）
     const currentSortColumn = props.columnSpace.findDescendantColumn(targetColumnId);
     return (
-      <div className={`${indentIndex ? "ml-5" : ""}`}>
+      <div className={`${indentIndex ? "ml-6" : ""}`}>
         {currentSortColumn.mapCells(cell => {
           return (
             <div key={cell.id} className="mb-3">
@@ -140,7 +140,7 @@ export const MainPane = (props: Props) => {
       if (currentIndent === props.displaySetting.sortColumns.length) {
         const mainColumn = props.columnSpace.findDescendantColumn(props.displaySetting.mainColumn);
         return (
-          <div className="ml-1">
+          <div className="ml-2">
             {mainColumn.cells.children
               .filter(cell => !alreadyRenderedCellIds.includes(cell.id))
               .map(cell => {
@@ -149,7 +149,7 @@ export const MainPane = (props: Props) => {
                     key={cell.id}
                     className="mb-2"
                     cell={cell}
-                    withLiPrefix={cell.type === CellDataType.Text}
+                    withLiPrefix={true}
                     withBackgroundHoveredColor={true}
                     onMouseMainCell={props.onMouseMainCell}
                     onSoundCellToggle={props.onSoundCellToggle}
@@ -165,7 +165,7 @@ export const MainPane = (props: Props) => {
       }
 
       return (
-        <div className="ml-5">
+        <div className="ml-6">
           {makeView(currentIndent+1)}
         </div>
 
