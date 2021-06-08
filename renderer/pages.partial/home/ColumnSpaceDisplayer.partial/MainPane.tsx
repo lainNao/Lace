@@ -22,8 +22,6 @@ export const MainPane = (props: Props) => {
 
   //TODO 無限スクロールにする（画像とかの問題で無理ならひとまずいい）
   //TODO 後でフィルタリングペインの情報もfilterに宛がうことになる
-  //TODO 必要ならuseMemoで結果をメモ化すること。左のツリーも。できなければ不要。
-  //TODO onmouseとかで右カラムへの伝達をする
   const generateMainPaneElementTree = (
     indentIndex: number,
     sortDescendants: {
