@@ -20,6 +20,7 @@ import { ParticularCellRelationModal } from "./ParticularCellRelationModal";
 import { Cell } from "../../../../models/ColumnSpaces";
 import specificColumnSpaceState from "../../../../recoils/selectors/specificColumnSpaceState";
 import { CellViewer } from '../../../../components/CellViewer';
+import { getAncestorDataset } from "../../../../modules/element";
 
 //TODO ここのセルへのonmouse、hoverが二重になってて手前だけ効いて奥は効いてないみたいな見た目になる時あるから後で直すか、
 export const CellManagerModalBodyText: React.FC<CellManagerModalBodyProps> = (props) => {
@@ -35,10 +36,13 @@ export const CellManagerModalBodyText: React.FC<CellManagerModalBodyProps> = (pr
   const [relationTargetCell, setRelationTargetCell] = useState<Cell>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
   const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
-  const [targetCell, setTargetCell] = useState(null);
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
     const target = event.target as HTMLElement;
+    const dataset = getAncestorDataset(target, "cellId");
+    if (!dataset) {
+      return;
+    }
 
     rightClickedCellRef.current = target.parentElement;
     rightClickedCellRef.current.classList.add("bg-gray-800");
@@ -49,17 +53,17 @@ export const CellManagerModalBodyText: React.FC<CellManagerModalBodyProps> = (pr
         setUpdateTargetCellData({
           columnSpaceId: currentColumnSpace.id,
           columnId: currentColumn.id,
-          cellId: targetCell.id,
+          cellId: dataset.cellId,
           type: CellDataType.Text,
           data: {
-            text: targetCell.data.text,
+            text: dataset.text,
           }
         });
         openUpdateModal();
       },
       // リレーション管理
       handleClickUpdateRelation: async() => {
-        const cell = currentColumn.findCell(targetCell.id);
+        const cell = currentColumn.findCell(dataset.cellId);
         setRelationTargetCell(cell);
         openParticularCellRelationModal();
       },
@@ -77,7 +81,7 @@ export const CellManagerModalBodyText: React.FC<CellManagerModalBodyProps> = (pr
             const croppedValue = (target.innerText.length > 15) ? target.innerText.substring(0, 15)+"..." : target.innerText;
             try {
               // セルの削除
-              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetCell.id);
+              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, dataset.cellId);
               set(columnSpacesState, newColumnSpaces);
               set(relatedCellsState, newRelatedCells);
               toast({ title: `"${croppedValue}"を削除しました`, status: "success", position: "bottom-right", isClosable: true, duration: 1500,})
@@ -96,12 +100,7 @@ export const CellManagerModalBodyText: React.FC<CellManagerModalBodyProps> = (pr
       }
     });
 
-  }, [currentColumnSpace, currentColumn, targetCell])
-
-  const handleOnMouseCell = (event, cell: Cell) => {
-    console.debug("セルにonmouse");
-    setTargetCell(cell);
-  }
+  }, [currentColumnSpace, currentColumn])
 
 
   //TODO サブミットが成功したらテキストエリアを空にしたい　失敗したらそのままにしたい
@@ -169,14 +168,13 @@ export const CellManagerModalBodyText: React.FC<CellManagerModalBodyProps> = (pr
                 height={windowHeight-260}
               >
                 {currentColumn.cells.mapChildren((cell, index) => (
-                  <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} >
+                  <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-text={(cell.data as TextCellData).text} >
                     <hr/>
                     <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
                       <CellViewer
                         key={cell.id}
                         cell={cell}
                         withLiPrefix={false}
-                        onMouseMainCell={(e) => handleOnMouseCell(e, cell)}
                       />
                     </div>
                   </div>

@@ -23,6 +23,7 @@ import specificColumnSpaceState from '../../../../recoils/selectors/specificColu
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import "@uiw/react-markdown-preview/dist/markdown.css";
 import { CellViewer } from '../../../../components/CellViewer';
+import { getAncestorDataset } from '../../../../modules/element';
 
 export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> = (props) => {
 
@@ -35,25 +36,28 @@ export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> =
   const [relationTargetCell, setRelationTargetCell] = useState<Cell>(null);
   const { isOpen: isOpenUpdateModal, onOpen: openUpdateModal, onClose: onCloseUpdateModal } = useDisclosure();
   const { isOpen: isOpenParticularCellRelationModal, onOpen: openParticularCellRelationModal, onClose: onCloseParticularCellRelationModal } = useDisclosure();
-  const [targetCell, setTargetCell] = useState(null);
 
   const handleOnCellContextMenu = useRecoilCallback(({set}) => async(event: React.MouseEvent<HTMLElement> ) => {
     const target = event.target as HTMLElement;
+    const dataset = getAncestorDataset(target, "cellId");
+    if (!dataset) {
+      return;
+    }
+
     rightClickedCellRef.current = target.parentElement;
     rightClickedCellRef.current.classList.add("bg-gray-800");
 
     showCellContextMenu(event, {
       // 編集
       handleClickUpdateCell: async () => {
-        //TODO ここもっときれいになるはず。columnSpaceId、columnId、cellだけで十分
         setUpdateTargetCellData({
           columnSpaceId: currentColumnSpace.id,
           columnId: currentColumn.id,
-          cellId: targetCell.id,
+          cellId: dataset.cellId,
           type: CellDataType.Markdown,
           data: {
-            title: targetCell.data.title,
-            text: targetCell.data.text,
+            title: dataset.title,
+            text: dataset.text,
           }
         });
         openUpdateModal();
@@ -72,7 +76,7 @@ export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> =
             const croppedValue = (target.innerText.length > 15) ? target.innerText.substring(0, 15)+"..." : target.innerText;
             try {
               // セルの削除
-              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, targetCell.id);
+              const [newColumnSpaces, newRelatedCells] = await removeCellUsecase(currentColumnSpace.id, currentColumn.id, dataset.cellId);
               set(columnSpacesState, newColumnSpaces);
               set(relatedCellsState, newRelatedCells);
               toast({ title: `"${croppedValue}"を削除しました`, status: "success", position: "bottom-right", isClosable: true, duration: 1500,})
@@ -88,7 +92,7 @@ export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> =
       },
       // リレーション管理
       handleClickUpdateRelation: async() => {
-        const cell = currentColumn.findCell(targetCell.id);
+        const cell = currentColumn.findCell(dataset.cellId);
         setRelationTargetCell(cell);
         openParticularCellRelationModal();
       },
@@ -97,12 +101,8 @@ export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> =
       }
     });
 
-  }, [currentColumnSpace, currentColumn, targetCell])
+  }, [currentColumnSpace, currentColumn])
 
-  const handleOnMouseCell = (event, cell: Cell) => {
-    console.debug("セルにonmouse");
-    setTargetCell(cell);
-  }
 
   return (
     <>
@@ -179,14 +179,13 @@ export const CellManagerModalBodyMarkdown: React.FC<CellManagerModalBodyProps> =
                 height={windowHeight-260}
               >
                 {currentColumn.cells.mapChildren((cell, index) => (
-                  <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-cell-text={(cell.data as MarkdownCellData).text}>
+                  <div key={cell.id} onContextMenu={handleOnCellContextMenu} data-cell-id={cell.id} data-title={(cell.data as MarkdownCellData).title} data-text={(cell.data as MarkdownCellData).text}>
                     <hr/>
                     <div key={cell.id} className="break-all hover:bg-gray-800 pb-2 pl-1 whitespace-pre-wrap" style={{minHeight: "10px"}}>
                       <CellViewer
                         key={cell.id}
                         cell={cell}
                         withLiPrefix={false}
-                        onMouseMainCell={(e) => handleOnMouseCell(e, cell)}
                       />
                     </div>
                   </div>
