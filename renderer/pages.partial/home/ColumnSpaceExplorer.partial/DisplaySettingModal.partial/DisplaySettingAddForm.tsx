@@ -47,7 +47,7 @@ export const DisplaySettingAddForm = () => {
     /// 現在のカラムスペース用の表示設定を一つ追加
     try {
       setSubmitting(true);
-      const displaySetting = DisplaySetting.createNewFromJSON(values);
+      const displaySetting = DisplaySetting.fromJSON(values);
       const newDisplaySettings = await createDisplaySettingUsecase(currentSelectedColumnSpaceId, displaySetting);
       set(displaySettingsState, newDisplaySettings);
       toast({ title: "追加しました", status: "success", position: "bottom-right", isClosable: true, duration: 1500 });

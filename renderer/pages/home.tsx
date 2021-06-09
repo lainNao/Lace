@@ -32,7 +32,7 @@ export const Home = () => {
               </a>
             </MenuItem>
             <MenuDivider />
-            <MenuItem styles={{transitionProperty: "none", padding:"0.1rem 1.5rem", hover: {backgroundColor: "gray"}}}>Check for updates</MenuItem>
+            {/* <MenuItem styles={{transitionProperty: "none", padding:"0.1rem 1.5rem", hover: {backgroundColor: "gray"}}}>Check for updates</MenuItem> */}
             <MenuHeader>{`installed version: ${packageJson.version}`}</MenuHeader>
           </Menu>
         </div>

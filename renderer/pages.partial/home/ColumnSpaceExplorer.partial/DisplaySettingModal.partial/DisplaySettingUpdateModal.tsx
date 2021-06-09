@@ -77,7 +77,7 @@ export const DisplaySettingUpdateModal: React.FC<Props> = props => {
     try {
       setSubmitting(true);
       values["id"] = props.displaySetting.id;
-      const displaySetting = DisplaySetting.createNewFromJSON(values);
+      const displaySetting = DisplaySetting.fromJSON(values);
       const newDisplaySettings = await updateDisplaySettingUsecase(currentSelectedColumnSpaceId, displaySetting);
       set(displaySettingsState, newDisplaySettings);
       toast({ title: "更新しました", status: "success", position: "bottom-right", isClosable: true, duration: 1500 });

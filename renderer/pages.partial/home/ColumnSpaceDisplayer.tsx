@@ -92,7 +92,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
               <TabPanel key={displaySetting.id} className="h-full">
                 <div className="w-full flex h-full overflow-y-scroll">
                   <FilterPane
-                    className="w-1/5 overflow-y-auto mr-2 h-full"
+                    className="w-1/5 overflow-y-auto mr-2 h-full text-xs"
                     displaySetting={displaySetting}
                     columnSpace={controller.currentSelectedColumnSpace}
                     onFilterUpdate={controller.handleFilterUpdate}

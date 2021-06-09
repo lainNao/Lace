@@ -61,11 +61,6 @@ export class DisplaySetting {
     return this.MIN_SORT_COLUMN_LENGTH <= length && length <= this.MAX_SORT_COLUMN_LENGTH;
   }
 
-  static createNewFromJSON(json): DisplaySetting {
-    json.id = json.id ?? uuidv4();
-    return DisplaySetting.fromJSON(json);
-  }
-
   static fromJSON(json): DisplaySetting {
     return new DisplaySetting({
       id: json.id,

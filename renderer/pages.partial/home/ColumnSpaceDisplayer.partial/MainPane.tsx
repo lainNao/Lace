@@ -1,11 +1,9 @@
-import { useRecoilState } from "recoil"
+import { useRecoilValue } from "recoil"
 import { Cell, ColumnSpace } from "../../../models/ColumnSpaces"
 import { DisplaySetting } from "../../../models/DisplaySettings"
 import relatedCellsState from "../../../recoils/atoms/relatedCellsState"
-import { CellDataType } from "../../../resources/CellDataType"
 import { Tag } from "@chakra-ui/react"
 import { CellViewer } from "../../../components/CellViewer"
-import { useEffect } from "react"
 
 type Props = {
   className: string;
@@ -19,8 +17,9 @@ type Props = {
   onVideoCellToggle: (event) => void;
 }
 
+//TODO 読み込みを非同期化したい
 export const MainPane = (props: Props) => {
-  const [relatedCells, setRelatedCells] = useRecoilState(relatedCellsState);
+  const relatedCells = useRecoilValue(relatedCellsState);
 
   //TODO 無限スクロールにする（画像とかの問題で無理ならひとまずいい）
   //TODO 後でフィルタリングペインの情報もfilterに宛がうことになる
