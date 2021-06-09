@@ -12,77 +12,79 @@ export const mainPaneDataTransformer = (
 
   return new Promise((resolve, reject) => {
     try {
-      const result = displaySettings.map(displaySetting => {
-        const firstColumn = columnSpace.findDescendantColumn(displaySetting.sortColumns[0])
-        const classifiedCellIds = [];
+      const result = displaySettings
+        .map(displaySetting => {
+          const firstColumn = columnSpace.findDescendantColumn(displaySetting.sortColumns[0])
+          const classifiedCellIds = [];
 
-        // 仕組み：　次のインデントを引数に入れて、それが次の実行時に存在するかどうかを判別させることでいい感じに階層を走査する再帰をしてる
-        const generateMainPaneTreeData = (
-          indentIndex: number,
-          sortDescendants: {
-            column: Column,
-            cell: Cell,
-          }[]
-        ): MainPaneTreeData[] => {
-          const targetColumnId = displaySetting.sortColumns[indentIndex];
-          if (targetColumnId) {
-            // ソートカラムのあるインデックスをたどった場合、まだソートカラムがあるということなのでそのセルを走査してデータ作成
-            const currentSortColumn = columnSpace.findDescendantColumn(targetColumnId);
-            const nextIndentIndex = indentIndex + 1;
-            const nextSortColumn = columnSpace.findDescendantColumn(displaySetting.sortColumns[nextIndentIndex]);
+          // 仕組み：　次のインデントを引数に入れて、それが次の実行時に存在するかどうかを判別させることでいい感じに階層を走査する再帰をしてる
+          const generateMainPaneTreeData = (
+            indentIndex: number,
+            sortDescendants: {
+              column: Column,
+              cell: Cell,
+            }[]
+          ): MainPaneTreeData[] => {
+            const targetColumnId = displaySetting.sortColumns[indentIndex];
+            if (targetColumnId) {
+              // ソートカラムのあるインデックスをたどった場合、まだソートカラムがあるということなのでそのセルを走査してデータ作成
+              const currentSortColumn = columnSpace.findDescendantColumn(targetColumnId);
+              const nextIndentIndex = indentIndex + 1;
+              const nextSortColumn = columnSpace.findDescendantColumn(displaySetting.sortColumns[nextIndentIndex]);
 
-            return currentSortColumn.cells.children.map(cell => {
-              return {
-                cell: cell,
-                nextColumn: nextSortColumn,
-                next: generateMainPaneTreeData(
-                  nextIndentIndex,
-                  sortDescendants.concat([{column: currentSortColumn,cell: cell,
-                }])),
-              }
-            })
-          } else {
-            // ソートカラムの無いインデックスをたどった場合、もう無いのでメインカラムと判断しもう再帰せず最後の層のデータを返す
-            const mainColumn = columnSpace.findDescendantColumn(displaySetting.mainColumn);
-
-            // ソートの祖先達と関連づいているものだけフィルタリング
-            return mainColumn.cells.children
-              .filter(cell =>
-                sortDescendants.every(sortDescendant =>
-                  relatedCells.isRelated(columnSpace.id,
-                    { columnId: sortDescendant.column.id, cellId: sortDescendant.cell.id },
-                    { columnId: mainColumn.id, cellId: cell.id }
-                  )
-                )
-              ).map(cell => {
-                classifiedCellIds.push(cell.id);  //NOTE: ここで分類済のセルIDをメモっておくことで、unclassifiedフィールドは「これ以外」とすることができ計算コスト少し節約になる的な意図で入れてる
+              return currentSortColumn.cells.children.map(cell => {
                 return {
                   cell: cell,
+                  nextColumn: nextSortColumn,
+                  next: generateMainPaneTreeData(
+                    nextIndentIndex,
+                    sortDescendants.concat([{column: currentSortColumn,cell: cell,
+                  }])),
                 }
               })
-          }
-        }
-        const mainPaneDatas = generateMainPaneTreeData(0, []);
-        const mainColumn = columnSpace.findDescendantColumn(displaySetting.mainColumn);
-        const uniqueClassifiedCellIds = Array.from(new Set(classifiedCellIds));
+            } else {
+              // ソートカラムの無いインデックスをたどった場合、もう無いのでメインカラムと判断しもう再帰せず最後の層のデータを返す
+              const mainColumn = columnSpace.findDescendantColumn(displaySetting.mainColumn);
 
-        return {
-          [displaySetting.id]: {
-            classified: {
-              firstColumn: firstColumn,
-              datas: mainPaneDatas,
-            },
-            unclassified: {
-              column: mainColumn,
-              datas: mainColumn.cells.children.filter(cell => !uniqueClassifiedCellIds.includes(cell.id))
+              // ソートの祖先達と関連づいているものだけフィルタリング
+              return mainColumn.cells.children
+                .filter(cell =>
+                  sortDescendants.every(sortDescendant =>
+                    relatedCells.isRelated(columnSpace.id,
+                      { columnId: sortDescendant.column.id, cellId: sortDescendant.cell.id },
+                      { columnId: mainColumn.id, cellId: cell.id }
+                    )
+                  )
+                ).map(cell => {
+                  classifiedCellIds.push(cell.id);  //NOTE: ここで分類済のセルIDをメモっておくことで、unclassifiedフィールドは「これ以外」とすることができ計算コスト少し節約になる的な意図で入れてる
+                  return {
+                    cell: cell,
+                  }
+                })
             }
-          },
-        }
-      }).reduce((result, current) => {
-        const firstKey = Object.keys(current)[0]
-        result[firstKey] = current[firstKey];
-        return result;
-      });
+          }
+          const mainPaneDatas = generateMainPaneTreeData(0, []);
+          const mainColumn = columnSpace.findDescendantColumn(displaySetting.mainColumn);
+          const uniqueClassifiedCellIds = Array.from(new Set(classifiedCellIds));
+
+          return {
+            [displaySetting.id]: {
+              classified: {
+                firstColumn: firstColumn,
+                datas: mainPaneDatas,
+              },
+              unclassified: {
+                column: mainColumn,
+                datas: mainColumn.cells.children.filter(cell => !uniqueClassifiedCellIds.includes(cell.id))
+              }
+            },
+          }
+        })
+        .reduce((result, current) => {
+          const firstKey = Object.keys(current)[0]
+          result[firstKey] = current[firstKey];
+          return result;
+        });
 
       resolve(result);
     } catch (error) {
