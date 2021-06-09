@@ -335,7 +335,7 @@ TODOーーーーーーーーーーーーーーーーーーーーーーーーー�
 
         // DisplaySettings
         {
-            DisplaySettings.children
+            // DisplaySettings.children
             // カラムスペースごとの表示形式の保存
             カラムスペースのUUID: [
 

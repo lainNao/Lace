@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import { Cell } from '../../models/ColumnSpaces';
 import columnSpacesState from '../../recoils/atoms/columnSpacesState';
@@ -6,6 +6,7 @@ import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import relatedCellsState from '../../recoils/atoms/relatedCellsState';
 import displayTargetColumnSpaceIdState from '../../recoils/atoms/displayTargetColumnSpaceIdState';
 import specificColumnSpaceState from '../../recoils/selectors/specificColumnSpaceState';
+import { mainPaneDataTransformer, MainPaneDataTransformerData } from '../../transformers/mainPaneDataTransformer';
 
 export const useColumnSpaceDisplayerController = () => {
   const [columnSpaces, setColumnSpaces] = useRecoilState(columnSpacesState);
@@ -14,8 +15,29 @@ export const useColumnSpaceDisplayerController = () => {
   const [displayTargetColumnSpaceId, setDisplayTargetColumnSpaceId] = useRecoilState(displayTargetColumnSpaceIdState)
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [targetCell, setTargetCell] = useState<Cell>(null);
+  const [mainPaneData, setMainPaneData] = useState<MainPaneDataTransformerData>(null)
   const lastPlayedAudioDetails = useRef(null);
   const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(displayTargetColumnSpaceId));
+
+  // メインパネルのデータ読み込み直す
+  // TODO ここのdeps大丈夫か確認したい　不要な再実行が起きないか
+  useEffect(() => {
+    setMainPaneData(null);
+
+    if (!(columnSpaces && relatedCells && displaySettings && displayTargetColumnSpaceId && displaySettings.children[displayTargetColumnSpaceId])) {
+      return;
+    }
+
+    (async() => {
+      const mainPaneData = await mainPaneDataTransformer(
+        columnSpaces.findDescendantColumnSpace(displayTargetColumnSpaceId),//TODO ここ、無選択の時にどうなってるかわからんからどうにかする。無選択なら発火も不要なんだけどそこ制御したいところ
+        displaySettings.children[displayTargetColumnSpaceId], //TODO ここ、無選択の時にエラーなってるからどうにかする
+        relatedCells,
+      );
+      setMainPaneData(mainPaneData);
+    })()
+
+  }, [columnSpaces, relatedCells, displaySettings, displayTargetColumnSpaceId]);
 
   const handleDisplaySettingChange = useRecoilCallback(({snapshot, set}) => async (tabIndex: number) => {
     console.debug("表示設定のタブ選択変更");
@@ -109,6 +131,7 @@ export const useColumnSpaceDisplayerController = () => {
     hasInitialized: columnSpaces && relatedCells && displaySettings,
     tabIndex,
     targetCell,
+    mainPaneData,
     // イベントハンドラ
     handleDisplaySettingChange,
     handleFilterUpdate,

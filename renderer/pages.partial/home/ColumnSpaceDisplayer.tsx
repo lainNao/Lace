@@ -99,7 +99,8 @@ export const ColumnSpaceDisplayer = (props: Props) => {
                   />
                   {/* TODO MainPaneはフィルター条件とかも流し込む必要がある。後々 */}
                   <MainPane
-                    className="w-2/5 overflow-y-auto mr-2 h-full pb-10"
+                    className="w-2/5 overflow-y-auto mr-2 h-full pb-10 text-xs"
+                    mainPaneTreeMetaData={controller.mainPaneData?.[displaySetting.id]}
                     displaySetting={displaySetting}
                     columnSpace={controller.currentSelectedColumnSpace}
                     targetCell={controller.targetCell}
@@ -110,7 +111,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
                     onVideoCellToggle={controller.handleVideoCellToggle}
                   />
                   <SubPane
-                    className="w-2/5 overflow-y-auto ml-2 h-full"
+                    className="w-2/5 overflow-y-auto ml-2 h-full text-xs"
                     displaySetting={displaySetting}
                     columnSpace={controller.currentSelectedColumnSpace}
                     targetCell={controller.targetCell}

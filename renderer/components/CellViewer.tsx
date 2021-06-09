@@ -33,13 +33,11 @@ export const CellViewer = ({
 }: CellViewerProps) => {
   if (cell.type === CellDataType.Text) {
     return (
-      <div>
-        <span
-          onMouseDown={(e) => onClickMainCell(e, cell)}
-          className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} ${pointer && "cursor-pointer"} ${(withBackgroundHoveredColor && !highLighted) && "hover:bg-gray-800"} ${highLighted && "bg-gray-700"} rounded`}
-        >
-          {(cell.data as TextCellData).text}
-        </span>
+      <div
+        onMouseDown={(e) => onClickMainCell(e, cell)}
+        className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} ${pointer && "cursor-pointer"} ${(withBackgroundHoveredColor && !highLighted) && "hover:bg-gray-800"} ${highLighted && "bg-gray-700"} rounded`}
+      >
+        {(cell.data as TextCellData).text}
       </div>
     )
   }
@@ -48,7 +46,7 @@ export const CellViewer = ({
       <div className={`${className} ${withLiPrefix ? "custom-li-prefix flex" : ""} `}>
         <details onMouseDown={(e) => onClickMainCell(e, cell)}  className={`${(withBackgroundHoveredColor && !highLighted) && "hover:bg-gray-800"} ${withLiPrefix ? "ml-1" : "" }  ${highLighted && "bg-gray-700"}  rounded-b-lg rounded-tr-lg rounded`}>
           <summary className="outline-none cursor-pointer">{(cell.data as MarkdownCellData).title}</summary>
-          <div className="pb-3 pt-1 px-3 rounded-lg">
+          <div className="pb-3 pt-1 px-3 rounded-lg text-white">
             <MarkdownPreview className="bg-gray-700 rounded-lg p-3 pt-2" source={(cell.data as MarkdownCellData).text} />
           </div>
         </details>
