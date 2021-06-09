@@ -34,10 +34,11 @@ export const CellViewer = ({
   if (cell.type === CellDataType.Text) {
     return (
       <div
-        onMouseDown={(e) => onClickMainCell(e, cell)}
-        className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} ${pointer && "cursor-pointer"} ${(withBackgroundHoveredColor && !highLighted) && "hover:bg-gray-800"} ${highLighted && "bg-gray-700"} rounded`}
+        className={`${className} ${withLiPrefix ? "custom-li-prefix" : ""} rounded`}
       >
-        {(cell.data as TextCellData).text}
+        <span className={`${pointer && "cursor-pointer"} ${(withBackgroundHoveredColor && !highLighted) && "hover:bg-gray-800"} ${highLighted && "bg-gray-700"} `} onMouseDown={(e) => onClickMainCell(e, cell)}>
+          {(cell.data as TextCellData).text}
+        </span>
       </div>
     )
   }
