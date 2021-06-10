@@ -10,6 +10,7 @@ import relatedCellsState from "../../../../recoils/atoms/relatedCellsState"
 import { useRecoilState } from "recoil"
 import displayTargetColumnSpaceIdState from "../../../../recoils/atoms/displayTargetColumnSpaceIdState"
 import { FilterPaneCheckedData } from "./FilterPane"
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 type MainInfoPainProps = {
   className: string;
@@ -23,7 +24,6 @@ type MainInfoPainProps = {
   onSoundCellPlay: (event) => void;
   onSoundCellPause: (event) => void;
   onVideoCellToggle: (event) => void;
-
 }
 
 export const MainInfoPane = (props: MainInfoPainProps) => {
@@ -31,7 +31,6 @@ export const MainInfoPane = (props: MainInfoPainProps) => {
   const [displayTargetColumnSpaceId, setDisplayTargetColumnSpaceId] = useRecoilState(displayTargetColumnSpaceIdState)
 
   //TODO 無限スクロールにする（画像とかの問題で無理ならひとまずいい）
-  //TODO 後でフィルタリングペインの情報をfilterに宛がうことになる
   const generateMainPaneTree = () => {
 
     const inner = (currentLayerColumn: Column, mainPaneTreeDatas: MainPaneTreeData[], currentLayerColor?: string) => {
@@ -40,24 +39,26 @@ export const MainInfoPane = (props: MainInfoPainProps) => {
 
         return (
           <div>
-            {mainPaneTreeDatas.map(layer => {
-              return (
-                <React.Fragment key={layer.cell.id}>
-                  <div className="mb-2">
-                    <CellViewer cell={layer.cell}
-                      className={`${currentLayerColor} font-bold`}
-                      onSoundCellToggle={props.onSoundCellToggle}
-                      onSoundCellPlay={props.onSoundCellPlay}
-                      onSoundCellPause={props.onSoundCellPause}
-                      onVideoCellToggle={props.onVideoCellToggle}
-                    />
-                  </div>
-                  <div className="ml-6">
-                    {inner(layer.nextColumn, layer.next, currentLayerColor === "text-blue-400" ? "text-pink-400" : "text-blue-400" )}
-                  </div>
-                </React.Fragment>
-              )
-            })}
+            <InfiniteScroll dataLength={mainPaneTreeDatas.length} loader={<h4>Loading...</h4>} next={null} hasMore={false}>
+              {mainPaneTreeDatas.map(layer => {
+                return (
+                  <React.Fragment key={layer.cell.id}>
+                    <div className="mb-2">
+                      <CellViewer cell={layer.cell}
+                        className={`${currentLayerColor} font-bold`}
+                        onSoundCellToggle={props.onSoundCellToggle}
+                        onSoundCellPlay={props.onSoundCellPlay}
+                        onSoundCellPause={props.onSoundCellPause}
+                        onVideoCellToggle={props.onVideoCellToggle}
+                      />
+                    </div>
+                    <div className="ml-6">
+                      {inner(layer.nextColumn, layer.next, currentLayerColor === "text-blue-400" ? "text-pink-400" : "text-blue-400" )}
+                    </div>
+                  </React.Fragment>
+                )
+              })}
+            </InfiniteScroll>
           </div>
         )
 
@@ -117,27 +118,29 @@ export const MainInfoPane = (props: MainInfoPainProps) => {
     // 最初のレイヤー
     return (
       <div>
-        {props.mainPaneTreeMetaData.classified.datas.map(topLayer => {
-          return (
-            <div key={topLayer.cell.id}>
-              <div>
-                <CellViewer
-                  key={topLayer.cell.id}
-                  className="mb-2 font-bold text-pink-400"
-                  cell={topLayer.cell}
-                  onClickMainCell={props.onClickMainCell}
-                  onSoundCellToggle={props.onSoundCellToggle}
-                  onSoundCellPlay={props.onSoundCellPlay}
-                  onSoundCellPause={props.onSoundCellPause}
-                  onVideoCellToggle={props.onVideoCellToggle}
-                />
+        <InfiniteScroll dataLength={props.mainPaneTreeMetaData.classified.datas.length} loader={<h4>Loading...</h4>} next={null} hasMore={false}>
+          {props.mainPaneTreeMetaData.classified.datas.map(topLayer => {
+            return (
+              <div key={topLayer.cell.id}>
+                <div>
+                  <CellViewer
+                    key={topLayer.cell.id}
+                    className="mb-2 font-bold text-pink-400"
+                    cell={topLayer.cell}
+                    onClickMainCell={props.onClickMainCell}
+                    onSoundCellToggle={props.onSoundCellToggle}
+                    onSoundCellPlay={props.onSoundCellPlay}
+                    onSoundCellPause={props.onSoundCellPause}
+                    onVideoCellToggle={props.onVideoCellToggle}
+                  />
+                </div>
+                <div className="ml-6">
+                  {inner(topLayer.nextColumn, topLayer.next, "text-blue-400")}
+                </div>
               </div>
-              <div className="ml-6">
-                {inner(topLayer.nextColumn, topLayer.next, "text-blue-400")}
-              </div>
-            </div>
-          )
-        })}
+            )
+          })}
+        </InfiniteScroll>
       </div>
     )
   }

@@ -8,6 +8,7 @@ import { RelatedCellDisplayDirectionType } from "../../../../models/DisplaySetti
 import React from "react"
 import ReactLoading from "react-loading";
 import { useSubColumnsData } from "../../../../hooks/useSubColumnsData"
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 type SubColumnsProps = {
   subColumns: Column[],
@@ -42,71 +43,77 @@ export const SubColumns = (props: SubColumnsProps) => {
   // 読み込み完了した場合
   return (
     <div className="">
-      {props.subColumns.map((subColumn, currentColumnIndex) => {
-        // 中央ペインでonmouseしているセルIDと関連しているセルだけフィルタリング。これがそれなりにたぶんコスト高い
+      <InfiniteScroll dataLength={props.subColumns.length} loader={<h4>Loading...</h4>} next={null} hasMore={false} className="no-wrap break-all ">
+        {props.subColumns.map((subColumn, currentColumnIndex) => {
+          // 中央ペインでonmouseしているセルIDと関連しているセルだけフィルタリング。これがそれなりにたぶんコスト高い
 
-        return (
-          <div key={subColumn.id} className="mb-4">
+          return (
+            //TODO なぜか以下overflow-x-hiddenしたら「横スクロールなぜかされなくなる」「横スクロールバーも出ない」といういい感じの状況になって、別にいいんだけどなぜかわからない。他のところはno-wrap break-allとかで防ごうとしてるのにここはできない。後でどうにかしたい
+            <div key={subColumn.id} className="mb-4 overflow-x-hidden">
 
-            {/* カラム名 */}
-            <div className="font-bold flex items-center">
-              <span>{cellDataTypeIcons(subColumn.type, "w-3 h-3 mr-2")}</span>
-              <span className="font-sans text-blue-400 text-sm">{subColumn.name}</span>
+              {/* カラム名 */}
+              <div className="font-bold flex items-center">
+                <span>{cellDataTypeIcons(subColumn.type, "w-3 h-3 mr-2")}</span>
+                <span className="font-sans text-blue-400 text-sm">{subColumn.name}</span>
+              </div>
+
+              {/* 関連セルが無い場合 */}
+              {subColumnsData[currentColumnIndex].relatedCells.length === 0 && (
+                <div className="ml-8">
+                  <div className="select-none">-</div>
+                </div>
+              )}
+
+              {/* 関連セルがあり、Verticalの場合 */}
+              {(subColumnsData[currentColumnIndex].relatedCells.length !== 0 && subColumnsData[currentColumnIndex].displaySetting.direction === RelatedCellDisplayDirectionType.Vertical) && (
+                <div className="ml-8 mt-1 ">
+                  <InfiniteScroll dataLength={subColumnsData[currentColumnIndex].relatedCells.length} loader={<h4>Loading...</h4>} next={null} hasMore={false} className="no-wrap break-all">
+                    {subColumnsData[currentColumnIndex].relatedCells.map(cell => {
+                      return (
+                        <CellViewer
+                          key={cell.id}
+                          className="mb-2"
+                          cell={cell}
+                          withLiPrefix={cell.type === CellDataType.Text}
+                          onSoundCellToggle={props.onSoundCellToggle}
+                          onSoundCellPlay={props.onSoundCellPlay}
+                          onSoundCellPause={props.onSoundCellPause}
+                          onVideoCellToggle={props.onVideoCellToggle}
+                        />
+                      )
+                    })}
+                  </InfiniteScroll>
+                </div>
+              )}
+
+              {/* 関連セルがあり、Horizontalの場合 */}
+              {(subColumnsData[currentColumnIndex].relatedCells.length !== 0 && subColumnsData[currentColumnIndex].displaySetting.direction === RelatedCellDisplayDirectionType.Horizontal) && (
+                <div className="ml-8 mt-1">
+                  {subColumnsData[currentColumnIndex].relatedCells.map((cell, index) => {
+                    return (
+                      <React.Fragment key={cell.id}>
+                        <CellViewerHorizontal
+                          tooltipId={index + "-" + subColumn.id + "-"+ cell.id}   //TODO ここもう少しどうにかする　本当はindexの代わりに表示設定IDとかほしいところ　いずれキャッシュ制御で生成するようにするなら表示設定IDも必要になるだろうし
+                          displayType={subColumnsData[currentColumnIndex].displaySetting.hListDisplayType}
+                          key={cell.id}
+                          className="mb-2 "
+                          cell={cell}
+                          withBackgroundHoveredColor={true}
+                        />
+                        {index !== subColumnsData[currentColumnIndex].relatedCells.length-1 &&
+                          <span className="mx-1 select-none">{subColumnsData[currentColumnIndex].displaySetting.hListSeparator}</span>
+                        }
+                      </React.Fragment>
+                    )
+                  })}
+                </div>
+              )}
+
             </div>
+          )
+        })}
+      </InfiniteScroll>
 
-            {/* 関連セルが無い場合 */}
-            {subColumnsData[currentColumnIndex].relatedCells.length === 0 && (
-              <div className="ml-8">
-                <div className="select-none">-</div>
-              </div>
-            )}
-
-            {/* 関連セルがあり、Verticalの場合 */}
-            {(subColumnsData[currentColumnIndex].relatedCells.length !== 0 && subColumnsData[currentColumnIndex].displaySetting.direction === RelatedCellDisplayDirectionType.Vertical) && (
-              <div className="ml-8 mt-1">
-                {subColumnsData[currentColumnIndex].relatedCells.map(cell => {
-                  return (
-                    <CellViewer
-                      key={cell.id}
-                      className="mb-2"
-                      cell={cell}
-                      withLiPrefix={cell.type === CellDataType.Text}
-                      onSoundCellToggle={props.onSoundCellToggle}
-                      onSoundCellPlay={props.onSoundCellPlay}
-                      onSoundCellPause={props.onSoundCellPause}
-                      onVideoCellToggle={props.onVideoCellToggle}
-                    />
-                  )
-                })}
-              </div>
-            )}
-
-            {/* 関連セルがあり、Horizontalの場合 */}
-            {(subColumnsData[currentColumnIndex].relatedCells.length !== 0 && subColumnsData[currentColumnIndex].displaySetting.direction === RelatedCellDisplayDirectionType.Horizontal) && (
-              <div className="ml-8 mt-1">
-                {subColumnsData[currentColumnIndex].relatedCells.map((cell, index) => {
-                  return (
-                    <React.Fragment key={cell.id}>
-                      <CellViewerHorizontal
-                        tooltipId={index + "-" + subColumn.id + "-"+ cell.id}   //TODO ここもう少しどうにかする　本当はindexの代わりに表示設定IDとかほしいところ　いずれキャッシュ制御で生成するようにするなら表示設定IDも必要になるだろうし
-                        displayType={subColumnsData[currentColumnIndex].displaySetting.hListDisplayType}
-                        key={cell.id}
-                        className="mb-2"
-                        cell={cell}
-                        withBackgroundHoveredColor={true}
-                      />
-                      {index !== subColumnsData[currentColumnIndex].relatedCells.length-1 &&
-                        <span className="mx-1 select-none">{subColumnsData[currentColumnIndex].displaySetting.hListSeparator}</span>
-                      }
-                    </React.Fragment>
-                  )
-                })}
-              </div>
-            )}
-
-          </div>
-        )
-      })}
     </div>
 
 

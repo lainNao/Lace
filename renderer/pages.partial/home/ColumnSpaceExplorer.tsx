@@ -100,11 +100,11 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                     data-name={column.name}
                     tabIndex={0}
                     label={(
-                      <div className="flex items-center">
+                      <div className="flex items-center text-xs mb-1">
                         {/* アイコン */}
                         <span>{cellDataTypeIcons(column.type, "w-3 h-3 mr-2")}</span>
                         {/* カラム名 */}
-                        <span className="font-sans text-blue-400 text-sm" ref={elem => controller.columnNameRefs.current[column.id] = elem}>
+                        <span className="font-sans text-blue-400" ref={elem => controller.columnNameRefs.current[column.id] = elem}>
                           {column.name}
                         </span>
                         {/* 編集フォーム */}
@@ -115,7 +115,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                           ref={elem => controller.newColumnNameInputRefs.current[column.id] = elem}
                           style={{height: "16px"}}
                         >
-                          <input name="new-column-name" className="bg-gray-700 text-sm border border-blue-500 outline-none" spellCheck={false}></input>
+                          <input name="new-column-name" className="bg-gray-700 border border-blue-500 outline-none" spellCheck={false}></input>
                         </form>
                       </div>
                     )}
