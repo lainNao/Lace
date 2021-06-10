@@ -2,7 +2,7 @@ import { useColumnSpaceDisplayerController } from "../../controllers/home/useCol
 import { Tag, TagLabel, TagLeftIcon, TagRightIcon, TagCloseButton } from "@chakra-ui/react"
 import { ExclamationCircleIcon } from "../../components/icons/ExclamationCircleIcon";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
-import { FilterPane, MainPane, SubPane } from "./ColumnSpaceDisplayer.partial";
+import { MainPane, SubPane } from "./ColumnSpaceDisplayer.partial";
 
 type Props = {
   className?: string;
@@ -91,15 +91,7 @@ export const ColumnSpaceDisplayer = (props: Props) => {
             return (
               <TabPanel key={displaySetting.id} className="h-full">
                 <div className="w-full flex h-full overflow-y-scroll">
-                  <FilterPane
-                    className="w-1/5 overflow-y-auto mr-2 h-full text-xs"
-                    displaySetting={displaySetting}
-                    columnSpace={controller.currentSelectedColumnSpace}
-                    onFilterUpdate={controller.handleFilterUpdate}
-                  />
-                  {/* TODO MainPaneはフィルター条件とかも流し込む必要がある。後々 */}
                   <MainPane
-                    className="w-2/5 overflow-y-auto mr-2 h-full pb-10 text-xs"
                     mainPaneTreeMetaData={controller.mainPaneData?.[displaySetting.id]}
                     displaySetting={displaySetting}
                     columnSpace={controller.currentSelectedColumnSpace}

@@ -1,62 +1,82 @@
 import { useEffect, useState } from "react";
-import { Cell, ColumnSpace } from "../models/ColumnSpaces";
+import { useRecoilState } from "recoil";
+import { ColumnSpace } from "../models/ColumnSpaces";
 import { DisplaySetting } from "../models/DisplaySettings";
+import { FilterPaneCheckedData, FilterPaneData } from "../pages.partial/home/ColumnSpaceDisplayer.partial/MainPane.partial/FilterPane";
+import displayTargetColumnSpaceIdState from "../recoils/atoms/displayTargetColumnSpaceIdState";
+import relatedCellsState from "../recoils/atoms/relatedCellsState";
+import { MainPaneTreeMeta } from "../transformers/mainPaneDataTransformer";
 
 type Props = {
   columnSpace: ColumnSpace;
   displaySetting: DisplaySetting;
+  mainPaneTreeMetaData: MainPaneTreeMeta;
 }
 
-export const useFilterPaneData = (props: Props) => {
-  const [filterPaneData, setFilterPaneData] = useState(null);
 
-  const subColumns = props.columnSpace.columns.children.filter(column => {
-    const selectedColumnIds = props.displaySetting.relatedCellsDisplaySettings.map(relatedCellsDisplaySetting => {
-      return relatedCellsDisplaySetting.columnId;
-    });
-    return selectedColumnIds.includes(column.id);
-  });
+export const useFilterPaneData = (props: Props): [
+  FilterPaneData,
+  FilterPaneCheckedData,
+  (checkedCellIds: FilterPaneCheckedData) => void,
+] => {
+  const [relatedCells, setRelatedCells] = useRecoilState(relatedCellsState);
+  const [displayTargetColumnSpaceId, setDisplayTargetColumnSpaceId] = useRecoilState(displayTargetColumnSpaceIdState)
+  const [filterPaneData, setFilterPaneData] = useState<FilterPaneData>(null);
+  const [filterPaneDataTransformerData, setFilterPaneCheckedData] = useState<FilterPaneCheckedData>({});
 
-  // // 表示設定で選択されたカラムを取得
-  // useEffect(() => {(async() => {
-  //   const getSubColumnsData = () => new Promise(async(resolve, reject) => {
+  // メインペインのフィルタリングに使うためのデータ（filterPaneDataTransformerData）を作る（というか実質FilterPaneから送られてきたのをセットするだけ）
+  // TODO ここの引数の型、Formikに合わせてかえるかも。わからんけど。生のformのonchangeイベントで十分扱いやすいならその内部でこの型に変換してこれ発火してもいいし。
+  const onFilterUpdate = (checkedCellIds: FilterPaneCheckedData) => {
+    console.debug("フィルター条件更新");
+    setFilterPaneCheckedData(checkedCellIds)
+  }
 
-  //     //TODO ここやる　以下コメントにあるクエリーサービス呼んで、それをパースしてセルID達を取得し、　　次にsubColumnsを回してその中のセルと関連づいたものだけfilterかける感じ（こっちもクエリーサービスにしてもいいかも）
+  // フィルターペイン表示のためのデータ（filterPaneData）を作る
+  useEffect(() => {
+    setFilterPaneData(null);
 
+    if (!(props.mainPaneTreeMetaData && props.columnSpace && props.displaySetting && relatedCells && displayTargetColumnSpaceId)) {
+      return;
+    }
 
-  //     // resolve(targetDatas);
-  //   });
+    (async() => {
 
-  //   setFilterPaneData(null);
+      // subペインで使っているカラム達を抽出（この中のセルをフィルターペインで絞って表示するので取得しておく）
+      const subColumns = props.columnSpace.columns.children.filter(column => {
+        const selectedColumnIds = props.displaySetting.relatedCellsDisplaySettings.map(relatedCellsDisplaySetting => {
+          return relatedCellsDisplaySetting.columnId;
+        });
+        return selectedColumnIds.includes(column.id);
+      });
 
+      // メインカラムのセルデータを全て配列で取得
+      const mainColumn = props.columnSpace.findDescendantColumn(props.displaySetting.mainColumn);
+      const mainColumnCells = mainColumn.cells.children;
 
-  //   // 一旦初期化
-  //   const result = await getSubColumnsData();
-  //   // 読み込み結果を反映
-  //   setFilterPaneData(result);
-  // })()}, [props.displaySetting.id])
+      //サブカラムのセルを全部回し、メインカラムとセルのいずれかとリレーション貼ってるセルのみ抽出
+      //TODO ここ、Cellsのドメイン知識流出してるっぽいかもだし、こういうfind系の再帰系は他にもこういう所あると思うのでまああとで…
+      const filterPaneDataResult = subColumns.map(subColumn => {
+        return {
+          column: subColumn,
+          cells: subColumn.cells.children.filter(subColumnCell => {
+            return mainColumnCells.some(mainColumnCell =>
+              relatedCells.isRelated(displayTargetColumnSpaceId,
+                { columnId: subColumn.id, cellId: subColumnCell.id },
+                { columnId: mainColumn.id, cellId: mainColumnCell.id }
+              )
+            );
+          })
+        }
+      })
 
+      setFilterPaneData(prev => filterPaneDataResult)
+    })();
+  }, [props.mainPaneTreeMetaData, relatedCells, displayTargetColumnSpaceId]);
 
-  /*
-    メインペインのデータ、以下のような形でクエリーサービスに託そう。
-      クエリーサービスというか、トランスフォーマーか…？
-    クエリーサービスにはawaitで以下の構造のデータを返してもらう
-
-    でそれをメインペインでも使おう。そうすれば無限スクロールもできる。パースの仕方はまた考える必要あるけど。
-    フィルターペインでは、メインセルだけこの結果から自前で抽出して、それを使う（使い方は、セル達を回して、後はサブペインでやってるようなことをする感じ。セルIDから求められるから）
-  */
-
-  /* 過去メモ
-    関連セルで使ってるカラム達とその中のセルを回して、チェックボックスで表示（デフォは無チェック）<br/>
-    チェックされたら表示しないように中央ペインでフィルタリングする<br/>
-    <br/><br/>
-    まずforで回して全部セル表示する（できれば無限スクロールだけどたぶんできない）。<br/>
-    で次にチェックボックスを頭につける<br/>
-    で次にそのチェックボックスのonChangeと、用意していたイベントハンドラを紐付ける<br/>
-    ちゃんとしたデータがそのイベントハンドラに送られるようになったら、その送られたデータをuseStateでちゃんと管理されてるか確認（オブジェクトか配列になるだろうので、変更判定が面倒かも。++するcntフィールド用意したほうが良いかも）<br/>
-    でそのuseStateで管理された状態を中央ペインに流し、必要な場所にfilter()を追加してフィルタリングさせるようにする。!includesが満たされるもののみ表示かな。<br/>
-    さらにCPUパワーが必要になりうるな…、、、、、、。
-  */
-
-  return [filterPaneData, subColumns] as const;
+  return [
+    filterPaneData,
+    filterPaneDataTransformerData,
+    onFilterUpdate,
+  ];
 }
+

@@ -19,8 +19,7 @@ export const useColumnSpaceDisplayerController = () => {
   const lastPlayedAudioDetails = useRef(null);
   const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(displayTargetColumnSpaceId));
 
-  // メインパネルのデータ読み込み直す
-  // TODO ここのdeps大丈夫か確認したい　不要な再実行が起きないか
+  // メインパネルのデータ読み込み
   useEffect(() => {
     setMainPaneData(null);
 
@@ -30,8 +29,8 @@ export const useColumnSpaceDisplayerController = () => {
 
     (async() => {
       const mainPaneData = await mainPaneDataTransformer(
-        columnSpaces.findDescendantColumnSpace(displayTargetColumnSpaceId),//TODO ここ、無選択の時にどうなってるかわからんからどうにかする。無選択なら発火も不要なんだけどそこ制御したいところ
-        displaySettings.children[displayTargetColumnSpaceId], //TODO ここ、無選択の時にエラーなってるからどうにかする
+        columnSpaces.findDescendantColumnSpace(displayTargetColumnSpaceId),
+        displaySettings.children[displayTargetColumnSpaceId],
         relatedCells,
       );
       setMainPaneData(mainPaneData);
@@ -114,13 +113,6 @@ export const useColumnSpaceDisplayerController = () => {
     target.dataset.isOpening = "true";
   }
 
-  const handleFilterUpdate = (checkedCellIds: {
-    [columnId: string] : string[]
-  }) => {
-    console.debug("フィルター条件更新");
-    console.log(checkedCellIds);
-  }
-
   return {
     // データ
     columnSpaces,
@@ -134,7 +126,6 @@ export const useColumnSpaceDisplayerController = () => {
     mainPaneData,
     // イベントハンドラ
     handleDisplaySettingChange,
-    handleFilterUpdate,
     handleClickMainCell,
     handleSoundCellToggle,
     handleSoundPlay,

@@ -22,7 +22,11 @@ export const SubPane = (props: Props) => {
 
   if (!props.targetCell) {
     //TODO ここもう少しどうにかする
-    return <div className="text-sm">中央ペインのセルをクリックしてください</div>
+    return (
+      <div className={`${props.className}`}>
+        中央ペインのセルをクリックしてください
+      </div>
+    )
   }
 
   // 表示設定で選択されたカラムを取得

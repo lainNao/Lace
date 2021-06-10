@@ -19,6 +19,7 @@ export const useSubColumnsData = (props: Props) => {
   const [subColumnsData , setSubcolumnsData] = useState(null);
 
   useEffect(() => {
+    setSubcolumnsData(null);
     (async() => {
       //TODO ここクエリーサービス化するのがいいかも
       const getSubColumnsData = () => new Promise(async(resolve, reject) => {
@@ -41,7 +42,7 @@ export const useSubColumnsData = (props: Props) => {
       // 読み込み結果を反映
       setSubcolumnsData(result);
     })();
-  }, [props.targetCell.id]);  //TODO ここにrelatedCells入れなくていいのか確かめたい
+  }, [relatedCells, props.targetCell.id]);
 
   return subColumnsData;
 }
