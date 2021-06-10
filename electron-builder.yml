@@ -1,6 +1,6 @@
-appId: com.example.nextron
-productName: My Nextron App
-copyright: Copyright © 2018 Yoshihide Shiono
+appId: com.lainNao
+productName: Lace Explorer
+copyright: Copyright © 2021 lainNao
 directories:
   output: dist
   buildResources: resources
