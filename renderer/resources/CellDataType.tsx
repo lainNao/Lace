@@ -1,6 +1,5 @@
 import React from "react";
 import { TextIcon, MarkdownIcon, SoundIcon, VideoIcon, ImageIcon } from "../components/column-type-icons";
-import { Cell } from "../models/ColumnSpaces";
 import { CellData } from "../models/ColumnSpaces/CellData";
 import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../models/ColumnSpaces/CellData.implemented";
 
@@ -52,9 +51,4 @@ export const cellDataTypeSelectOptionText = (cellDataType: CellDataType, cellDat
     case CellDataType.Video: return (cellData as VideoCellData).name;
     default: throw new Error("不明なCellDataTypeです");
   }
-}
-
-type CellPreviewProps = {
-  cell: Cell,
-  className: string,
 }

@@ -1,7 +1,5 @@
 import { ColumnSpacesRepositoryJson } from "../repositories/ColumnSpacesRepositoryJson";
-import { Columns, ColumnSpaces, ColumnSpace } from "../models/ColumnSpaces";
-import { TrimedFilledString } from "../value-objects/TrimedFilledString";
-import { DbFilesExclusiveTransaction } from "../modules/db";
+import { ColumnSpaces } from "../models/ColumnSpaces";
 import { DisplaySettings } from "../models/DisplaySettings";
 import { GlobalSettings } from "../models/GlobalSettings";
 import { RelatedCells } from "../models/RelatedCells";

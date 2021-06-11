@@ -6,7 +6,6 @@ export const getUserdataPath = async(): Promise<string> => {
   return electron.ipcRenderer.invoke('read-userdata-path');
 }
 
-//TODO 一度読んだらキャッシュ
 export const getSaveDirPath = async(): Promise<string> => {
   // 保存先ディレクトリの設定をしてるならそこから読み込む
   if (localStorage.getItem(LocalStorageKeys.CUSTOM_SAVE_DIR_PATH)) {
