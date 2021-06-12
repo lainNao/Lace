@@ -24,8 +24,13 @@
 
 <br>
 
-# インストーラ
-Windows x64　https://github.com/lainNao/Lace/releases/tag/0.1.0　の「dist-win-x64.zip」リンクをクリックでDLし、中の「Lace Explorer Setup 0.1.0.exe」をクリックでインストールできます。
+# インストーラ（v0.1.0）
+Windows x64版のみアップロードしてます。
+https://github.com/lainNao/Lace/releases/tag/0.1.0
+
+こちらのリンク先にある「dist-win-x64.zip」リンクをクリックでDLし、中の「Lace Explorer Setup 0.1.0.exe」をクリックでインストールできます。
+
+ちなみにv0.1.0は「まだ製品レベルのものではない＆製品レベルのちゃんとしたテストなどをしていない」ということなのでそこらへんお願いします、。
 
 <br>
 
