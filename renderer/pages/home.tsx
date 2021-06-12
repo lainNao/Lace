@@ -35,6 +35,14 @@ export const Home = () => {
             {/* <MenuItem styles={{transitionProperty: "none", padding:"0.1rem 1.5rem", hover: {backgroundColor: "gray"}}}>Check for updates</MenuItem> */}
             <MenuHeader>{`installed version: ${packageJson.version}`}</MenuHeader>
           </Menu>
+
+          {process.env.NODE_ENV !== "production" && (
+            <Menu styles={{backgroundColor:"rgb(60 70 86)", color:"aliceblue"}}  menuButton={<div className="hover:bg-gray-700 grid place-items-center w-14 text-gray-300 cursor-default select-none">DEV</div>}>
+              <MenuItem styles={{transitionProperty: "none", padding:"0.1rem 1.5rem", hover: {backgroundColor: "gray"}}} onClick={controller.devTestFunction}>
+                devTestFunction
+              </MenuItem>
+            </Menu>
+          )}
         </div>
 
         {/* 中央表示部分 */}
