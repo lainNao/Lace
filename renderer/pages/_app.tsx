@@ -33,7 +33,7 @@ function App(props: AppProps) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <title>{packageJson.name}</title>
-        <script dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }} />
+        {/* <script dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }} /> */}
       </Head>
       <ChakraProvider theme={dark}>
         <RecoilRoot>
