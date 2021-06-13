@@ -57,7 +57,7 @@ export const FilterPane = (props: Props) => {
                         {data.cells.map(cell => (
                           <Field key={cell.id} name={data.column.id} className="">
                             {({ field, form, props: formProps }) => (
-                              <Checkbox {...field} {...formProps} size="sm" key={cell.id} name={data.column.id} value={cell.id}>
+                              <Checkbox {...field} {...formProps} size="sm" className="ml-1" key={cell.id} name={data.column.id} value={cell.id}>
                                 <CellViewer
                                   cell={cell}
                                   className="mb-1 text-xs"
