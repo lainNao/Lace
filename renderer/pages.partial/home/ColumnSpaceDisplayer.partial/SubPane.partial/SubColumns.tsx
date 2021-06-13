@@ -58,7 +58,7 @@ export const SubColumns = (props: SubColumnsProps) => {
               </div>
 
               {/* 関連セルが無い場合 */}
-              {subColumnsData[currentColumnIndex].relatedCells.length === 0 && (
+              {(!subColumnsData?.[currentColumnIndex]?.relatedCells || subColumnsData[currentColumnIndex].relatedCells.length === 0) && (
                 <div className="ml-8">
                   <div className="select-none">-</div>
                 </div>
