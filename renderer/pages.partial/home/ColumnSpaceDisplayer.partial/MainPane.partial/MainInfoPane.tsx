@@ -127,7 +127,6 @@ export const MainInfoPane = (props: MainInfoPainProps) => {
                     key={topLayer.cell.id}
                     className="mb-2 font-bold text-pink-400"
                     cell={topLayer.cell}
-                    onClickMainCell={props.onClickMainCell}
                     onSoundCellToggle={props.onSoundCellToggle}
                     onSoundCellPlay={props.onSoundCellPlay}
                     onSoundCellPause={props.onSoundCellPause}
