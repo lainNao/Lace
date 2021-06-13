@@ -1,4 +1,4 @@
-# Lace Explorer（v0.1.0）
+# Lace Explorer（v0.1.x）
 （現状は突貫工事版で、バージョン1にするまでにはゴリゴリのリファクタリングをするつもりです）
 
 セルとセルを関連付けて表示・再生できる、個人レベルのデータ分析用のメディアエクスプローラーです。創作物の分析に使うような用途をイメージしてます。
@@ -24,9 +24,9 @@
 
 <br>
 
-# インストーラ（v0.1.0）
+# インストーラ（v0.1.x）
 Windows x64版のみアップロードしてます。
-https://github.com/lainNao/Lace/releases/tag/0.1.0
+https://github.com/lainNao/Lace/releases
 
 こちらのリンク先にあるバージョンが新しいやつの「dist-win-x64.zip」をなんとかDLし、中の「Lace Explorer Setup <そのバージョン番号>.exe」をクリックでインストールできます。
 
