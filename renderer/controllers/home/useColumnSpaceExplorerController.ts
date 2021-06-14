@@ -424,9 +424,12 @@ export const useColumnSpaceExplorerController = () => {
     event.preventDefault();
     //TODO マウス乗せられたら、移動できるなら色つけるとかしたい　できればホバー時のみスタイル変わるのと組み合わせてCSSの追加削除じゃないので対応したい
 
+    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
+    if (!draggingNodeDataset) {
+      return;
+    }
     const enteredColumnSpace = event.target as HTMLElement;
     const enteredColumnSpaceDataset = enteredColumnSpace.dataset;
-    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
 
     /// カラムスペースをDnDでの移動の管理
     if (draggingNodeDataset && Number(draggingNodeDataset.type) === FileSystemEnum.ColumnSpace) {
@@ -482,6 +485,11 @@ export const useColumnSpaceExplorerController = () => {
     event.preventDefault();
     event.stopPropagation();
 
+    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
+    if (!draggingNodeDataset) {
+      return;
+    }
+
     /// 色付けの管理
     if (lastFilledColumnSpaceNodeRef.current) {
       lastFilledColumnSpaceNodeRef.current.classList.remove("bg-gray-900");
@@ -492,7 +500,6 @@ export const useColumnSpaceExplorerController = () => {
     }
 
     /// カラムのソート管理
-    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState);
     if (draggingNodeDataset.type == FileSystemEnum.Column) {
 
       if (draggingNodeDataset.columnSpaceId == (event.target as HTMLElement).dataset.id) {
@@ -536,7 +543,10 @@ export const useColumnSpaceExplorerController = () => {
     console.debug("カラムへのドラッグエンター");
     event.preventDefault();
 
-    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState);
+    const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
+    if (!draggingNodeDataset) {
+      return;
+    }
     if (Number(draggingNodeDataset.type) === FileSystemEnum.ColumnSpace) {
       return;
     }
@@ -588,6 +598,9 @@ export const useColumnSpaceExplorerController = () => {
     event.stopPropagation();
 
     const draggingNodeDataset = await snapshot.getPromise(draggingNodeDatasetState)
+    if (!draggingNodeDataset) {
+      return;
+    }
     const targetColumnDataset = (event.target as HTMLElement).parentElement.parentElement.parentElement.dataset;
     set(draggingNodeDatasetState, null);
 
