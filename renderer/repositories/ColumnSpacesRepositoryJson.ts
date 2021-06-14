@@ -9,8 +9,8 @@ export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
 
   model = ColumnSpaces;
   dbFileName: string = DbFileNameEnum.COLUMN_SPACES;
-  private columnDataDir: string = "file_datas"; //TODO この定数どっかに移す
-  private dustBoxDirName: string = "file_datas_dust_box";
+  static columnDataDir: string = "file_datas"; //TODO この定数どっかに移す
+  static dustBoxDir: string = "file_datas_dust_box";
   initialDB: any = [       //TODO モックなので後で直す
     {
       "id": "1111",
@@ -69,7 +69,7 @@ export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
 
     // ゴミ箱内に入れるファイルパスを作る
     const applicationDirPath = await this.getSaveDirAbsolutePath();
-    const dustedFileDirPath = path.join(applicationDirPath, this.dustBoxDirName, columnSpaceId, columnId);
+    const dustedFileDirPath = path.join(applicationDirPath, ColumnSpacesRepositoryJson.dustBoxDir, columnSpaceId, columnId);
     await this.createDirectoryIfNotExists(dustedFileDirPath);
     const dustedFilePath = path.join(dustedFileDirPath, fileName);
 
@@ -87,7 +87,7 @@ export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
 
   private async createColumnDataDirAbsolutePath(columnSpaceId: string, columnId: string): Promise<string> {
     const applicationDirPath = await this.getSaveDirAbsolutePath();
-    const saveDirPath = path.join(applicationDirPath, this.columnDataDir, columnSpaceId, columnId);
+    const saveDirPath = path.join(applicationDirPath, ColumnSpacesRepositoryJson.columnDataDir, columnSpaceId, columnId);
     await this.createDirectoryIfNotExists(saveDirPath);
     return path.join(saveDirPath);
   }

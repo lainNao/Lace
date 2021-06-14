@@ -12,10 +12,12 @@ import * as packageJson from "../../../package.json"
 import path from "path";
 import fs from "fs";
 import columnSpacesState from "../../recoils/atoms/columnSpacesState";
+import { cleanUpDustBoxUsecase } from "../../usecases/cleanUpDustBoxUsecase";
 
 export const useSettingsPanelController = () => {
   const [globalSettings, setGlobalSettings] = useRecoilState(globalSettingsState);
   const { isOpen: isOpenProgressModal, onOpen: openProgressModal, onClose: onCloseProgressModal} = useDisclosure()
+  const [modalSentence, setModalSentence] = useState(null);
   const [saveDirPath, setSaveDirPath] = useState(null);
   // 他
   const toast = useToast()
@@ -48,6 +50,7 @@ export const useSettingsPanelController = () => {
       return;
     }
 
+    setModalSentence("DBのコピー中");
     openProgressModal();
     try {
       //2, 設定の変更を適用し、 既存のDBをコピーする
@@ -55,7 +58,7 @@ export const useSettingsPanelController = () => {
       const [newColumnSpaces, newGlobalSettings] = await updateDbPathUsecase(GlobalSettingKeys.CUSTOM_SAVE_DIR_PATH, oldUserDirectory, newCustomSaveDirPath);
       set(globalSettingsState, newGlobalSettings);
       set(columnSpacesState, newColumnSpaces);
-      toast({ title: `データベースをコピーしました。元のデータベースディレクトリ（${oldUserDirectory}）はもう不要ですが一応自動削除はしなかったので、気になる場合手動で削除してください`, status: "success", position: "bottom-right", isClosable: true, duration: 30000,})
+      toast({ title: `データベースをコピーしました。元のデータベースディレクトリ（${oldUserDirectory}）はもう不要ですが一応自動削除はしなかったので、気になる場合手動で削除してください`, status: "success", position: "bottom-right", isClosable: true, duration: null})
     } catch (e) {
       console.log(e.stack);
       toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
@@ -65,8 +68,19 @@ export const useSettingsPanelController = () => {
 
   }, []);
 
-  const handleClickOptimizeDbSize = useRecoilCallback(({snapshot, set}) => async (event) => {
-    //TODO 実装
+  const handleClickCleanUpDustBoxedFiles = useRecoilCallback(({snapshot, set}) => async (event) => {
+    setModalSentence("クリーンアップ中");
+    openProgressModal()
+    try {
+      const deletedFiles = await cleanUpDustBoxUsecase();
+      toast({ title: `${deletedFiles.length}個のクリーンアップに成功しました`, status: "success", position: "bottom-right", isClosable: true, duration: 2000,});
+    } catch (e) {
+      toast({ title: `クリーンアップ時にエラーが発生しました`, status: "error", position: "bottom-right", isClosable: true, duration: null,});
+      toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: null,});
+    } finally {
+      onCloseProgressModal();
+    }
+
   }, []);
 
   // 表示用のDBファイル保存先ディレクトリの設定を反映
@@ -85,9 +99,10 @@ export const useSettingsPanelController = () => {
     // 状態
     globalSettings,
     saveDirPath,
+    modalSentence,
     // イベントハンドラ
     handleClickCustomSaveDirPath,
-    handleClickOptimizeDbSize,
+    handleClickCleanUpDustBoxedFiles,
     // モーダル管理
     isOpenProgressModal,
     onCloseProgressModal,

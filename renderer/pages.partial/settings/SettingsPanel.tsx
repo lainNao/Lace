@@ -26,6 +26,8 @@ export const SettingsPanel = () => {
             </Tr>
           </Thead>
           <Tbody>
+
+          {/* データ保存先ディレクトリ */}
           <Tr>
             <Td>
               <div className="flex">
@@ -40,19 +42,22 @@ export const SettingsPanel = () => {
               <Button className="ml-3" colorScheme="teal" size="sm" onClick={controller.handleClickCustomSaveDirPath}>変更</Button>
             </Td>
           </Tr>
-          {/* <Tr>
+
+          {/* 削除済みファイルのクリーンアップ */}
+          <Tr>
             <Td>
               <div className="flex">
-                <div>DB容量最適化</div>
-                <Tooltip label="現状カラムスペースやカラムやセルを消してもその時はその配下のメディアファイルは削除しないような実装になっちゃっている（トランザクションが面倒なためな）んですが、このオプションではそのもう使われなくなった迷子ファイルを物理削除してくます。バグが無ければ安全です。" aria-label="A tooltip">
+                <div>削除済みファイルのクリーンアップ</div>
+                <Tooltip label="ゴミファイルをクリーンアップしてストレージサイズを削減します。（今は実装上の理由で、消されたファイルは全部裏でコピーされて2倍の容量で残っちゃってます。それを消します。ファイルをよく使って消してる人はやったら今までのファイルサイズの2倍のサイズのストレージ削減になります。バグってたらごめん）" aria-label="A tooltip">
                   <span><QuestionCircleIcon className="ml-1 h-5" /></span>
                 </Tooltip>
               </div>
             </Td>
             <Td>
-              <Button className="ml-3" colorScheme="teal" size="sm" onClick={controller.handleClickOptimizeDbSize}>実行</Button>
+              <Button colorScheme="teal" size="sm" onClick={controller.handleClickCleanUpDustBoxedFiles}>クリーンアップの実行</Button>
             </Td>
-          </Tr> */}
+          </Tr>
+
           </Tbody>
         </Table>
       </section>
@@ -66,10 +71,11 @@ export const SettingsPanel = () => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>DBのコピー中（元ファイルは一応残しますので不要なら自分で消してください）</ModalHeader>
-          <ModalCloseButton style={{outline: "none"}}/>
           <ModalBody>
-            <Progress size="xs" isIndeterminate />
+            <div className="flex flex-col items-center mb-2">
+              <div className=" mb-2">{controller.modalSentence}</div>
+              <Progress size="xs" className="w-full" isIndeterminate />
+            </div>
           </ModalBody>
         </ModalContent>
       </Modal>
