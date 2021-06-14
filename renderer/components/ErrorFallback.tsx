@@ -1,9 +1,8 @@
 import React from "react";
-import { Footer } from "./Footer";
-import { MenuBar } from "./Menubar";
+import { AppFooter } from "./AppFooter";
+import { AppMenuBar } from "./AppMenuBar";
 import { Tag } from "@chakra-ui/react"
 import { InfoOutlineIcon } from '@chakra-ui/icons'
-import * as packageJson from "../../package.json"
 
 type Props = {
   error: Error;
@@ -17,20 +16,20 @@ export const ErrorFallback = (props: Props) => {
 
       {/* メニューバー */}
       <div className=" bg-gray-900 text-sm flex justify-between" style={{height: "25px"}}>
-        <MenuBar />
+        <AppMenuBar />
       </div>
 
       {/* ボディ */}
       <div className="flex flex-col items-center text-sm w-screen overflow-x-hidden flex-auto px-20" style={{height: "95%"}}>
         <div className="mt-10"><InfoOutlineIcon w={6} h={6} color="red.200" className="mb-5"/></div>
-        <div>申し訳ないです。なんらかのエラーが起きたのでエラーダウンダリーを表示しています</div>
+        <div>申し訳ないです。なんらかのエラーが起きたのでエラー画面を一時的に表示しています</div>
 
         <div className="mt-2 text-blue-400">Q「エラーを解決したい場合どうしたらいいか」</div>
         <div className="text-xs">A：以下の選択肢を1から順に取ってほしいと思います。分かりづらい説明すみません</div>
         <div className="mt-1 text-gray-400 text-xs">
-          <div className="mb-1">1, メニューバーの「About」を開いた時に表示されるバージョン番号が最新かどうか<a className="cursor-pointer text-blue-500" href="https://github.com/lainNao/Lace/releases">githubのリリースページ</a>にアクセスして見比べてください。違った場合、今のバージョンはアンインストールせずにそのまま最新版をDLしてインストールしてみてください。直る可能性があります。</div>
+          <div className="mb-1">1, メニューバーの「About」を開いた時に表示されるバージョン番号が最新かどうか<a className="cursor-pointer text-blue-500"  target="_blank" rel="noopener" href="https://github.com/lainNao/Lace/releases">githubのリリースページ</a>にアクセスして見比べてください。違った場合、今のバージョンはアンインストールせずにそのまま最新版をDLしてインストールしてみてください。直る可能性があります。</div>
           <div className="mb-1">2, あと一応、データフォルダをまるごとそのままコピーしてバックアップ取っておいてください。データフォルダの場所は、Windowsならdocuments配下にあると思います。</div>
-          <div className="mb-1">3, 最新版だった場合、この画面下部の背景が青い部分のスクショを作者かAboutから行けるGitHubのリポジトリのissueページにどうにか伝えて修正を待ち、修正しましたすみませんと連絡が来たら、今のバージョンはアンインストールしないで（言葉の意味通り、しないで）、ただただそのまま修正版をDLしインストールしてください。</div>
+          <div className="mb-1">3, 最新版だった場合、この画面下部の背景が青い部分のスクショを作者か<a className="cursor-pointer text-blue-500" target="_blank" rel="noopener"  href="https://github.com/lainNao/Lace/issues">issueページ</a>にどうにか伝えて修正を待ち、修正しましたすみませんと連絡が来たら、今のバージョンはアンインストールしないで（言葉の意味通り、しないで）、ただただそのまま修正版をDLしインストールしてください。</div>
           <div className="mb-1">4, 3で直る見込みが無さそうな場合、諦めるか、作者に感情をぶつけるか、法的に手段は無いか考えるか、同じツールを自分で作るか、同じツールをもっと技術力のあるベンダーに作らせてみる等してください。</div>
         </div>
 
@@ -67,7 +66,7 @@ export const ErrorFallback = (props: Props) => {
 
       {/* フッター */}
       <div className="flex justify-center items-center bg-gray-900 select-none" style={{height: "25px"}}>
-        <Footer />
+        <AppFooter />
       </div>
 
   </div>

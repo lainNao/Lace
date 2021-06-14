@@ -6,8 +6,8 @@ import '@szhsin/react-menu/dist/index.css';
 import HomeBody from '../pages.partial/HomeBody';
 import SettingsBody from '../pages.partial/SettingsBody';
 import { useHomeController } from '../controllers/useHomeController';
-import { MenuBar } from '../components/Menubar';
-import { Footer } from '../components/Footer';
+import { AppMenuBar } from '../components/AppMenuBar';
+import { AppFooter } from '../components/AppFooter';
 
 export const Home = () => {
   const controller = useHomeController();
@@ -18,7 +18,7 @@ export const Home = () => {
 
       {/* メニューバー */}
       <div className=" bg-gray-900 text-sm flex justify-between" style={{height: "25px"}}>
-        <MenuBar />
+        <AppMenuBar />
       </div>
 
       {/* ボディ */}
@@ -83,7 +83,7 @@ export const Home = () => {
 
       {/* フッター */}
       <div className="flex justify-center items-center bg-gray-900 select-none" style={{height: "25px"}}>
-        <Footer />
+        <AppFooter />
       </div>
 
     </div>

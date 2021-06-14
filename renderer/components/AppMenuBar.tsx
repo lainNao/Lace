@@ -6,7 +6,7 @@ import { useMenuBarController } from "../controllers/useMenuBarController";
 import { LeftMenus } from "../resources/enums/app";
 import { remote } from "electron";
 
-export const MenuBar = () => {
+export const AppMenuBar = () => {
 
   const controller = useMenuBarController();
 
