@@ -6,6 +6,8 @@ import { ChakraProvider } from "@chakra-ui/react"
 import dark from "../resources/themes/dark"
 import { RecoilRoot } from 'recoil';
 import * as packageJson from "../../package.json"
+import { ErrorFallback } from '../components/ErrorFallback';
+import { ErrorBoundary } from 'react-error-boundary'
 
 function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -37,7 +39,9 @@ function App(props: AppProps) {
       </Head>
       <ChakraProvider theme={dark}>
         <RecoilRoot>
-          <Component {...pageProps} />
+          <ErrorBoundary FallbackComponent={ErrorFallback} >
+            <Component {...pageProps} />
+          </ErrorBoundary>
         </RecoilRoot>
       </ChakraProvider>
     </React.Fragment>
