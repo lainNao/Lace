@@ -30,8 +30,8 @@ export class ImageCellData implements CellData {
   constructor(args: ConstructorArgs) {
     this._path = args.path;
     this._basename = path.basename(args.path);
-    this._extname = path.extname(args.path).substring(1);
-    this._name = path.basename(this._path, this._extname);  //TODO なんかこれ先頭にピリオドついてるっぽいので直す
+    this._extname = path.extname(args.path);
+    this._name = path.basename(this._path, this._extname);
     this._alias = args.alias ?? this._name;
   }
 
