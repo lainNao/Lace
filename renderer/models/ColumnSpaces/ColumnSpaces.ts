@@ -57,6 +57,61 @@ export class ColumnSpaces {
     }
   }
 
+  // NOTE: ここうまくやれてると思う。他のAPIを利用したり、「| null」をちゃんとしたり。find系は例外出す必要無いし。他のもこれに合わせたい。
+  // TODO 他のもここのやり方に似せて合わせたい
+  findDescendantCell(columnSpaceId: string, columnId: string, cellId: string): Cell | null {
+    const targetColumnSpace = this.findDescendantColumnSpace(columnSpaceId);
+    if (!targetColumnSpace) {
+      return null;
+    }
+
+    const targetColumn = targetColumnSpace.findDescendantColumn(columnId);
+    if (!targetColumn) {
+      return null;
+    }
+
+    const targetCell = targetColumn.findCell(cellId);
+    if (!targetCell) {
+      return null;
+    }
+
+    return targetCell;
+  }
+
+  findAllColumnsOf(columnSpaceId: string): Column[] | null {
+    const targetColumnSpace = this.findDescendantColumnSpace(columnSpaceId);
+
+    if (!targetColumnSpace) {
+      return null;
+    }
+
+    return targetColumnSpace.columns.children;
+  }
+
+
+  findAllDescendantCellsOf(columnSpaceId: string): Cell[] | null {
+    const targetColumnSpace = this.findDescendantColumnSpace(columnSpaceId);
+
+    if (!targetColumnSpace) {
+      return null;
+    }
+
+    return targetColumnSpace.findAllDescendantCells();
+  }
+
+  findDescendantColumnSpacesHasColumn(): ColumnSpace[] {
+    let columnSpacesHasChildColumnArray = [];
+    for (const columnSpace of this._children) {
+      let columnSpaceArray = columnSpace.findDescendantColumnSpacesHasColumn();
+      console.log(columnSpaceArray)
+      columnSpacesHasChildColumnArray = columnSpacesHasChildColumnArray.concat(columnSpaceArray);
+      console.log(columnSpacesHasChildColumnArray)
+    }
+
+    console.log(columnSpacesHasChildColumnArray)
+    return columnSpacesHasChildColumnArray;
+  }
+
   // 子のカラムスペースから指定IDのものを削除
   removeChildColumnSpace(targetColumnSpaceId: string): ColumnSpaces {
     for (let i=0; i<this._children.length; i++) {

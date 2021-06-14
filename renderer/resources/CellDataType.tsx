@@ -52,3 +52,11 @@ export const cellDataTypeSelectOptionText = (cellDataType: CellDataType, cellDat
     default: throw new Error("不明なCellDataTypeです");
   }
 }
+
+export const isKindOfFileCellDataType = (cellDataType: CellDataType) => {
+  return (
+    cellDataType === CellDataType.Image
+    || cellDataType === CellDataType.Sound
+    || cellDataType === CellDataType.Video
+  )
+}

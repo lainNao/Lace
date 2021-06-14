@@ -31,19 +31,19 @@ export const Home = () => {
               <img src="/images/icon-title.png" className=""/>
               <div className="flex flex-col items-center mt-4">
                 {localStorage.getItem(LocalStorageKeys.HAS_ONCE_INITIALIZED)
-                    //過去に初期化したことはあるが、なんらかの原因でDBが読み込めない場合
-                    ? (
-                        <div>
-                          <div>データが読み込めませんか？</div>
-                          <div>なんらかのエラーが起きている可能性があるのでまずデータのバックアップを取ってください。</div>
-                          <div>（データはOSのユーザ用ディレクトリの中の「Lace」ディレクトリか、または過去に変更したディレクトリパスにあります）</div>
-                          <div>次にFAQを探して解決してください（後で用意するつもりです…）</div>
-                          <div>または無料なので諦め、以下のボタンを押して新しく初期化してください（既存データは消えます）</div>
-                          <div className="mt-6 text-center">
-                            <Button colorScheme="gray" size="sm" onClick={controller.handleClickSetup}>データの初期化</Button>
-                          </div>
+                  //過去に初期化したことはあるが、なんらかの原因でDBが読み込めない場合
+                  ? (
+                      <div>
+                        <div>データが読み込めませんか？</div>
+                        <div>なんらかのエラーが起きている可能性があるのでまずデータのバックアップを取ってください。</div>
+                        <div>（データはOSのユーザ用ディレクトリの中の「Lace」ディレクトリか、または過去に変更したディレクトリパスにあります）</div>
+                        <div>次にFAQを探して解決してください（後で用意するつもりです…）</div>
+                        <div>または無料なので諦め、以下のボタンを押して新しく初期化してください（既存データは消えます）</div>
+                        <div className="mt-6 text-center">
+                          <Button colorScheme="gray" size="sm" onClick={controller.handleClickSetup}>データの初期化</Button>
                         </div>
-                      )
+                      </div>
+                    )
                   //過去に初期化したこともなく、読み込めない場合（通常の最初期化）
                   : <Button colorScheme="gray" size="sm" onClick={controller.handleClickSetup}>初期データのセットアップ</Button>
                 }

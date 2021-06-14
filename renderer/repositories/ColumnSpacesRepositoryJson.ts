@@ -1,3 +1,4 @@
+import { assert } from 'console';
 import fs from 'fs'
 import path from 'path';
 import { ColumnSpaces } from '../models/ColumnSpaces';
@@ -9,6 +10,7 @@ export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
   model = ColumnSpaces;
   dbFileName: string = DbFileNameEnum.COLUMN_SPACES;
   private columnDataDir: string = "file_datas"; //TODO この定数どっかに移す
+  private dustBoxDirName: string = "file_datas_dust_box";
   initialDB: any = [       //TODO モックなので後で直す
     {
       "id": "1111",
@@ -56,6 +58,25 @@ export class ColumnSpacesRepositoryJson extends RepositoryJson<ColumnSpaces> {
     await fs.promises.copyFile(localFilePath, saveFilePath)
 
     return saveFilePath;
+  }
+
+  // ゴミ箱にファイルをコピーし、ゴミ箱内に作られたファイルパスを返す
+  async copyCellFileToDustBox(originalFilePath: string, columnSpaceId: string, columnId: string, fileName: string): Promise<string> {
+    assert(originalFilePath, "originalFilePathが空です")
+    assert(columnSpaceId, "columnSpaceIdが空です");
+    assert(columnId, "columnIdが空です");
+    assert(fileName, "fileNameが空です");
+
+    // ゴミ箱内に入れるファイルパスを作る
+    const applicationDirPath = await this.getSaveDirAbsolutePath();
+    const dustedFileDirPath = path.join(applicationDirPath, this.dustBoxDirName, columnSpaceId, columnId);
+    await this.createDirectoryIfNotExists(dustedFileDirPath);
+    const dustedFilePath = path.join(dustedFileDirPath, fileName);
+
+    // 元ファイルからゴミ箱にコピーする
+    await fs.promises.copyFile(originalFilePath, dustedFilePath)
+
+    return dustedFilePath;
   }
 
   private async createColumnDataSavePathWithoutDuplication(fileName: string, columnSpaceId: string,columnId: string): Promise<string> {
