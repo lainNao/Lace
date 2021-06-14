@@ -18,12 +18,6 @@ export const useHomeController = () => {
   const currentSelectedColumnSpace = useRecoilValue(specificColumnSpaceState(currentSelectedColumnSpaceId));
   const toast = useToast();
 
-  const devTestFunction =  useRecoilCallback(({snapshot, set}) => async (event) => {
-    console.log("開発用のメニュー発火")
-
-    console.log(process.versions)
-  }, []);
-
   const handleClickSetup = useRecoilCallback(({snapshot, set}) => async (event) => {
     try {
       const [newColumnSpaces, newRelatedCells, newDisplaySettings, newGlobalSettings] = await initializeApplicationUsecase();
@@ -51,7 +45,6 @@ export const useHomeController = () => {
 
     // コールバック類
     handleClickSetup,
-    devTestFunction,
   }
 
 }
