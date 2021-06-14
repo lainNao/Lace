@@ -39,7 +39,7 @@ export const AppMenuBar = () => {
       </div>
 
       {/* 中央表示部分 */}
-      <div className="webkit-app-region-drag flex-auto text-center">
+      <div className="webkit-app-region-drag flex-auto text-center select-none">
         {controller.selectedLeftMenu === LeftMenus.HOME &&
           <div>
             <span>Home{controller.displayTargetSelectedColumnSpace?.name && ` - ${controller.displayTargetSelectedColumnSpace.name}`}</span>
