@@ -28,7 +28,7 @@
 Windows x64版のみアップロードしてます。
 https://github.com/lainNao/Lace/releases
 
-こちらのリンク先にあるバージョンが新しいやつの「dist-win-x64.zip」をなんとかDLし、中の「Lace Explorer Setup <そのバージョン番号>.exe」をクリックでインストールできます。
+こちらのリンク先にあるバージョンが新しいやつの「vX.X.X-Win-x64.zip」をなんとかDLし、中の「Lace Explorer Setup <そのバージョン番号>.exe」をクリックでインストールできます。
 
 ちなみにv0.1.xは「まだ製品レベルのものではない＆製品レベルのちゃんとしたテストなどをしていない」ということなのでそこらへんお願いします、。
 
