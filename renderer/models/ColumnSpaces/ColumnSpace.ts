@@ -71,6 +71,29 @@ export class ColumnSpace {
     return this._columns.findBellowCell(targetCellId, targetColumnId);
   }
 
+  findAllDescendantCells(): Cell[] {
+
+    const descendantCells: Cell[] = [];
+    this._columns.children.forEach(column => {
+      column.cells.children.forEach(cell => {
+        descendantCells.push(cell)
+      })
+    })
+
+    return descendantCells;
+  }
+
+  // 子孫のカラムスペースのうち、子にカラムを持つもの全てを配列で返す
+  findDescendantColumnSpacesHasColumn(): ColumnSpace[] {
+
+    // 自身が持ってたらそれで終わり
+    if (this.hasColumns()) {
+      return [this];
+    }
+
+    return this._childColumnSpaces.findDescendantColumnSpacesHasColumn();
+  }
+
   addChildColumnSpace(columnSpace: ColumnSpace): ColumnSpace {  //TODO ここらへんの戻値本当にthisでいいか？全体的に後で勉強して変えるかもなところ
     this._childColumnSpaces.push(columnSpace);
     return this;

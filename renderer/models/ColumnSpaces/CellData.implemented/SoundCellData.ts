@@ -21,11 +21,11 @@ export class SoundCellData implements CellData {
   private _extname: string;
   private _alias: string;
 
-  get name() { return this._name; }
-  get basename() { return this._basename; }
-  get path() { return this._path; }
-  get extname() { return this._extname; }
-  get alias() { return this._alias; }
+  get name() { return this._name; } //拡張子抜き
+  get basename() { return this._basename; } //拡張子あり
+  get path() { return this._path; } //フルパス
+  get extname() { return this._extname; } //拡張子のみ
+  get alias() { return this._alias; } //別名
 
   constructor(args: ConstructorArgs) {
     this._path = args.path;
