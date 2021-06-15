@@ -1,7 +1,7 @@
-import { Cell, Cells, ColumnSpaces } from "../../../models/ColumnSpaces";
-import { ImageCellData } from "../../../models/ColumnSpaces/CellData.implemented";
-import { ColumnSpacesRepositoryJson } from "../../../repositories/ColumnSpacesRepositoryJson";
-import { CreateCellsUsecasesArgs } from "../../createCellsUsecase";
+import { Cell, Cells, ColumnSpaces } from "../../models/ColumnSpaces";
+import { ImageCellData } from "../../models/ColumnSpaces/CellData.implemented";
+import { ColumnSpacesRepositoryJson } from "../../repositories/ColumnSpacesRepositoryJson";
+import { CreateCellsUsecasesArgs } from "../createCellsUsecase";
 
 export const createImageCellsUsecase = async(args: CreateCellsUsecasesArgs): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
