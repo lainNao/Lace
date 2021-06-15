@@ -16,7 +16,6 @@ export const removeColumnSpaceUsecase = async(columnSpaceId: string): Promise<[C
       // カラムスペース削除の前に、その配下のファイル系セルのファイルをゴミ箱にコピーしておく
       const targetAncestorColumnSpace = rootColumnSpaces.findDescendantColumnSpace(columnSpaceId);
       const targetColumnSpaces = targetAncestorColumnSpace.findDescendantColumnSpacesHasColumn();
-      console.log(targetColumnSpaces)
       for (const targetColumnSpace of targetColumnSpaces) {
         for (const targetColumn of targetColumnSpace.columns.children) {
           if (!isKindOfFileCellDataType(targetColumn.type)) {

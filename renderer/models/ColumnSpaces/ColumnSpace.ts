@@ -162,6 +162,12 @@ export class ColumnSpace {
     return this;
   }
 
+  updateColumnSpaceOrder(columnSpaceId: string, fromIndex: number, toIndex: number): ColumnSpaces {
+    if (this._childColumnSpaces) {
+      return this._childColumnSpaces.updateColumnSpaceOrder(columnSpaceId, fromIndex, toIndex);
+    }
+  }
+
   removeDescendantColumnSpace(targetId: string): ColumnSpaces {
     return this._childColumnSpaces.removeDescendantColumnSpace(targetId);
   }

@@ -2,6 +2,8 @@ import { BrowserWindow, MenuItem, remote } from "electron";
 
 interface ColumnSpaceContextMenuArgs {
   handleClickSetDisplayTarget: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
+  handleClickUp: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
+  handleClickDown: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickDeleteColumnSpace: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickRename: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickAddChildColumnSpace: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
@@ -20,6 +22,19 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
     label: "表示対象に設定",
     click: args.handleClickSetDisplayTarget,
     enabled: (args.targetColumnSpaceDataset.hasColumns === "true"),
+  }));
+  contextMenu.append(new MenuItem({
+    type: 'separator'
+  }));
+  contextMenu.append(new MenuItem({
+    label: "1つ上に移動",
+    click: args.handleClickUp,
+    enabled: args.targetColumnSpaceDataset.isFirstIndex !== "true",
+  }));
+  contextMenu.append(new MenuItem({
+    label: "1つ下に移動",
+    click: args.handleClickDown,
+    enabled: args.targetColumnSpaceDataset.isLastIndex !== "true",
   }));
   contextMenu.append(new MenuItem({
     type: 'separator'

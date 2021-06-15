@@ -48,7 +48,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
 
   const generateColumnSpaceElementTree = useCallback((columnSpaces: ColumnSpaces) => {
 
-    return columnSpaces.mapChildren((columnSpace) => {
+    return columnSpaces.children.map((columnSpace, index) => {
       return (
         <React.Fragment key={columnSpace.id} >
           <TreeItem
@@ -61,6 +61,9 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                 data-name={columnSpace.name}
                 data-has-child-column-spaces={!!(columnSpace.hasChildColumnSpace())}
                 data-has-columns={!!(columnSpace.hasColumns())}
+                data-index={index}
+                data-is-first-index={index === 0}
+                data-is-last-index={index === (columnSpaces.children.length - 1)}
                 onClick={controller.handleClickColumnSpace}
                 onDragStart={controller.handleDragStartOnColumnSpace}
                 onDragEnter={controller.handleDragEnterOnColumnSpace}
@@ -68,7 +71,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
                 onDragOver={controller.handleDragOverOnColumnSpace}
                 onDrop={controller.handleDropOnColumnSpace}
                 onContextMenu={controller.handleRightClickOnColumnSpace}
-                >{columnSpace.name}</div>
+              >{columnSpace.name}</div>
             }
             classes={{
               label: classes.label,
@@ -236,6 +239,7 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
         />
       }
 
+      {/* カラムスペースリネームモーダル */}
       {controller.isRenameColumnSpaceModalOpen &&
         <RenameColumnSpaceModal
           columnSpace={controller.renameTargetColumnSpace}

@@ -31,6 +31,7 @@ import useExpandedColumnSpaces from '../../hooks/useExpandedColumnSpaces';
 import displayTargetColumnSpaceIdState from '../../recoils/atoms/displayTargetColumnSpaceIdState';
 import { ColumnSpace } from '../../models/ColumnSpaces';
 import { renameColumnSpaceUsecase } from '../../usecases/renameColumnSpaceUsecase';
+import { updateColumnSpaceOrderUsecase } from '../../usecases/updateColumnSpaceOrderUsecase';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -104,6 +105,26 @@ export const useColumnSpaceExplorerController = () => {
     showColumnSpaceContextMenu(event, {
       handleClickSetDisplayTarget: async () => {
         set(displayTargetColumnSpaceIdState, targetDataset.id);
+      },
+      handleClickUp: async () => {
+        console.debug("一つ上に移動")
+        try {
+          const newColumnSpaces = await updateColumnSpaceOrderUsecase(targetDataset.id, Number(targetDataset.index), Number(targetDataset.index) - 1);
+          setColumnSpaces(newColumnSpaces);
+        } catch (e) {
+          console.log(e.stack);
+          toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
+        }
+      },
+      handleClickDown: async () => {
+        console.debug("一つ下に移動")
+        try {
+          const newColumnSpaces = await updateColumnSpaceOrderUsecase(targetDataset.id, Number(targetDataset.index), Number(targetDataset.index) +1);
+          setColumnSpaces(newColumnSpaces);
+        } catch (e) {
+          console.log(e.stack);
+          toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000,})
+        }
       },
       handleClickAddChildColumnSpace: async () => {
         newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");

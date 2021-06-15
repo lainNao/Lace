@@ -1,4 +1,5 @@
 import { Cell, Cells, Column, ColumnSpace } from ".";
+import { array_move } from "../../modules/array";
 
 interface ColumnSpacesConstructorArgs {
   children: ColumnSpace[],
@@ -103,12 +104,9 @@ export class ColumnSpaces {
     let columnSpacesHasChildColumnArray = [];
     for (const columnSpace of this._children) {
       let columnSpaceArray = columnSpace.findDescendantColumnSpacesHasColumn();
-      console.log(columnSpaceArray)
       columnSpacesHasChildColumnArray = columnSpacesHasChildColumnArray.concat(columnSpaceArray);
-      console.log(columnSpacesHasChildColumnArray)
     }
 
-    console.log(columnSpacesHasChildColumnArray)
     return columnSpacesHasChildColumnArray;
   }
 
@@ -196,6 +194,21 @@ export class ColumnSpaces {
       }
     }
     return this;
+  }
+
+  updateColumnSpaceOrder(columnSpaceId: string, fromIndex: number, toIndex: number): ColumnSpaces {
+    if (this.hasChildColumnSpaceOf(columnSpaceId)) {
+      this._children = array_move(this._children, fromIndex, toIndex);
+      return this;
+    }
+    for (let i=0; i<this._children.length; i++) {
+      const orderFinished = this._children[i].updateColumnSpaceOrder(columnSpaceId, fromIndex, toIndex);
+      if (orderFinished) {
+        return this;
+      }
+    }
+
+    //TODO ここらへんで例外出してもいいのかも。ただ、ルートのカラムスペースのときのみにしたいので、そこらへんのフラグを引数とかでもたせる必要あるのかも。単にbooleanの方がいいのかもだけど
   }
 
   // 子孫のカラムスペースに指定カラムスペースを追加
@@ -310,6 +323,13 @@ export class ColumnSpaces {
   // 子カラムスペースを持つかどうか
   hasChildColumnSpace(): boolean {
     return this._children.length > 0;
+  }
+
+  // 子に指定IDのカラムスペースを持つかどうか
+  hasChildColumnSpaceOf(columnSpaceId: string): boolean {
+    return this._children.some(columnSpace => {
+      return columnSpace.id === columnSpaceId;
+    })
   }
 
 }
