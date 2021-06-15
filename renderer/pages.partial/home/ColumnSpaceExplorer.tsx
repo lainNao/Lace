@@ -14,6 +14,7 @@ import { ColumnSpaces } from '../../models/ColumnSpaces';
 import { CellManagerModal } from './ColumnSpaceExplorer.partial/CellManagerModal';
 import { CellRerationModal } from './ColumnSpaceExplorer.partial/CellRelationModal';
 import { DisplaySettingModal } from './ColumnSpaceExplorer.partial/DisplaySettingModal';
+import { RenameColumnSpaceModal } from './ColumnSpaceExplorer.partial/RenameColumnSpaceModal';
 
 type Props = {
   classeName?: string;
@@ -232,6 +233,15 @@ export const ColumnSpaceExplorer: React.FC<Props> = props => {
           isOpen={controller.isDisplaySettingModalOpen}
           onClose={controller.closeDisplaySettingModal}
           displaySettings={controller.displaySettings}
+        />
+      }
+
+      {controller.isRenameColumnSpaceModalOpen &&
+        <RenameColumnSpaceModal
+          columnSpace={controller.renameTargetColumnSpace}
+          isOpen={controller.isRenameColumnSpaceModalOpen}
+          onClose={controller.closeRenameColumnSpaceModal}
+          onSubmit={controller.handleSubmitRenameColumnSpaceForm}
         />
       }
 

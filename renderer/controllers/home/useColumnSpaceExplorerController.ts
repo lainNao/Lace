@@ -29,6 +29,8 @@ import displaySettingsState from '../../recoils/atoms/displaySettingsState';
 import { CellManagerModalDataType } from '../../pages.partial/home/ColumnSpaceExplorer.partial/CellManagerModal';
 import useExpandedColumnSpaces from '../../hooks/useExpandedColumnSpaces';
 import displayTargetColumnSpaceIdState from '../../recoils/atoms/displayTargetColumnSpaceIdState';
+import { ColumnSpace } from '../../models/ColumnSpaces';
+import { renameColumnSpaceUsecase } from '../../usecases/renameColumnSpaceUsecase';
 
 
 //TODO 結局useCallbackの第二引数使えないじゃんってなって、そこに追加してるけど意味ないの消しちゃったりしたんだけど、実際どう使うのが正解なの？調べて。それによってはgetPromise(～)は使わなくなる
@@ -47,11 +49,13 @@ export const useColumnSpaceExplorerController = () => {
   const [newColumnFormName, setNewColumnFormName] = useState<string>("");
   const [newColumnFormParentId, setNewColumnFormParentId] = useState<string>(null);
   const [draggingNodeDataset, setDraggingNodeDataset] = useRecoilState(draggingNodeDatasetState);
+  const [renameTargetColumnSpace, setRenameTargetColumnSpace] = useState<ColumnSpace>(null);
   // モーダル管理
   const { isOpen: isNewColumnFormOpen, onOpen: openNewColumnForm, onClose: closeNewColumnForm } = useDisclosure();
   const { isOpen: isNewCellFormOpen, onOpen: openNewCellFormOpen, onClose: closeNewCellForm } = useDisclosure();
   const { isOpen: isCellRelationFormOpen, onOpen: openCellRelationFormOpen, onClose: closeCellRelationForm } = useDisclosure();
   const { isOpen: isDisplaySettingModalOpen, onOpen: openDisplaySettingModal, onClose: closeDisplaySettingModal } = useDisclosure();
+  const { isOpen: isRenameColumnSpaceModalOpen, onOpen: openRenameColumnSpaceModal, onClose: closeRenameColumnSpaceModal } = useDisclosure();
   // ref
   const newTopLevelColumnSpaceFormRef = React.useRef(null);
   const newColumnSpacesFormRefs = React.useRef([]);
@@ -89,7 +93,7 @@ export const useColumnSpaceExplorerController = () => {
 
   /* -----------------------------------------------------コンテキストメニュー管理----------------------------------------------------------- */
 
-  const handleRightClickOnColumnSpace = useRecoilCallback(({set}) => async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleRightClickOnColumnSpace = useRecoilCallback(({set, snapshot}) => async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     console.debug("カラムスペースのコンテキストメニュー表示");
     event.preventDefault();
     event.stopPropagation();
@@ -104,6 +108,13 @@ export const useColumnSpaceExplorerController = () => {
       handleClickAddChildColumnSpace: async () => {
         newColumnSpacesFormRefs.current[targetDataset.id].classList.remove("hidden");
         newColumnSpacesFormRefs.current[targetDataset.id].elements.namedItem("new-column-space-name").focus();
+      },
+      handleClickRename: async () => {
+        console.debug("カラムスペースリネームモーダルopen");
+        const currentRootColumnSpaces = await snapshot.getPromise(columnSpacesState);
+        const targetColumnSpace = currentRootColumnSpaces.findDescendantColumnSpace(targetDataset.id);
+        setRenameTargetColumnSpace(targetColumnSpace);
+        openRenameColumnSpaceModal();
       },
       handleClickDisplaySettings: async () => {
         set(selectedColumnSpaceIdState, targetDataset.id);
@@ -311,6 +322,19 @@ export const useColumnSpaceExplorerController = () => {
         isClosable: true,
         duration: 10000,
       })
+    }
+  }, []);
+
+  const handleSubmitRenameColumnSpaceForm = useRecoilCallback(({set}) => async (columnSpaceId: string, newColumnSpaceName: string) => {
+    console.debug("カラムスペースリネームモーダルsubmit");
+
+    try {
+      const newColumnSpaces = await renameColumnSpaceUsecase(columnSpaceId, newColumnSpaceName);
+      set(columnSpacesState, newColumnSpaces);
+      closeRenameColumnSpaceModal();
+    } catch (e) {
+      console.log(e.stack);
+      toast({ title: e.message, status: "error", position: "bottom-right", isClosable: true, duration: 10000})
     }
   }, []);
 
@@ -658,11 +682,13 @@ export const useColumnSpaceExplorerController = () => {
     selectedNodeId,
     cellmanagerModalData,
     newColumnFormName,
+    renameTargetColumnSpace,
     //モーダル状態
     isNewColumnFormOpen,
     isNewCellFormOpen,
     isCellRelationFormOpen,
     isDisplaySettingModalOpen,
+    isRenameColumnSpaceModalOpen,
     //ref
     newTopLevelColumnSpaceFormRef,
     newColumnFormRef,
@@ -698,6 +724,7 @@ export const useColumnSpaceExplorerController = () => {
     handleDropOnColumnSpace,
     handleDropOnColumn,
     handleSubmitCellRelationForm,
+    handleSubmitRenameColumnSpaceForm,
     //モーダル管理
     handleNewCellFormClose,
     handleNewCellFormCreateButtonClick,
@@ -706,5 +733,6 @@ export const useColumnSpaceExplorerController = () => {
     closeNewColumnForm,
     closeCellRelationForm,
     closeDisplaySettingModal,
+    closeRenameColumnSpaceModal,
   }
 }

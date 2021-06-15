@@ -3,6 +3,7 @@ import { BrowserWindow, MenuItem, remote } from "electron";
 interface ColumnSpaceContextMenuArgs {
   handleClickSetDisplayTarget: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickDeleteColumnSpace: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
+  handleClickRename: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickAddChildColumnSpace: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickAddChildColumn: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
   handleClickRelateCells: (menuItem: MenuItem, browserWindow: BrowserWindow, event: KeyboardEvent) => void,
@@ -37,6 +38,10 @@ export const showColumnSpaceContextMenu = (event: React.MouseEvent<HTMLElement, 
         enabled: args.targetColumnSpaceDataset.hasChildColumnSpaces === "false",
       }
     ]
+  }));
+  contextMenu.append(new MenuItem({
+    label: "リネーム",
+    click: args.handleClickRename,
   }));
   contextMenu.append(new MenuItem({
     label: "リレーション管理",
