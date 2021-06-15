@@ -1,9 +1,9 @@
-import { Cell, Cells, ColumnSpaces } from "../../models/ColumnSpaces";
-import { SoundCellData } from "../../models/ColumnSpaces/CellData.implemented";
-import { ColumnSpacesRepositoryJson } from "../../repositories/ColumnSpacesRepositoryJson";
-import { CreateCellsUsecasesArgs } from "../createCellsUsecase";
+import { Cell, Cells, ColumnSpaces } from "../../../models/ColumnSpaces";
+import { ImageCellData } from "../../../models/ColumnSpaces/CellData.implemented";
+import { ColumnSpacesRepositoryJson } from "../../../repositories/ColumnSpacesRepositoryJson";
+import { CreateCellsUsecasesArgs } from "../../createCellsUsecase";
 
-export const createSoundCellsUsecase = async(args: CreateCellsUsecasesArgs): Promise<ColumnSpaces> => {
+export const createImageCellsUsecase = async(args: CreateCellsUsecasesArgs): Promise<ColumnSpaces> => {
   const columnSpacesRepository = new ColumnSpacesRepositoryJson();
   const rootColumnSpaces = await columnSpacesRepository.read();
 
@@ -17,7 +17,7 @@ export const createSoundCellsUsecase = async(args: CreateCellsUsecasesArgs): Pro
   const newRootColumnSpaces = rootColumnSpaces.addDescendantCells(
     new Cells({
       children: savedFilePaths.map(cellData => new Cell({
-        data: new SoundCellData({path: cellData}),
+        data: new ImageCellData({path: cellData}),
         type: args.columnType,
       })),
     }),
