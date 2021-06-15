@@ -27,9 +27,9 @@ export const ErrorFallback = (props: Props) => {
         <div className="mt-2 text-blue-400">Q「エラーを解決したい場合どうしたらいいか」</div>
         <div className="text-xs">A：以下の選択肢を1から順に取ってほしいと思います。分かりづらい説明すみません</div>
         <div className="mt-1 text-gray-400 text-xs">
-          <div className="mb-1">1, メニューバーの「About」を開いた時に表示されるバージョン番号が最新かどうか<a className="cursor-pointer text-blue-500"  target="_blank" rel="noopener" href="https://github.com/lainNao/Lace/releases">githubのリリースページ</a>にアクセスして見比べてください。違った場合、今のバージョンはアンインストールせずにそのまま最新版をDLしてインストールしてみてください。直る可能性があります。</div>
+          <div className="mb-1">1, メニューバーの「About」を開いた時に表示されるバージョン番号が最新かどうか<a className="cursor-pointer text-blue-500"  rel="noopener" href="https://github.com/lainNao/Lace/releases">githubのリリースページ</a>にアクセスして見比べてください。違った場合、今のバージョンはアンインストールせずにそのまま最新版をDLしてインストールしてみてください。直る可能性があります。</div>
           <div className="mb-1">2, あと一応、データフォルダをまるごとそのままコピーしてバックアップ取っておいてください。データフォルダの場所は、Windowsならdocuments配下にあると思います。</div>
-          <div className="mb-1">3, 最新版だった場合、この画面下部の背景が青い部分のスクショを作者か<a className="cursor-pointer text-blue-500" target="_blank" rel="noopener"  href="https://github.com/lainNao/Lace/issues">issueページ</a>にどうにか伝えて修正を待ち、修正しましたすみませんと連絡が来たら、今のバージョンはアンインストールしないで（言葉の意味通り、しないで）、ただただそのまま修正版をDLしインストールしてください。</div>
+          <div className="mb-1">3, 最新版だった場合、この画面下部の背景が青い部分のスクショを作者か<a className="cursor-pointer text-blue-500" rel="noopener"  href="https://github.com/lainNao/Lace/issues">issueページ</a>にどうにか伝えて修正を待ち、修正しましたすみませんと連絡が来たら、今のバージョンはアンインストールしないで（言葉の意味通り、しないで）、ただただそのまま修正版をDLしインストールしてください。</div>
           <div className="mb-1">4, 3で直る見込みが無さそうな場合、諦めるか、作者に感情をぶつけるか、法的に手段は無いか考えるか、同じツールを自分で作るか、同じツールをもっと技術力のあるベンダーに作らせてみる等してください。</div>
         </div>
 

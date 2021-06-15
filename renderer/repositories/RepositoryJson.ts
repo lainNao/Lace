@@ -35,7 +35,7 @@ export class RepositoryJson<T> {
 
   async save(data: T): Promise<T> {
     const saveDirPath = await this.getSaveDirAbsolutePath();
-    await fs.promises.writeFile(path.join(saveDirPath, this.dbFileRelativePath), JSON.stringify(data, null, "\t"), "utf8");
+    await fs.promises.writeFile(path.join(saveDirPath, this.dbFileRelativePath), JSON.stringify(data, null, null), "utf8");
     this.data = data;
     return this.data;
   }
@@ -66,7 +66,7 @@ export class RepositoryJson<T> {
     }
 
     // 初期DBファイル作成
-    await fs.promises.writeFile(dbPath, JSON.stringify(this.initialDB, null, "\t"), "utf8");
+    await fs.promises.writeFile(dbPath, JSON.stringify(this.initialDB, null, null), "utf8");
     return this.model.fromJSON(this.initialDB);
   }
 

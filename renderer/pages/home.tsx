@@ -48,7 +48,7 @@ export const Home = () => {
                   : <Button colorScheme="gray" size="sm" onClick={controller.handleClickSetup}>初期データのセットアップ</Button>
                 }
                 <div className="mt-3 text-sm">
-                  <a href="https://github.com/lainNao/Lace" target="_blank" rel="noopener" className="text-blue-500">README</a>
+                  <a href="https://github.com/lainNao/Lace" className="text-blue-500">README</a>
                 </div>
               </div>
             </div>

@@ -4,6 +4,8 @@ import React from 'react';
 import { Cell } from "../../../../../models/ColumnSpaces";
 import { ImageCellData, MarkdownCellData, SoundCellData, TextCellData, VideoCellData } from "../../../../../models/ColumnSpaces/CellData.implemented";
 import { CellDataType } from "../../../../../resources/CellDataType";
+import MarkdownPreview from '@uiw/react-markdown-preview';
+import "@uiw/react-markdown-preview/dist/markdown.css";
 
 type CellInfoProps = {
   cell: Cell,
@@ -36,6 +38,12 @@ export const CellInfo = (props: CellInfoProps) => {
           <div>
             {/* TODO ここマークダウンのレンダリングをしたいところ */}
             <Textarea isReadOnly defaultValue={cellData.text} />
+          </div>
+        </div>
+        <div className="mt-3">
+          <div>本文プレビュー</div>
+          <div className="rounded-lg p-3 mb-3 bg-gray-900">
+            <MarkdownPreview source={cellData.text} />
           </div>
         </div>
       </div>

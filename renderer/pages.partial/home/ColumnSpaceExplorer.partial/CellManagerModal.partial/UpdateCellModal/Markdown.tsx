@@ -72,8 +72,6 @@ export const MarkdownCellUpdateModal = (props: Props) => {
                     .filled("タイトルは必須です")
                   ,text: yup
                     .string()
-                    .required("本文は必須です")
-                    .filled("本文は必須です")
                 })
               }
             >{(formState) => {

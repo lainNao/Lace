@@ -18,7 +18,7 @@ export const AppMenuBar = () => {
         {/* About */}
         <Menu styles={{backgroundColor:"rgb(60 70 86)", color:"aliceblue"}}  menuButton={<div className="hover:bg-gray-700 grid place-items-center w-14 text-gray-300 cursor-default select-none">About</div>}>
           <MenuItem styles={{transitionProperty: "none", padding:"0.1rem 1.5rem", hover: {backgroundColor: "gray"}}}>
-            <a href="https://github.com/lainNao/Lace" target="_blank" rel="noopener">
+            <a href="https://github.com/lainNao/Lace" rel="noopener">
               <img width="30px" className="mr-3 inline" src="/images/icon.png" role="presentation" />GitHub
             </a>
           </MenuItem>
