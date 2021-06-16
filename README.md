@@ -68,7 +68,7 @@ https://github.com/lainNao/Lace/releases
 | --- | --- |
 | 0.1系 | 基礎開発中 |
 | 0.2系（今の最新） | 一応機能は最低限揃ったけど、TODOとテストが山積み中 |
-| 1系（まだできてない） | 機能も揃ったし、リファクタリングもテストも済んだもの。<a href="https://github.com/lainNao/Lace/commit/ed150bec05b6aafc8765962db682ee0f2970ec7a">軽い設計案</a> |
+| 1系（まだできてない） | 機能も揃ったし、リファクタリングもテストも済んだもの。<a href="https://github.com/lainNao/Lace/blob/main/memo.txt#L15">軽い設計案</a> |
 
 <br>
 
