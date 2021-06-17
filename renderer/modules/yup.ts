@@ -2,6 +2,7 @@ import * as yup from 'yup';
 import Lazy from 'yup/lib/Lazy';
 import { AnyObject, Maybe, Optionals } from "yup/lib/types";
 
+//https://github.com/jquense/yup/issues/312
 yup.addMethod<yup.StringSchema>(yup.string, "filled", function (errorMessage) {
   return this.test(`test-filled`, errorMessage, function (value) {
     const { path, createError } = this;
