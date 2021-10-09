@@ -1,5 +1,5 @@
 # お知らせ
-[V1に移行予定](https://github.com/lainNao/LaceV1)
+[Relational-Media-Explorerに移行予定](https://github.com/lainNao/Relational-Media-Explorer)
 
 # Lace Explorer（v0.x.x）
 （現状は突貫工事版で、バージョン1にするまでにはゴリゴリのリファクタリングをするつもりです）
