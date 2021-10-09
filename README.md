@@ -1,3 +1,6 @@
+# お知らせ
+[V2に移行予定](https://github.com/lainNao/LaceV2)
+
 # Lace Explorer（v0.x.x）
 （現状は突貫工事版で、バージョン1にするまでにはゴリゴリのリファクタリングをするつもりです）
 
